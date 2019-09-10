@@ -1,14 +1,6 @@
-import catenary
+from . import catenary
 import numpy as np
 
-class CableMaterial(self):
-    def __init__(
-            self,
-            w,
-            EA,
-    ):
-        self.w = w
-        self.EA = EA
 
 class MooringLine:
     """
@@ -93,12 +85,11 @@ class MooringLine:
             self.distance = np.abs(self.fairlead[0]-self.anchor[0])
 
     def setVariables(self):
-        if self.broken is False:
-            self.setDirectionDistance()
-            if self.nd == 2:
-                h = self.fairlead[1]-self.anchor[1]
-            elif self.nd == 3:
-                h = self.fairlead[2]-self.anchor[2]
+        self.setDirectionDistance()
+        if self.nd == 2:
+            h = self.fairlead[1]-self.anchor[1]
+        elif self.nd == 3:
+            h = self.fairlead[2]-self.anchor[2]
         d = self.distance
         cat = self.catenary
         cat.getState(d, h, self.L)
@@ -148,53 +139,15 @@ class MooringLine:
         anchor = np.dot(self.anchor, transf)
         fairlead = np.dot(self.anchor, transf)
 
-    def getTension(self, tol=1e-6, maxit=1000):
+    def getTension(self, s):
         """
         Gives the tension using line length and the coordinates of the anchor and fairlead
         :param tol: tolerance for calculation of tension
         :param maxit: maximum of iterations to calculate tension
         (!) works for seabed flat and perpendicular to gravity
         """
-        if self.broken is False:
-            if self.nd == 2:
-                anchor2D = self.anchor
-                fairlead2D = self.fairlead
-                vec2D = np.array([1., 1.])
-            elif self.nd == 3:
-                transf = np.linalg.inv(self.anchor_coords_system)
-                anchor_transf = np.dot(self.anchor, transf)
-                anchor2D = np.array([np.linalg.norm(anchor_transf[:2]), anchor_transf[2]])
-                fairlead_transf = np.dot(self.fairlead, transf)
-                fairlead2D = np.array([np.linalg.norm(fairlead_transf[:2]), fairlead_transf[2]])
-                vec = (fairlead_transf-anchor_transf)[:2]
-                vec = vec/np.linalg.norm(vec)
-            if fairlead2D[0] < anchor2D[0]:
-                # fairlead must be on the right of anchor
-                fairlead2D[0], anchor2D[0] = anchor2D[0], fairlead2D[0]
-                vec2D = np.array([-1., 1.])
-
-            Tf, Ta, self.Ls, self.e, self.a, y_func, xs = catenary_tension_elastic(P1=anchor2D, P2=fairlead2D, L=self.L, w=self.w, EA=self.EA, a0=self.a, tol=tol, maxit=maxit)
-
-            if self.nd == 2:
-                Tf = Tf*vec2D
-                Ta = Ta*vec2D
-                self.y = y_func
-            if self.nd == 3:
-                Tf3D = np.zeros(3)
-                Ta3D = np.zeros(3)
-                # horizontal component from 2D to 3D on x-y
-                Tf3D[:2] = Tf[0]*vec
-                Ta3D[:2] = Ta[0]*vec
-                self.y = lambda x, y: y_func(np.sqrt(x**2+y**2))*vec
-                # vertical component to z-axis
-                Tf3D[2] = Tf[1]
-                Ta3D[2] = Ta[1]
-                # transform back with coord system to align with gravity
-                Tf = np.dot(self.anchor_coords_system, Tf3D)
-                Ta = np.dot(self.anchor_coords_system, Ta3D)
-
-            self.Tf = Tf
-            self.Ta = Ta
+        if 0 <= s <= self.L:
+            return self.catenary.getTension(s)
 
 
 def get_array(x):

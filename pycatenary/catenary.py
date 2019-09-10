@@ -1,4 +1,4 @@
-import utils
+from . import utils
 import numpy as np
 import sys
 nitercount = 0
@@ -59,9 +59,9 @@ class CatenaryBase(object):
             ds0 = self.ds2xy(0)
             angle0 = np.arctan(ds0[1]/ds0[0])
             # vertical tension at anchor
-            Tv_a = H*np.tan(angle0)
+            Tv_a = Th*np.tan(angle0)
             # vertical tension at point
-            Tv = Va+w_av*s
+            Tv = Tv_a+w_av*s
             # tension at point
             Ts = np.array([Th, Tv])
         elif 0 <= s < s0:
