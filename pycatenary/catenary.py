@@ -11,7 +11,8 @@ def get_array(x):
     return x
 
 class CatenaryBase(object):
-    def __init__(self):
+    def __init__(self, line):
+        self.line = line
         # horizontal distance
         self.d = 0.
         # vertical distance
@@ -22,15 +23,9 @@ class CatenaryBase(object):
         self.e = 0.
         # horizontal span
         self.x0 = 0.
-        # line length
-        self.L = 0.
         # lifted line length
         self.Ls = 0.
         # submerged weight
-        self.w = 0.
-        # axial stiffness
-        self.EA = 0.
-        # maximum iterations
         self.maxit = 1000
         # tolerance
         self.tol = 1e-10
@@ -52,7 +47,7 @@ class CatenaryBase(object):
         Lset = Lst+np.sum(self.e) # stretched
         if Lst >= s >= s0:
             # average w
-            w_av = np.sum(self.w*self.Ls)/Lst
+            w_av = np.sum(self.line.w*self.Ls)/Lst
             # horizontal tension
             Th = self.a*w_av*(Lst/Lset)
             # vertical tension
@@ -100,12 +95,9 @@ class CatenaryBase(object):
 class CatenaryRigid(CatenaryBase):
     def __init__(
             self,
-            L,
-            w,
+            line,
     ):
-        super(CatenaryRigid, self).__init__()
-        self.L = L
-        self.w = w
+        super(CatenaryRigid, self).__init__(line)
 
     def getState(
             self,
@@ -117,7 +109,7 @@ class CatenaryRigid(CatenaryBase):
         self.h = h
         tol = self.tol
         maxit = self.maxit
-        L = self.L
+        L = self.line.L
         Ls = np.zeros(len(L))
         Lt = np.sum(L)
         x_offset = 0.
@@ -130,16 +122,16 @@ class CatenaryRigid(CatenaryBase):
             x0 = 0.
         else:
             # cable straight to seabed:
-            if self.L >= h+d:
+            if L >= h+d:
                 # no horizontal tension
                 Lst = 0.
                 for ii in range(len(L)):
                     index = -1-i
-                    Lst += self.L[index]
+                    Lst += L[index]
                     if Ltot < h:
-                        Ls[index] = self.L[index]
+                        Ls[index] = L[index]
                     if Ltot >= h:
-                        Ls[index] = Ltot-self.L[index+1:]
+                        Ls[index] = Ltot-L[index+1:]
                 a = 0.
                 x0 = 0.
             else:
@@ -178,23 +170,14 @@ class CatenaryRigid(CatenaryBase):
 class CatenaryElastic(CatenaryBase):
     def __init__(
             self,
-            L,
-            w,
-            EA,
+            line,
     ):
-        super(CatenaryElastic, self).__init__()
-        self.L = L
-        self.w = w
-        self.EA = EA
-        self._x_offset = 0.
+        super(CatenaryElastic, self).__init__(line)
 
     def getState(
             self,
             d,
             h,
-            a0=1.,
-            tol=1e-10,
-            maxit=1000,
             floor=True,
     ):
         """
@@ -215,9 +198,9 @@ class CatenaryElastic(CatenaryBase):
         self.h = h
         minL = np.sqrt(h**2+d**2)+tol  # minimum line length
 
-        L = get_array(self.L)  # unstretched line length
-        w = get_array(self.w)  # submerged weight
-        EA = get_array(self.EA)  # axial stiffness
+        L = get_array(self.line.L)  # unstretched line length
+        w = get_array(self.line.w)  # submerged weight
+        EA = get_array(self.line.EA)  # axial stiffness
 
         Lt = np.sum(L)  # total unstretched line length
         Ls = np.zeros(len(L))  # lifted line length
@@ -233,7 +216,7 @@ class CatenaryElastic(CatenaryBase):
         niter = 0
 
         if floor is False:
-            a, e = nofloor_elastic(d=d, h=d, L=L, w=w, EA=EA, tol=tol, maxit=1000)
+            a, e = nofloor_elastic(d=d, h=d, L=L, w=w, EA=EA, tol=tol, maxit=maxit)
             state = 'nofloor'
             x0 = 0.
         else:
@@ -304,7 +287,3 @@ class CatenaryElastic(CatenaryBase):
         self.a = a
         self.e = e
         self.x0 = x0
-
-
-
-
