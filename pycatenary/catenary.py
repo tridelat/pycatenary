@@ -26,7 +26,7 @@ class CatenaryBase(object):
         # lifted line length
         self.Ls = 0.
         # submerged weight
-        self.maxit = 1000
+        self.maxit = 10000
         # tolerance
         self.tol = 1e-10
         # first guess for bisection (int1)
@@ -43,9 +43,10 @@ class CatenaryBase(object):
     def getTension(self, s):
         s0 = self.d-self.x0
         # total line lengths
+        Lt = np.sum(self.line.L) # unstretched
         Lst = np.sum(self.Ls) # unstretched
         Lset = Lst+np.sum(self.e) # stretched
-        if Lst >= s >= s0:
+        if Lt >= s >= s0:
             # average w
             w_av = np.sum(self.line.w*self.Ls)/Lst
             # horizontal tension
@@ -56,18 +57,18 @@ class CatenaryBase(object):
             # vertical tension at anchor
             Tv_a = Th*np.tan(angle0)
             # vertical tension at point
-            Tv = Tv_a+w_av*s
+            Tv = Tv_a+w_av*(s-s0)
             # tension at point
             Ts = np.array([Th, Tv])
         elif 0 <= s < s0:
             Ts = np.array([0., 0.])
         else:
-            assert 1>2, 'wrong value for s'
+            assert False, 'wrong value for s'
         return Ts
 
     def s2xy(self, s):
         s0 = self.d-self.x0
-        s += self._s_offset
+        s = s+self._s_offset
         s = s*np.sum(self.Ls+self.e)/np.sum(self.Ls)
         a = self.a
         if s < s0:
@@ -81,7 +82,7 @@ class CatenaryBase(object):
 
     def ds2xy(self, s):
         s0 = self.d-self.x0
-        s += self._s_offset
+        s = s+self._s_offset
         a = self.a
         if s < s0:
             x = 1.
@@ -94,16 +95,16 @@ class CatenaryBase(object):
 
 class CatenaryRigid(CatenaryBase):
     def __init__(
-            self,
-            line,
+        self,
+        line,
     ):
         super(CatenaryRigid, self).__init__(line)
 
     def getState(
-            self,
-            d,
-            h,
-            floor=True,
+        self,
+        d,
+        h,
+        floor=True,
     ):
         self.d = d
         self.h = h
@@ -137,7 +138,7 @@ class CatenaryRigid(CatenaryBase):
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a*(np.cosh(d/a)-1)-h
-                a = utils.bisection(f, int1=1e-6, int2=1e6, tol=tol, maxit=maxit)
+                a = utils.bisection(f, int1=self.bisection_int1, int2=self.bisection_int2, tol=tol, maxit=maxit)
                 Ls0 = a*np.sinh(d/a)  # maximum line length to be fully lifted
                 # get actual line length assuming it is fully lifted (from parameter a)
                 Ls1 = np.sum(L)
@@ -156,7 +157,7 @@ class CatenaryRigid(CatenaryBase):
                     y_offset = h-a*np.cosh(xy/a)
                     s_offset = a*np.sinh(xx/a)
                     if a is np.nan:
-                        assert 1 > 2, 'error'
+                        raise RuntimeError('The line is too stretched/straight, cannot find catenary shape')
         self.Ls = Ls
         self._x_offset = x_offset
         self._y_offset = y_offset
@@ -175,10 +176,10 @@ class CatenaryElastic(CatenaryBase):
         super(CatenaryElastic, self).__init__(line)
 
     def getState(
-            self,
-            d,
-            h,
-            floor=True,
+        self,
+        d,
+        h,
+        floor=True,
     ):
         """
         Calculates the solution for elastic catenary of unstretched length L between two points P1 and P2.
@@ -196,6 +197,9 @@ class CatenaryElastic(CatenaryBase):
         """
         self.d = d
         self.h = h
+        tol = self.tol
+        maxit = self.maxit
+        L = self.line.L
         minL = np.sqrt(h**2+d**2)+tol  # minimum line length
 
         L = get_array(self.line.L)  # unstretched line length
@@ -250,12 +254,11 @@ class CatenaryElastic(CatenaryBase):
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a*(np.cosh(d/a)-1)-h
-                a = utils.bisection(f, 1.e-6, 1e15, tol=tol, maxit=maxit)
+                a = utils.bisection(f, self.bisection_int1, self.bisection_int2, tol=tol, maxit=maxit)
                 Ls0 = a*np.sinh(d/a)  # maximum line length to be fully lifted
                 # get actual line length assuming it is fully lifted (from parameter a)
                 H = a*np.sum(w*L)/Lt
                 Va = 0
-                print('aaa', a)
                 for i in range(len(e)):
                     e[i] = np.sqrt(H**2+(Va+np.sum(w[:i]*Lsu[:i])+w[i]*Lsu[i]/2.)**2)*Lsu[i]/EA[i]
                 Ls1 = Lt+np.sum(e)
@@ -264,22 +267,19 @@ class CatenaryElastic(CatenaryBase):
                     x0 = a*np.arccosh(1+h/a)
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
-                    a, e = utils.fully_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol)
                     x0 = d
                     Ls = L
+                    a, e = utils.fully_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, int1=a, maxit=maxit, tol=tol)
+                    if a is np.nan:  # assume line is straight
+                        raise RuntimeError('The line is too stretched/straight, cannot find catenary shape')
+                        # H, e = utils.straight_elastic(d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol)
+                        # a = H/np.sum(w*L)
                     Lst = np.sum(Ls+e)
                     xx = 0.5*(a*np.log((Lst+h)/(Lst-h))-d)
                     xy = 0.5*(a*np.log((Lst+h)/(Lst-h))+d)
                     x_offset = -xx
                     y_offset = h-a*np.cosh(xy/a)
                     s_offset = a*np.sinh(xx/a)
-                    print(x_offset, s_offset, a)
-                    if a is not np.nan:
-                        Lsu = L
-                    else:  # assume line is straight
-                        #print("STRAIGHT")
-                        H, e = utils.straight(d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol)
-                        a = H/np.sum(w*L)
         self.Ls = Ls
         self._x_offset = x_offset
         self._y_offset = y_offset

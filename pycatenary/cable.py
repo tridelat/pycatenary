@@ -55,7 +55,8 @@ class MooringLine:
         self.catenary.getState(
             d=self.distance_h,
             h=self.distance_v,
-            floor=self.floor)
+            floor=self.floor,
+        )
 
     def s2xyz(self, s):
         """
@@ -88,8 +89,7 @@ class MooringLine:
         s: double
             distance along line (from anchor)
         """
-        if 0 <= s <= self.L:
-            return self._transformVector(self.catenary.getTension(s))
+        return self._transformVector(self.catenary.getTension(s))
 
     def _setDirectionDistance(self):
         if self.nd == 3:

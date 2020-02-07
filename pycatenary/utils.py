@@ -1,6 +1,11 @@
 import numpy as np
 
-def get_root_a(L, d, h, a0=1., tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
+int1_default = 1e-6
+int2_default = 1e16
+maxit_default = 1000
+tol_default = 1e-6
+
+def get_root_a(L, d, h, a0=1., tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     g = lambda a: 2.*a*np.sinh(d/(2.*a))-np.sqrt((L)**2.-h**2.)
     dg = lambda a: 2.*np.sinh(d/(2.*a))-d*np.cosh(d/(2.*a))/a
     a = newton_raphson(f=g, df=dg, x0=a0, tol=tol, maxit=maxit)
@@ -8,7 +13,7 @@ def get_root_a(L, d, h, a0=1., tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
         a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
     return a
 
-def newton_raphson(f, df, x0, tol=1e-6, maxit=1000):
+def newton_raphson(f, df, x0, tol=tol_default, maxit=maxit_default):
     """
     Root finding algorithm (for transcendental equations)
     :param f: must be a function (so f(x) = 0 returns the required x)
@@ -33,7 +38,7 @@ def newton_raphson(f, df, x0, tol=1e-6, maxit=1000):
         x = np.nan
     return x
 
-def bisection(f, int1, int2, tol=1e-6, maxit=1000):
+def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
     """
     Root finding algorithm (for transcendental equations).
     A solution is found between a user-provided interval.
@@ -60,26 +65,26 @@ def bisection(f, int1, int2, tol=1e-6, maxit=1000):
         x = np.nan
     return x
 
-def nofloor_rigid(d, h, L, tol=1e-6, maxit=1000):
+def nofloor_rigid(d, h, L, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     g = lambda a: 2.*a*np.arcsinh((L/2.)/a)-d
-    a0 = bisection(f=g, int1=0.01, int2=1e15, tol=tol, maxit=maxit)
+    a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
     return a0
 
-def nofloor_elastic(d, h, L, w, EA, tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
+def nofloor_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     e = w*L/EA
     Le = L+e
     g = lambda a: 2.*a*np.arcsinh((Le/2.)/a)-d
     a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
     return a0, e
 
-def fully_lifted_elastic(d, h, L, w, EA, tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
+def fully_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     Ls_tot = Le = 0
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w*L/Lt) # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
 
     t_high = h/d
-    t_low = 0
+    t_low = 0.
 
     diff = 1.
     niter = 0
@@ -106,14 +111,14 @@ def fully_lifted_elastic(d, h, L, w, EA, tol=1e-6, maxit=1000, int1=1e-6, int2=1
         Ha = Ta*np.cos(angle)
         Va = Ta*np.sin(angle)
         for i in range(len(e)):
-            e[i] = np.sqrt(Ha**2+(Va+(np.sum(w[:i]*L[:i])+w[i]*L[i]/2.))**2)*L[i]/EA[i]
+            e[i] = np.sqrt(Ha**2+(Va+(np.sum(w[:i]*L[:i])+w[i]*L[i]))**2)*L[i]/EA[i]
         et = np.sum(e)
         Le = Lt+et  # store new Ls value as calculated with stretching
         x0 = d
         diff = np.abs(Le-Ls_tot)
     return a, e
 
-def fully_lifted_rigid(d, h, L, tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
+def fully_lifted_rigid(d, h, L, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     g = lambda a: 2.*a*np.sinh(d/(2.*a))-np.sqrt(np.sum(L)**2.-h**2.)
     dg = lambda a: 2.*np.sinh(d/(2.*a))-d*np.cosh(d/(2.*a))/a
     a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
@@ -124,7 +129,7 @@ def fully_lifted_rigid(d, h, L, tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
         a = a1
     return a
 
-def partly_lifted_elastic(d, h, L, w, EA, tol=1e-6, maxit=1000, int1=1e-6, int2=1e6):
+def partly_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     diff = 1.
     niter = 0
     a = 1.
@@ -166,13 +171,13 @@ def partly_lifted_elastic(d, h, L, w, EA, tol=1e-6, maxit=1000, int1=1e-6, int2=
         w_av = np.sum(w[i]*Lsu[i])/Ls
         H = a*w_av
         for i in range(len(L)):
-            e[i] = np.sqrt(H**2+(np.sum(w[i:]*Lsu[i:])+w[i]*Lsu[i]/2.)**2)*Lsu[i]/EA[i]
+            e[i] = np.sqrt(H**2+(np.sum(w[i:]*Lsu[i:])+w[i]*Lsu[i])**2)*Lsu[i]/EA[i]
         et = np.sum(e)
         Lse = Lsu_tot+et
         diff = np.abs(Ls-Lse)
     return a, e, Lsu
 
-def partly_lifted_rigid(d, h, L, tol=1e-6, maxit=1000):
+def partly_lifted_rigid(d, h, L, tol=tol_default, maxit=maxit_default):
     diff = 1.
     niter = 0
     a = 1.
@@ -192,14 +197,16 @@ def partly_lifted_rigid(d, h, L, tol=1e-6, maxit=1000):
             a = a*((d/X0)**(d/x0))
     return a, Ls
 
-def straight_elastic(d, h, L, w, EA, H_low=0, H_high=1e10, tol=1e-6, maxit=1000):
+def straight_elastic(d, h, L, w, EA, H_low=0, H_high=1e10, tol=tol_default, maxit=maxit_default):
 
     Lt = np.sum(L)  # total length of cable
+    assert Lt <= np.sqrt(d**2+h**2)
     w_av = np.sum(w*L/Lt) # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
     et = (d**2+h**2)**0.5-Lt  # stretching to reach minimum length
     angle = np.arctan(h/d)  # angle
 
+    et_check = et
     H = (H_low+H_high)/2.  # guess of horizontal tension at anchor
     diff = 1.
     niter = 0
@@ -212,6 +219,7 @@ def straight_elastic(d, h, L, w, EA, H_low=0, H_high=1e10, tol=1e-6, maxit=1000)
         H = (H_low+H_high)/2.
         Va = H*np.tan(angle)  # tension at anchor
         for i in range(len(e)):
-            e[i] = ((H**2+(Va+w[i:]*L[w:]+w[i]*L[i]/2.)**2)**0.5)*L[i]/EA[i]
+            e[i] = ((H**2+(Va+np.sum(w[i:]*L[i:])+w[i]*L[i])**2)**0.5)*L[i]/EA[i]
         et_check = np.sum(e)
+        diff = np.abs(et_check-et)
     return H, e
