@@ -1,16 +1,23 @@
+import os
 import unittest
 import numpy as np
 import numpy.testing as npt
 from pycatenary import cable
 
+
+def csv2array(filename, delimiter=',', names=None):
+    fname = os.path.join(os.path.dirname(__file__), filename)
+    return np.genfromtxt(fname, delimiter=delimiter, names=names)
+
+
 class TestCatenaryValidation(unittest.TestCase):
 
     def test_validation1(self):
         # results to compare to
-        pos = np.genfromtxt('xpos.csv', delimiter=',')
-        T = np.genfromtxt('T.csv', delimiter=',')
-        Tx = np.genfromtxt('Tx.csv', delimiter=',')
-        Ty = np.genfromtxt('Ty.csv', delimiter=',')
+        pos = csv2array('xpos.csv')
+        T = csv2array('T.csv')
+        Tx = csv2array('Tx.csv')
+        Ty = csv2array('Ty.csv')
 
         # make mooring line
         length = 6.98

@@ -1,0 +1,12 @@
+os: linux
+
+language: python
+
+jobs:
+  include:
+  - stage: test
+    name: "test"
+    python: 3.7
+    install: skip
+    script:
+      - pytest pycatenary/tests/validation1/test.py
