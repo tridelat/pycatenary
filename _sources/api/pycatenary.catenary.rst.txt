@@ -1,0 +1,7 @@
+pycatenary.catenary module
+==========================
+
+.. automodule:: pycatenary.catenary
+   :members:
+   :undoc-members:
+   :show-inheritance:

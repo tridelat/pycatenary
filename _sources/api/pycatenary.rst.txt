@@ -1,0 +1,16 @@
+pycatenary package
+==================
+
+.. automodule:: pycatenary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   pycatenary.cable
+   pycatenary.catenary
+   pycatenary.utils

@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pycatenary.cable module &mdash; pycatenary 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pycatenary.catenary module" href="pycatenary.catenary.html" />
+    <link rel="prev" title="pycatenary package" href="pycatenary.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pycatenary
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API docs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pycatenary.html">pycatenary package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pycatenary.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pycatenary.cable module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pycatenary.catenary.html">pycatenary.catenary module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pycatenary.utils.html">pycatenary.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pycatenary</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">pycatenary</a> &raquo;</li>
+        
+          <li><a href="pycatenary.html">pycatenary package</a> &raquo;</li>
+        
+      <li>pycatenary.cable module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/tridelat/pycatenary/blob/masterdocs/source/api/pycatenary.cable.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-pycatenary.cable">
+<span id="pycatenary-cable-module"></span><h1>pycatenary.cable module<a class="headerlink" href="#module-pycatenary.cable" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pycatenary.cable.MooringLine">
+<em class="property">class </em><code class="sig-prename descclassname">pycatenary.cable.</code><code class="sig-name descname">MooringLine</code><span class="sig-paren">(</span><em class="sig-param">L</em>, <em class="sig-param">w</em>, <em class="sig-param">EA=None</em>, <em class="sig-param">anchor=None</em>, <em class="sig-param">fairlead=None</em>, <em class="sig-param">nd=3</em>, <em class="sig-param">floor=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to create a mooring line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>double</em>) – unstretched line length [m]</p></li>
+<li><p><strong>w</strong> (<em>double</em>) – submerged weight [N/m]</p></li>
+<li><p><strong>EA</strong> (<em>double</em>) – axial stiffness</p></li>
+<li><p><strong>anchor</strong> (<em>np.ndarray</em>) – anchor coordinates</p></li>
+<li><p><strong>fairlead</strong> (<em>np.ndarray</em>) – fairlead coordinates</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="pycatenary.cable.MooringLine.count">
+<code class="sig-name descname">count</code><em class="property"> = 0</em><a class="headerlink" href="#pycatenary.cable.MooringLine.count" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.computeSolution">
+<code class="sig-name descname">computeSolution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.computeSolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes solution of the catenary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.s2xyz">
+<code class="sig-name descname">s2xyz</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.s2xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives xyz coordinates along line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>double</em>) – distance along line (from anchor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.ds2xyz">
+<code class="sig-name descname">ds2xyz</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.ds2xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives xyz direction along line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>double</em>) – distance along line (from anchor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">npoints=100</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots line from anchor to fairlead in 3D</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.getTension">
+<code class="sig-name descname">getTension</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.getTension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives tension along line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>double</em>) – distance along line (from anchor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.setAnchorCoords">
+<code class="sig-name descname">setAnchorCoords</code><span class="sig-paren">(</span><em class="sig-param">coords</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.setAnchorCoords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets coordinates of anchor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>array</em>) – coordinates of anchor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycatenary.cable.MooringLine.setFairleadCoords">
+<code class="sig-name descname">setFairleadCoords</code><span class="sig-paren">(</span><em class="sig-param">coords</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine.setFairleadCoords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets coordinates of fairlead</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>array</em>) – coordinates of fairlead</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pycatenary.cable.get_array">
+<code class="sig-prename descclassname">pycatenary.cable.</code><code class="sig-name descname">get_array</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.get_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pycatenary.catenary.html" class="btn btn-neutral float-right" title="pycatenary.catenary module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pycatenary.html" class="btn btn-neutral float-left" title="pycatenary package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Tristan de Lataillade
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

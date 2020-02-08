@@ -1,0 +1,7 @@
+pycatenary
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   pycatenary
