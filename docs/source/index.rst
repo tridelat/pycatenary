@@ -10,6 +10,8 @@ Welcome to pycatenary's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   API docs <api/modules.rst>
+
 
 
 Indices and tables

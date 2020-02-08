@@ -14,14 +14,25 @@ def get_root_a(L, d, h, a0=1., tol=tol_default, maxit=maxit_default, int1=int1_d
     return a
 
 def newton_raphson(f, df, x0, tol=tol_default, maxit=maxit_default):
-    """
-    Root finding algorithm (for transcendental equations)
-    :param f: must be a function (so f(x) = 0 returns the required x)
-    :param df: derivative of the function f (df/dx)
-    :param x0: initial guess of x
-    :param tol: tolerance
-    :param maxit: maximum number of iterations
-    :return: x
+    """Root finding algorithm (for transcendental equations)
+
+    Parameters
+    ----------
+    f: function
+        must be a function (so f(x) = 0 returns the required x)
+    df: function
+        derivative of the function f (df/dx)
+    x0: double
+        initial guess of x
+    tol: double
+        tolerance
+    maxit: int
+        maximum number of iterations
+
+    Returns
+    -------
+    x: double
+        root
     """
     x_prev = x0
     x = x0-f(x0)/df(x0)
@@ -39,15 +50,25 @@ def newton_raphson(f, df, x0, tol=tol_default, maxit=maxit_default):
     return x
 
 def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
-    """
-    Root finding algorithm (for transcendental equations).
-    A solution is found between a user-provided interval.
-    :param f: must be a function (so f(x) = 0 returns the required x)
-    :param int1: lower end value
-    :param int2: higher end value
-    :param tol: tolerance
-    :param maxit: maximum number of iterations
-    :return: x (solution)
+    """Root finding algorithm (for transcendental equations)
+
+    Parameters
+    ----------
+    f: function
+        must be a function (so f(x) = 0 returns the required x)
+    int1: double
+        lower end value
+    int2: double
+        lower end value
+    tol: double
+        tolerance
+    maxit: int
+        maximum number of iterations
+
+    Returns
+    -------
+    x: double
+        root
     """
     err = np.abs(int2-int1)/2.
     niter = 0

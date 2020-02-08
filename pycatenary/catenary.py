@@ -11,6 +11,13 @@ def get_array(x):
     return x
 
 class CatenaryBase(object):
+    """Base class for catenaries
+
+    Parameters
+    ----------
+    line: pycatenary.cable.MooringLine
+        line holding properties necessary for calculation of catenary
+    """
     def __init__(self, line):
         self.line = line
         # horizontal distance
@@ -94,18 +101,28 @@ class CatenaryBase(object):
         return xy
 
 class CatenaryRigid(CatenaryBase):
-    def __init__(
-        self,
-        line,
-    ):
+    """A class for rigid catenary
+
+    Parameters
+    ----------
+    line: pycatenary.cable.MooringLine
+        line holding properties necessary for calculation of catenary
+    """
+    def __init__(self, line):
         super(CatenaryRigid, self).__init__(line)
 
-    def getState(
-        self,
-        d,
-        h,
-        floor=True,
-    ):
+    def getState(self, d, h, floor=True):
+        """Calculates the solution for rigid catenary
+
+        Parameters
+        ----------
+        d: double
+            horizontal distance between anchor and fairlead
+        h: double
+            vertical distance between anchor and fairlead
+        floor: bool
+            if True, the floor is assumed to be at the anchor level
+        """
         self.d = d
         self.h = h
         tol = self.tol
@@ -169,31 +186,27 @@ class CatenaryRigid(CatenaryBase):
 
 
 class CatenaryElastic(CatenaryBase):
-    def __init__(
-            self,
-            line,
-    ):
+    """A class for elastic catenary
+
+    Parameters
+    ----------
+    line: pycatenary.cable.MooringLine
+        line holding properties necessary for calculation of catenary
+    """
+    def __init__(self, line):
         super(CatenaryElastic, self).__init__(line)
 
-    def getState(
-        self,
-        d,
-        h,
-        floor=True,
-    ):
-        """
-        Calculates the solution for elastic catenary of unstretched length L between two points P1 and P2.
+    def getState(self, d, h, floor=True):
+        """Calculates the solution for elastic catenary
 
         Parameters
         ----------
-        :param P1: coordinates of anchor (2D) (!) must be lower and on the left of fairlead
-        :param P2: coordinates of point 2 (2D)  (!) must be higher and on the right of anchor
-        :param L: length of cable
-        :param w: submerged weight of cable
-        :param EA: axial stiffness of cable
-        :param a0: initial guess of solution to catenary equation (a=H/w)
-        :param tol: tolerance for finding solution
-        :param maxit: maximum of iterations
+        d: double
+            horizontal distance between anchor and fairlead
+        h: double
+            vertical distance between anchor and fairlead
+        floor: bool
+            if True, the floor is assumed to be at the anchor level
         """
         self.d = d
         self.h = h
