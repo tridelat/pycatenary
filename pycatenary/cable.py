@@ -68,7 +68,9 @@ class MooringLine:
         s: double
             distance along line (from anchor)
         """
-        return self._transformVector(self.catenary.s2xy(s))
+        Lt = np.sum(self.L)
+        assert s <= Lt, 'Cannot retrieve solution with s > L'
+        return self.anchor+self._transformVector(self.catenary.s2xy(s))
 
     def ds2xyz(self, s):
         """Gives xyz direction along line
@@ -79,6 +81,30 @@ class MooringLine:
             distance along line (from anchor)
         """
         return self._transformVector(self.catenary.ds2xy(s))
+
+    def plot(self, npoints=100):
+        """Plots line from anchor to fairlead in 3D
+        """
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        xyzs = []
+        xx = []
+        yy = []
+        zz = []
+        ds = np.sum(self.L)/(npoints-1)
+        ss = np.linspace(0., np.sum(self.L), npoints)
+        for s in ss:
+            xyz = self.s2xyz(s)
+            xyzs.append(xyz)
+            xx.append(xyz[0])
+            yy.append(xyz[1])
+            zz.append(xyz[2])
+        ax.plot(xx, yy, zz)
+        print('anchor: {anchor}'.format(anchor=str(xyzs[0])))
+        print('fairlead: {fairlead}'.format(fairlead=str(xyzs[-1])))
+        fig.show()
 
     def getTension(self, s):
         """Gives tension along line

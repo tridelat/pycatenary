@@ -1,7 +1,6 @@
 from . import utils
 import numpy as np
 import sys
-nitercount = 0
 
 def get_array(x):
     if np.isscalar(x):
@@ -99,6 +98,26 @@ class CatenaryBase(object):
             y = s/np.sqrt(a**2+s**2)
         xy = np.array([x, y])
         return xy
+
+    def plot(self, npoints=100):
+        """Plots catenary in 2D from (0, 0) to (d, h)
+        """
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
+        xys = []
+        xx = []
+        yy = []
+        ss = np.linspace(0., np.sum(self.line.L), npoints)
+        for s in ss:
+            xy = self.s2xy(s)
+            xys.append(xy)
+            xx.append(xy[0])
+            yy.append(xy[1])
+        ax.plot(xx, yy)
+        print('anchor: {anchor}'.format(anchor=str(xys[0])))
+        print('fairlead: {fairlead}'.format(fairlead=str(xys[-1])))
+        fig.show()
+
 
 class CatenaryRigid(CatenaryBase):
     """A class for rigid catenary
