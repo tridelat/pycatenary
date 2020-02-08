@@ -26,7 +26,7 @@ class CatenaryBase(object):
         # lifted line length
         self.Ls = 0.
         # submerged weight
-        self.maxit = 10000
+        self.maxit = 1000
         # tolerance
         self.tol = 1e-10
         # first guess for bisection (int1)

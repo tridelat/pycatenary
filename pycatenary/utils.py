@@ -144,20 +144,16 @@ def partly_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, 
     Lse = 0
     Ls = 0
     Lsu = np.zeros(len(L))
-    while diff > tol and niter < maxit:
+    while np.abs(diff) > tol and niter < maxit:
         niter += 1
-        if Ls < Lse:
-            x0_high = x0
-        elif Ls > Lse:
-            x0_low = x0
         x0 = (x0_low+x0_high)/2.
-        lifted = False
         g = lambda a: a*(np.cosh(x0/a)-1.)-h
         dg = lambda a: np.cosh(d/a+np.arcsinh(t))-d/a*np.sinh(d/a+np.arcsinh(t))
         a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
         Ls = h*np.sqrt(1+2*a/h)
         Lns_tot_check = 0
         ground = d-x0
+        lifted = False
         for i in (range(len(L))):
             if lifted is False:
                 Lsu[i] = 0
@@ -174,28 +170,49 @@ def partly_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, 
             e[i] = np.sqrt(H**2+(np.sum(w[i:]*Lsu[i:])+w[i]*Lsu[i])**2)*Lsu[i]/EA[i]
         et = np.sum(e)
         Lse = Lsu_tot+et
-        diff = np.abs(Ls-Lse)
+        X0 = Lt+et-Ls
+        diff = X0+x0-d
+        if diff > 0:
+            x0_high = x0
+        elif diff < 0:
+            x0_low = x0
     return a, e, Lsu
 
-def partly_lifted_rigid(d, h, L, tol=tol_default, maxit=maxit_default):
+def partly_lifted_rigid(d, h, L, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     diff = 1.
     niter = 0
     a = 1.
-    Ls = np.zeros(len(L))
+    Lsu = np.zeros(len(L))
     Lt = np.sum(L)
-    while diff > tol and niter < maxit:
+    x0_high = d
+    x0_low = 0
+    while np.abs(diff) > tol and niter < maxit:
         niter += 1
-        Ls_tot = h*np.sqrt(1+2*a/h)  # lifted line length
+        x0 = (x0_low+x0_high)/2.
+        g = lambda a: a*(np.cosh(x0/a)-1.)-h
+        dg = lambda a: np.cosh(d/a+np.arcsinh(t))-d/a*np.sinh(d/a+np.arcsinh(t))
+        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        Ls = h*np.sqrt(1+2*a/h)
+        Lns_tot_check = 0
+        ground = d-x0
+        lifted = False
+        for i in (range(len(L))):
+            if lifted is False:
+                Lsu[i] = 0
+                Lns_tot_check += L[i]
+                if Lns_tot_check > ground:
+                    Lsu[i] = Lns_tot_check-ground
+                    lifted = True
+            else:
+                Lsu[i] = L[i]
         x0 = a*np.arccosh(1+h/a)
-        X0 = (Lt-Ls_tot)+x0
-        if Ls_tot > Lt:
-            diff = 0  # cannot find solution; line must be fully lifted
-            a = Ls = np.nan
-        else:
-            diff = np.abs(X0-d)
-        if diff > tol:
-            a = a*((d/X0)**(d/x0))
-    return a, Ls
+        X0 = (Lt-Ls)
+        diff = X0+x0-d
+        if diff > 0:
+            x0_high = x0
+        elif diff < 0:
+            x0_low = x0
+    return a, Lsu
 
 def straight_elastic(d, h, L, w, EA, H_low=0, H_high=1e10, tol=tol_default, maxit=maxit_default):
 

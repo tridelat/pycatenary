@@ -3,8 +3,8 @@ import numpy as np
 
 
 class MooringLine:
-    """
-    Class to create a mooring line between anchor and fairlead points
+    """Class to create a mooring line
+
     Parameters
     ----------
     L: double
@@ -23,7 +23,7 @@ class MooringLine:
             self,
             L,
             w,
-            EA=0.,
+            EA=None,
             anchor=None,
             fairlead=None,
             nd=3,
@@ -45,13 +45,15 @@ class MooringLine:
             self.fairlead = np.array(fairlead)
         self.anchor_coords_system = np.eye(3)
         self.floor = floor
-        if EA == 0.:
+        if EA is None:
             self.catenary = catenary.CatenaryRigid(self)
         else:
             self.catenary = catenary.CatenaryElastic(self)
         self._setDirectionDistance()
 
     def computeSolution(self):
+        """Computes solution of the catenary
+        """
         self.catenary.getState(
             d=self.distance_h,
             h=self.distance_v,
@@ -59,8 +61,7 @@ class MooringLine:
         )
 
     def s2xyz(self, s):
-        """
-        Returns coordinates along line
+        """Gives xyz coordinates along line
 
         Parameters
         ----------
@@ -70,8 +71,7 @@ class MooringLine:
         return self._transformVector(self.catenary.s2xy(s))
 
     def ds2xyz(self, s):
-        """
-        Returns direction along line
+        """Gives xyz direction along line
 
         Parameters
         ----------
@@ -81,8 +81,7 @@ class MooringLine:
         return self._transformVector(self.catenary.ds2xy(s))
 
     def getTension(self, s):
-        """
-        Returns tension in line
+        """Gives tension along line
 
         Parameters
         ----------
@@ -105,6 +104,11 @@ class MooringLine:
             self.distance_v = np.abs(self.fairlead[1]-self.anchor[1])
 
     def _transformVector(self, vector):
+        """Transforms a 2D vector back in 3D (or 2D) according to direction
+
+        Note that it is assumed that gravity acts in the Y direction in 2D,
+        and Z direction in 3D
+        """
         assert len(vector) == 2, 'must be 2D vector'
         if self.nd == 2:
             vector[0] *= self.direction[0]
@@ -117,15 +121,23 @@ class MooringLine:
             return vector3D
 
     def setAnchorCoords(self, coords):
-        """
-        Sets coordinates of anchor
+        """Sets coordinates of anchor
+
+        Parameters
+        ----------
+        coords: array
+            coordinates of anchor
         """
         self.anchor[:] = np.array(coords)
         self._setDirectionDistance()
 
     def setFairleadCoords(self, coords):
-        """
-        Sets coordinates of fairlead
+        """Sets coordinates of fairlead
+
+        Parameters
+        ----------
+        coords: array
+            coordinates of fairlead
         """
         self.fairlead[:] = np.array(coords)
         self._setDirectionDistance()
