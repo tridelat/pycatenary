@@ -1,7 +1,7 @@
 import numpy as np
 
-int1_default = 1e-6
-int2_default = 1e16
+int1_default = 1e-2
+int2_default = 1e10
 maxit_default = 1000
 tol_default = 1e-6
 
@@ -87,16 +87,30 @@ def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
     return x
 
 def nofloor_rigid(d, h, L, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
-    g = lambda a: 2.*a*np.arcsinh((L/2.)/a)-d
+    Lt = np.sum(L)
+    g = lambda a: 2*a*np.sinh(d/(2*a))-np.sqrt(Lt**2-h**2)
     a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
     return a0
 
 def nofloor_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
-    e = w*L/EA
-    Le = L+e
-    g = lambda a: 2.*a*np.arcsinh((Le/2.)/a)-d
-    a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
-    return a0, e
+    Lt = np.sum(L)  # total length of cable
+    w_av = np.sum(w*L/Lt) # average weight of cable
+    e = np.zeros(len(L))  # stretching of cable segments
+    diff = tol+1
+    niter = 0
+    while diff > tol and niter < maxit:
+        niter += 1
+        Lte = np.sum(L+e)
+        g = lambda a: 2*a*np.sinh(d/(2*a))-np.sqrt(Lte**2-h**2)
+        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        #
+        T = np.sqrt((a*w_av)**2+np.sum(w*L))
+        et = T*L/EA
+        Lte_check = Lt+et  # store new Ls value as calculated with stretching
+        diff = np.abs(Lte-Lte_check)
+    # HACK: not real elongation if multi-segmented line here
+    e[:] = et*L/Lt
+    return a, e
 
 def fully_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):
     Ls_tot = Le = 0
@@ -112,10 +126,6 @@ def fully_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, i
     a = 1.
     while diff > tol and niter < maxit:
         niter += 1
-        if Le > Ls_tot:
-            t_high = t
-        elif Le < Ls_tot:
-            t_low = t
         t = (t_low+t_high)/2.
         angle = np.arctan(t)
         # transcendental equation
@@ -137,6 +147,10 @@ def fully_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, i
         Le = Lt+et  # store new Ls value as calculated with stretching
         x0 = d
         diff = np.abs(Le-Ls_tot)
+        if Le > Ls_tot:
+            t_high = t
+        elif Le < Ls_tot:
+            t_low = t
     return a, e
 
 def fully_lifted_rigid(d, h, L, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):

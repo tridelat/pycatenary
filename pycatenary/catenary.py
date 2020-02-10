@@ -77,7 +77,7 @@ class CatenaryBase(object):
         s = s+self._s_offset
         s = s*np.sum(self.Ls+self.e)/np.sum(self.Ls)
         a = self.a
-        if s < s0:
+        if s < s0 and self.line.floor:
             x = s
             y = 0.-self._y_offset
         else:
@@ -90,7 +90,7 @@ class CatenaryBase(object):
         s0 = self.d-self.x0
         s = s+self._s_offset
         a = self.a
-        if s < s0:
+        if s < s0 and self.line.floor:
             x = 1.
             y = 0.
         else:
@@ -155,8 +155,15 @@ class CatenaryRigid(CatenaryBase):
         a = 1.
         x0 = 0.
         if floor is False:
-            a = nofloor_rigid(d=d, h=d, L=L, tol=tol, maxit=maxit)
-            x0 = 0.
+            a = utils.nofloor_rigid(d=d, h=h, L=L, tol=tol, maxit=maxit)
+            x0 = d
+            Ls[:] = L
+            Lst = np.sum(Ls+e)
+            xx = 0.5*(a*np.log((Lst+h)/(Lst-h))-d)
+            xy = 0.5*(a*np.log((Lst+h)/(Lst-h))+d)
+            x_offset = -xx
+            y_offset = h-a*np.cosh(xy/a)
+            s_offset = a*np.sinh(xx/a)
         else:
             # cable straight to seabed:
             if L >= h+d:
@@ -184,7 +191,7 @@ class CatenaryRigid(CatenaryBase):
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
                     a = utils.fully_lifted_rigid(d=d, h=h, L=L, maxit=maxit, tol=tol)
-                    Ls = L
+                    Ls[:] = L
                     Lst = Lt
                     x0 = d
                     xx = 0.5*(a*np.log((Lst+h)/(Lst-h))-d)
@@ -252,9 +259,16 @@ class CatenaryElastic(CatenaryBase):
         niter = 0
 
         if floor is False:
-            a, e = nofloor_elastic(d=d, h=d, L=L, w=w, EA=EA, tol=tol, maxit=maxit)
-            state = 'nofloor'
-            x0 = 0.
+            a, e = utils.nofloor_elastic(d=d, h=h, L=L, w=w, EA=EA, tol=tol, maxit=maxit)
+            # a, e = utils.fully_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, int1=a, maxit=maxit, tol=tol)
+            x0 = d
+            Ls[:] = L
+            Lst = np.sum(Ls+e)
+            xx = 0.5*(a*np.log((Lst+h)/(Lst-h))-d)
+            xy = 0.5*(a*np.log((Lst+h)/(Lst-h))+d)
+            x_offset = -xx
+            y_offset = h-a*np.cosh(xy/a)
+            s_offset = a*np.sinh(xx/a)
         else:
             # cable straight to seabed:
             # find tension and stretching
@@ -300,7 +314,7 @@ class CatenaryElastic(CatenaryBase):
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
                     x0 = d
-                    Ls = L
+                    Ls[:] = L
                     a, e = utils.fully_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, int1=a, maxit=maxit, tol=tol)
                     if a is np.nan:  # assume line is straight
                         raise RuntimeError('The line is too stretched/straight, cannot find catenary shape')
