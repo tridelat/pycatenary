@@ -138,7 +138,7 @@ class MooringLine:
         assert len(vector) == 2, 'must be 2D vector'
         if self.nd == 2:
             vector[0] *= self.direction[0]
-            return vector
+            return np.array([vector[0], vector[1], 0.])
         else:
             vector3D = np.zeros(3)
             vector3D[0] = vector[0]*self.direction[0]
