@@ -6,7 +6,7 @@ with open('README.md') as file:
 
 setup(name='pycatenary',
       packages=['pycatenary'],
-      version='0.0.1',
+      version='0.1',
       description='A Python library for solving catenary equations',
       long_description=long_description,
       long_description_content_type='text/markdown',
