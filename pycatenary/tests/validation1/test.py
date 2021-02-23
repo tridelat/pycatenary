@@ -76,6 +76,18 @@ class TestCatenaryValidation(unittest.TestCase):
         L2 = np.linalg.norm(np.array(Tfs)-T)/len(T)
         npt.assert_almost_equal(L2, 0.0015298813773942969)
 
+    def test_rigid_without_floor(self):
+        """ Check that computation is running without floor
+        """
+        # make mooring line
+        length = 6.98
+        w = 1.036
+        EA = None
+        anchor1 = [0., 0., 0.]
+        fairlead1 = [5.3, 0., 2.65]
+        l1 = cable.MooringLine(L=length, w=w, EA=EA, anchor=anchor1, fairlead=fairlead1, floor=False, )
+        l1.computeSolution()
+        TT = l1.getTension(length)
 
 if __name__ == "__main__":
     unittest.main()
