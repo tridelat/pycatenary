@@ -158,7 +158,7 @@ class CatenaryRigid(CatenaryBase):
             a = utils.nofloor_rigid(d=d, h=h, L=L, tol=tol, maxit=maxit)
             x0 = d
             Ls[:] = L
-            Lst = np.sum(Ls+e)
+            Lst = np.sum(Ls+self.e)
             xx = 0.5*(a*np.log((Lst+h)/(Lst-h))-d)
             xy = 0.5*(a*np.log((Lst+h)/(Lst-h))+d)
             x_offset = -xx
