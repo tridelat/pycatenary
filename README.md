@@ -11,6 +11,14 @@ This python package solves catenary equations for cables at static equilibrium.
 
 ## Installation
 
+Through pip:
+
+```
+pip install pycatenary
+```
+
+or by running the following command in the root folder of the pycatenary project
+
 ```
 python setup.py install --user
 ```
@@ -28,7 +36,7 @@ w = 1.036  # submerged weight
 EA = 560e3  # axial stiffness
 floor = True  # if True, contact is possible at the level of the anchor
 anchor = [0., 0., 0.]
-fairlead = [5.3, 0., 2.65]
+fairlead = [5.2, 1., 2.65]
 
 # create cable instance
 l1 = cable.MooringLine(L=length,
@@ -36,7 +44,7 @@ l1 = cable.MooringLine(L=length,
                        EA=EA,
                        anchor=anchor,
                        fairlead=fairlead,
-                       floor=True)
+                       floor=floor)
 
 # compute calculations
 l1.computeSolution()
@@ -46,13 +54,13 @@ Position of fairlead and anchor can be changed as follows:
 
 ```python
 # change fairlead position
-l1.setFairleadCoords([5.4, 0., 2.65])
+l1.setFairleadCoords([5.4, 1., 2.65])
 
 # recompute solution
 l1.computeSolution()
 ```
 
-Other functions exist:
+Other useful functions:
 
 ```python
 # get tension along line (between 0. and total line length)
@@ -65,3 +73,15 @@ xyz = l1.s2xyz(s)
 ```
 
 For extra functionality, please refer to the documentation: https://tridelat.github.io/pycatenary
+
+## Plotting
+
+If matplotlib is installed:
+
+```python
+# plot cable cable.MooringLine instance l1
+l1.plot()
+```
+
+Displays the following plot of the cable partly laying on the floor:
+![plot](docs/source/line_plot.svg)
