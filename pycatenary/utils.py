@@ -1,5 +1,9 @@
 import numpy as np
 
+# ignore overflow warnings
+# cosh can overflow (e.g. inf expected for cosh(d/a) when d/a is very large)
+np.seterr(over='ignore')
+
 int1_default = 1e-2
 int2_default = 1e10
 maxit_default = 1000
