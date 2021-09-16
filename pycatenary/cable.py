@@ -83,6 +83,34 @@ class MooringLine:
         return self._transformVector(self.catenary.ds2xy(s))
 
     def plot(self, npoints=100):
+        """Plots line from anchor to fairlead
+        """
+        self.plot3D(npoints=npoints)
+
+    def plot2D(self, npoints=100):
+        """Plots line from anchor to fairlead in 2D
+        """
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        xyzs = []
+        dd = []
+        hh = []
+        ds = np.sum(self.L)/(npoints-1)
+        ss = np.linspace(0., np.sum(self.L), npoints)
+        for s in ss:
+            xyz = self.s2xyz(s)
+            xyzs.append(xyz)
+            dd.append(np.sqrt(xyz[0]**2+xyz[1]**2))
+            hh.append(xyz[2])
+        ax.plot(dd, hh)
+        ax.grid('both')
+        ax.set_xlabel("d")
+        ax.set_ylabel("h")
+        fig.show()
+
+    def plot3D(self, npoints=100):
         """Plots line from anchor to fairlead in 3D
         """
         import matplotlib.pyplot as plt
@@ -105,8 +133,6 @@ class MooringLine:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         ax.set_zlabel("z")
-        print('anchor: {anchor}'.format(anchor=str(xyzs[0])))
-        print('fairlead: {fairlead}'.format(fairlead=str(xyzs[-1])))
         fig.show()
 
     def getTension(self, s):

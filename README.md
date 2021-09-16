@@ -76,12 +76,22 @@ For extra functionality, please refer to the documentation: https://tridelat.git
 
 ## Plotting
 
-If matplotlib is installed:
+With matplotlib installed, the cable can be plotted in 2D:
 
 ```python
 # plot cable cable.MooringLine instance l1
-l1.plot()
+l1.plot2D()
 ```
 
-Displays the following plot of the cable partly laying on the floor:
-![plot](docs/source/line_plot.svg)
+Displaying:
+![plot2D](docs/source/line_plot_2D.svg)
+
+Or in 3D:
+
+```python
+# plot cable cable.MooringLine instance l1
+l1.plot3D()
+```
+
+Displaying:
+![plot3D](docs/source/line_plot_3D.svg)
