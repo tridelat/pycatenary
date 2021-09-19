@@ -1,5 +1,9 @@
 # pycatenary
 
+[![Build Status](https://app.travis-ci.com/tridelat/pycatenary.svg?branch=main)](https://app.travis-ci.com/tridelat/pycatenary)
+![PyPI](https://img.shields.io/pypi/v/pycatenary)
+![GitHub](https://img.shields.io/github/license/tridelat/pycatenary)
+
 ## Features
 
 This python package solves catenary equations for cables at static equilibrium.
@@ -83,7 +87,6 @@ With matplotlib installed, the cable can be plotted in 2D:
 l1.plot2D()
 ```
 
-Displaying:
 ![plot2D](docs/source/line_plot_2D.svg)
 
 Or in 3D:
@@ -93,5 +96,4 @@ Or in 3D:
 l1.plot3D()
 ```
 
-Displaying:
 ![plot3D](docs/source/line_plot_3D.svg)
