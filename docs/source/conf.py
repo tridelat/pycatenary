@@ -22,7 +22,7 @@ copyright = '2020, Tristan de Lataillade'
 author = 'Tristan de Lataillade'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = '0.4.0'
 
 
 # -- General configuration ---------------------------------------------------
