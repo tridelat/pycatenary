@@ -32,7 +32,9 @@ class MooringLine:
         self.__class__.count += 1
         self.L = get_array(L)
         self.w = get_array(w)
-        self.EA = get_array(EA)
+        self.EA = EA
+        if self.EA is not None:
+            self.EA = get_array(self.EA)
         self.nd = nd
         self.name = 'cable_'+str(self.count)
         if anchor is None:
@@ -45,7 +47,7 @@ class MooringLine:
             self.fairlead = np.array(fairlead)
         self.anchor_coords_system = np.eye(3)
         self.floor = floor
-        if EA is None:
+        if self.EA is None:
             self.catenary = catenary.CatenaryRigid(self)
         else:
             self.catenary = catenary.CatenaryElastic(self)

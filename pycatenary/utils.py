@@ -107,13 +107,12 @@ def nofloor_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=i
         Lte = np.sum(L+e)
         g = lambda a: 2*a*np.sinh(d/(2*a))-np.sqrt(Lte**2-h**2)
         a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
-        #
+        # HACK: not real elongation if multi-segmented line here
         T = np.sqrt((a*w_av)**2+np.sum(w*L))
-        et = T*L/EA
+        e = T*L/EA
+        et = np.sum(e)
         Lte_check = Lt+et  # store new Ls value as calculated with stretching
         diff = np.abs(Lte-Lte_check)
-    # HACK: not real elongation if multi-segmented line here
-    e[:] = et*L/Lt
     return a, e
 
 def fully_lifted_elastic(d, h, L, w, EA, tol=tol_default, maxit=maxit_default, int1=int1_default, int2=int2_default):

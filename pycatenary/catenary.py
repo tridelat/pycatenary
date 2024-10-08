@@ -166,18 +166,19 @@ class CatenaryRigid(CatenaryBase):
             s_offset = a*np.sinh(xx/a)
         else:
             # cable straight to seabed:
-            if L >= h+d:
+            if np.sum(L)+tol >= h+d:
                 # no horizontal tension
-                Lst = 0.
-                for ii in range(len(L)):
-                    index = -1-i
-                    Lst += L[index]
-                    if Ltot < h:
-                        Ls[index] = L[index]
-                    if Ltot >= h:
-                        Ls[index] = Ltot-L[index+1:]
                 a = 0.
                 x0 = 0.
+                Lst = 0.
+                for ii in reversed(range(len(L))):
+                    if Lst >= h:
+                        break
+                    Lst += L[ii]
+                    if Lst < h:
+                        Ls[ii] = L[ii]
+                    if Lst >= h:
+                        Ls[ii] = Lst-h
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a*(np.cosh(d/a)-1)-h
@@ -246,8 +247,7 @@ class CatenaryElastic(CatenaryBase):
         EA = get_array(self.line.EA)  # axial stiffness
 
         Lt = np.sum(L)  # total unstretched line length
-        Ls = np.zeros(len(L))  # lifted line length
-        Lsu = np.zeros(len(L))  # unstretched lifted line length
+        Ls = np.zeros(len(L))  # unstretched lifted line length
         e = np.zeros(len(L))  # stretching
         et = np.sum(e)  # total stretching
         Le = Lt+et  # stretched line length
@@ -273,29 +273,28 @@ class CatenaryElastic(CatenaryBase):
             # cable straight to seabed:
             # find tension and stretching
             for i in reversed(range(len(L))):
-                Lsu[i] = L[i]
-                for j in range(i, len(L)):
-                    e[i] = (w[i]*Lsu[i]/2.+np.sum(w[:i]*Lsu[:i]))*Lsu[i]/EA[i]
-                    Ls[i] = Lsu[i]+e[i]
-                if np.sum(Ls) >= h:
-                    Lhi_low = 0
-                    Lhi_high = L[i]
-                    while diff > tol:
-                        Lsu[i] = (Lhi_low+Lhi_high)/2.
-                        for j in range(i, len(L)):
-                            e[i] = (w[i]*Lsu[i]/2.+np.sum(w[:i]*Lsu[:i]))*Lsu[i]/EA[i]
-                            Ls[i] = Lsu[i]+e[i]
-                        if np.sum(Ls) > h:
-                            Lhi_high = Lsu[i]
-                        elif np.sum(Ls) < h:
-                            Lhi_low = Lsu[i]
-                        diff = np.abs(np.sum(Ls)-h)
+                if np.sum(Ls+e)+tol >= h:
+                    break
+                else:
+                    Ls[i] = L[i]
+                    for j in range(i, len(L)):
+                        e[j] = (w[j]*Ls[j]/2.+np.sum(w[i:j]*Ls[i:j]))*Ls[j]/EA[j]
+                    if np.sum(Ls+e) >= h:
+                        Lhi_low = 0
+                        Lhi_high = L[i]
+                        while diff > tol:
+                            Ls[i] = (Lhi_low+Lhi_high)/2.
+                            for j in range(i, len(L)):
+                                e[j] = (w[j]*Ls[j]/2.+np.sum(w[i:j]*Ls[i:j]))*Ls[j]/EA[j]
+                            if np.sum(Ls + e) > h:
+                                Lhi_high = Ls[i]
+                            elif np.sum(Ls + e) <= h:
+                                Lhi_low = Ls[i]
+                            diff = np.abs(np.sum(Ls+e)-h)
             # check if cable straight to seabed is solution
-            if np.sum(L-Lsu+Ls)+tol >= h+d:
+            if np.sum(L+e)+tol >= h+d:
                 # no horizontal tension
-                a = 0
-                Ls = h
-                Le = Lt+et
+                a = 0.
                 x0 = 0.
             else:
                 # check if line is partly or fully lifted
@@ -306,10 +305,11 @@ class CatenaryElastic(CatenaryBase):
                 H = a*np.sum(w*L)/Lt
                 Va = 0
                 for i in range(len(e)):
-                    e[i] = np.sqrt(H**2+(Va+np.sum(w[:i]*Lsu[:i])+w[i]*Lsu[i]/2.)**2)*Lsu[i]/EA[i]
+                    e[i] = np.sqrt(H**2+(Va+np.sum(w[:i]*Ls[:i])+w[i]*Ls[i]/2.)**2)*Ls[i]/EA[i]
                 Ls1 = Lt+np.sum(e)
                 if Ls1 > Ls0:  # partly lifted
                     a, e, Lsu = utils.partly_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol)
+                    Ls[:] = Lsu
                     x0 = a*np.arccosh(1+h/a)
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
