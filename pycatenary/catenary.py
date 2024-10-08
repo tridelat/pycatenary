@@ -305,7 +305,7 @@ class CatenaryElastic(CatenaryBase):
                 H = a*np.sum(w*L)/Lt
                 Va = 0
                 for i in range(len(e)):
-                    e[i] = np.sqrt(H**2+(Va+np.sum(w[:i]*Ls[:i])+w[i]*Ls[i]/2.)**2)*Ls[i]/EA[i]
+                    e[i] = np.sqrt(H**2+(Va+np.sum(w[:i]*L[:i])+w[i]*L[i]/2.)**2)*L[i]/EA[i]
                 Ls1 = Lt+np.sum(e)
                 if Ls1 > Ls0:  # partly lifted
                     a, e, Lsu = utils.partly_lifted_elastic(d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol)

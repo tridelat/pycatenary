@@ -39,7 +39,7 @@ class TestCatenaryValidation(unittest.TestCase):
             Tys += [TT[1]]
             x0s += [l1.catenary.x0]
         L2 = np.linalg.norm(np.array(Tfs)-T)/len(T)
-        npt.assert_almost_equal(L2, 0.0013525612473249868)
+        npt.assert_almost_equal(L2, 0.001353)
 
     def test_rigid(self):
         # results to compare to
@@ -74,7 +74,7 @@ class TestCatenaryValidation(unittest.TestCase):
         # ax.plot(pos, T, 'r--')
         # plt.show()
         L2 = np.linalg.norm(np.array(Tfs)-T)/len(T)
-        npt.assert_almost_equal(L2, 0.0015298813773942969)
+        npt.assert_almost_equal(L2, 0.001530)
 
     def test_rigid_without_floor(self):
         """ Check that computation is running without floor
