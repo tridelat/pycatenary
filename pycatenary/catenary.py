@@ -40,7 +40,7 @@ class CatenaryBase(object):
         # first guess for bisection (int2)
         self.bisection_int2 = 1e6
         # offset for x
-        self._x_offet = 0.
+        self._x_offset = 0.
         # offset for y
         self._y_offset = 0.
         # offset for s
@@ -52,31 +52,22 @@ class CatenaryBase(object):
         Lt = np.sum(self.line.L) # unstretched
         Lst = np.sum(self.Ls) # unstretched
         Lset = Lst+np.sum(self.e) # stretched
-        if self.line.floor is False:
-            # average w
-            w_av = np.sum(self.line.w*self.line.L)/Lt
-            # horizontal tension
-            Th = self.a*w_av*(Lst/Lset)
-            if s+self._s_offset > 0.:
-                Th = -Th
-            # vertical tension
-            Tv = w_av*np.abs((s+self._s_offset))
-            # tension at point
-            Ts = np.array([Th, -Tv])
-        elif Lt >= s >= s0:
+        if Lt >= s >= s0:
             # average w
             w_av = np.sum(self.line.w*self.Ls)/Lst
             # horizontal tension
             Th = self.a*w_av*(Lst/Lset)
+            # reverse sign for Th if s > 0 for catenary
+            if s+self._s_offset > 0.:
+                Th = -Th
             # vertical tension
-            ds0 = self.ds2xy(0)
-            angle0 = np.arctan(ds0[1]/ds0[0])
-            # vertical tension at anchor
-            Tv_a = Th*np.tan(angle0)
-            # vertical tension at point
-            Tv = Tv_a+w_av*(s-s0)
+            dydx = np.sinh((self.s2xy(s)[0]-self._x_offset-s0)/self.a)
+            angle = np.arctan(dydx)
+            Tv = Th*np.tan(angle)
+            # Tv assumed always negative
+            Tv = -np.abs(Tv)
             # tension at point
-            Ts = np.array([-Th, -Tv])
+            Ts = np.array([Th, Tv])
         elif 0 <= s < s0:
             Ts = np.array([0., 0.])
         else:
@@ -105,6 +96,7 @@ class CatenaryBase(object):
             x = 1.
             y = 0.
         else:
+            s = s-s0
             x = a/np.sqrt(a**2+s**2)
             y = s/np.sqrt(a**2+s**2)
         xy = np.array([x, y])
