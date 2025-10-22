@@ -52,7 +52,18 @@ class CatenaryBase(object):
         Lt = np.sum(self.line.L) # unstretched
         Lst = np.sum(self.Ls) # unstretched
         Lset = Lst+np.sum(self.e) # stretched
-        if Lt >= s >= s0:
+        if self.line.floor is False:
+            # average w
+            w_av = np.sum(self.line.w*self.line.L)/Lt
+            # horizontal tension
+            Th = self.a*w_av*(Lst/Lset)
+            if s+self._s_offset > 0.:
+                Th = -Th
+            # vertical tension
+            Tv = w_av*np.abs((s+self._s_offset))
+            # tension at point
+            Ts = np.array([Th, -Tv])
+        elif Lt >= s >= s0:
             # average w
             w_av = np.sum(self.line.w*self.Ls)/Lst
             # horizontal tension
@@ -65,7 +76,7 @@ class CatenaryBase(object):
             # vertical tension at point
             Tv = Tv_a+w_av*(s-s0)
             # tension at point
-            Ts = np.array([Th, Tv])
+            Ts = np.array([-Th, -Tv])
         elif 0 <= s < s0:
             Ts = np.array([0., 0.])
         else:
