@@ -73,8 +73,32 @@ class MooringLine:
             distance along line (from anchor)
         """
         Lt = np.sum(self.L)
-        assert s <= Lt, "Cannot retrieve solution with s > L"
-        return self.anchor + self._transformVector(self.catenary.s2xy(s))
+        assert (
+            0.0 <= s <= Lt
+        ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
+        if not self.fairlead_above_anchor:
+            return self.fairlead + self._transformVector(
+                self.catenary.s2xy(Lt - s)
+            )
+        else:
+            return self.anchor + self._transformVector(self.catenary.s2xy(s))
+
+    def getTension(self, s):
+        """Gives tension along line
+
+        Parameters
+        ----------
+        s: double
+            distance along line (from anchor)
+        """
+        Lt = np.sum(self.L)
+        assert (
+            0.0 <= s <= Lt
+        ), f"Cannot get tension for s = {s} (should be 0.0 <= s <= L = {Lt})."
+        if not self.fairlead_above_anchor:
+            return self._transformVector(self.catenary.getTension(Lt - s))
+        else:
+            return self._transformVector(self.catenary.getTension(s))
 
     def ds2xyz(self, s):
         """Gives xyz direction along line
@@ -134,22 +158,13 @@ class MooringLine:
         ax.set_zlabel("z")
         fig.show()
 
-    def getTension(self, s):
-        """Gives tension along line
-
-        Parameters
-        ----------
-        s: double
-            distance along line (from anchor)
-        """
-        return self._transformVector(self.catenary.getTension(s))
-
     def _setDirectionDistance(self):
         if self.nd == 3:
             self.distance_h = np.sqrt(
                 np.sum((self.fairlead[:2] - self.anchor[:2]) ** 2)
             )
             self.distance_v = np.abs(self.fairlead[2] - self.anchor[2])
+            self.fairlead_above_anchor = self.fairlead[2] - self.anchor[2] > 0
             self.direction = (
                 self.fairlead[:2] - self.anchor[:2]
             ) / self.distance_h
@@ -160,6 +175,9 @@ class MooringLine:
                 self.direction = np.array([-1.0, 0.0])
             self.distance_h = np.abs(self.fairlead[0] - self.anchor[0])
             self.distance_v = np.abs(self.fairlead[1] - self.anchor[1])
+            self.fairlead_above_anchor = self.fairlead[1] - self.anchor[1] > 0
+        if not self.fairlead_above_anchor:
+            self.direction = -self.direction
 
     def _transformVector(self, vector):
         """Transforms a 2D vector back in 3D (or 2D) according to direction
