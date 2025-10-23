@@ -238,6 +238,61 @@ class TestCatenaryValidation(unittest.TestCase):
                 names="xpos,Ls,Tfx,Tfy,Tfz,Tax,Tay,Taz",
             )
 
+    def test_rigid_nofloor_multisegmented(self):
+        # load reference data
+        ref_filename = "rigid_nofloor.txt"
+        ref = csv2array(ref_filename, names=True, delimiter=",")
+        xpos = ref["xpos"]
+        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+        Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
+        Ls_ref = ref["Ls"]
+
+        # make mooring line
+        length = 6.98
+        l1 = cable.MooringLine(
+            L=[length / 3.0, length * 2.0 / 3.0],
+            w=[1.036, 1.036],
+            EA=None,
+            anchor=[0.0, 0.0, 0.0],
+            fairlead=[5.3, 0.0, 2.65],
+            floor=False,
+        )
+
+        # test for different positions of fairlead
+        Tf_test = np.zeros_like(Tf_ref)
+        Ta_test = np.zeros_like(Ta_ref)
+        Ls_test = np.zeros(len(Tf_ref))
+        for ii, x in enumerate(xpos):
+            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
+            l1.computeSolution()
+            # tension at fairlead
+            Tf = l1.getTension(length)
+            Tf_test[ii] = Tf
+            # tension at anchor
+            Ta = l1.getTension(0.0)
+            Ta_test[ii] = Ta
+            # total lifted line length
+            Ls_test[ii] = np.sum(l1.catenary.Ls)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ta_test[ii, 0], Ta_ref[ii, 0])
+                npt.assert_almost_equal(Ta_test[ii, 1], Ta_ref[ii, 1])
+                npt.assert_almost_equal(Ta_test[ii, 2], Ta_ref[ii, 2])
+                npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
+
+        if self.save_test2ref:
+            stack = np.column_stack((xpos, Ls_test, Tf_test, Ta_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="xpos,Ls,Tfx,Tfy,Tfz,Tax,Tay,Taz",
+            )
+
     def test_rigid_nofloor_anchor_above(self):
         # load reference data
         ref_filename = "rigid_nofloor.txt"
