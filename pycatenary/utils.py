@@ -107,6 +107,26 @@ def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
     return x
 
 
+def integrate_tension(s1, s2, w, Ha, Va):
+    Ts1 = (
+        1
+        / (2 * w)
+        * (
+            (Va + w * s1) * np.sqrt(Ha**2 + (Va + w * s1) ** 2)
+            + Ha**2 * np.arcsinh((Va + w * s1) / Ha)
+        )
+    )
+    Ts2 = (
+        1
+        / (2 * w)
+        * (
+            (Va + w * s2) * np.sqrt(Ha**2 + (Va + w * s2) ** 2)
+            + Ha**2 * np.arcsinh((Va + w * s2) / Ha)
+        )
+    )
+    return Ts2 - Ts1
+
+
 def nofloor_rigid(
     d,
     h,
@@ -163,7 +183,7 @@ def fully_lifted_elastic(
     int1=int1_default,
     int2=int2_default,
 ):
-    Ls_tot = Le = 0
+    Ls_tot = Le_tot = 0
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
@@ -197,20 +217,22 @@ def fully_lifted_elastic(
         Ta = a * w_av / np.cos(angle) * Lt / Ls_tot
         Ha = Ta * np.cos(angle)
         Va = Ta * np.sin(angle)
+
+        # compute elongation
         for i in range(len(e)):
-            e[i] = (
-                np.sqrt(
-                    Ha**2 + (Va + (np.sum(w[:i] * L[:i]) + w[i] * L[i])) ** 2
-                )
-                * L[i]
-                / EA[i]
+            # integrate tension
+            T_int = integrate_tension(
+                0, L[i], w[i], Ha, Va + np.sum(w[:i] * L[:i])
             )
+            # get elongation
+            e[i] = T_int / EA[i]
+
         et = np.sum(e)
-        Le = Lt + et  # store new Ls value as calculated with stretching
-        diff = np.abs(Le - Ls_tot)
-        if Le > Ls_tot:
+        Le_tot = Lt + et
+        diff = np.abs(Le_tot - Ls_tot)
+        if Le_tot > Ls_tot:
             t_high = t
-        elif Le < Ls_tot:
+        elif Le_tot < Ls_tot:
             t_low = t
     return a, e
 
@@ -282,16 +304,16 @@ def partly_lifted_elastic(
                     lifted = True
             else:
                 Lsu[i] = L[i]
-        w_av = np.sum(w[i] * Lsu[i]) / Ls
+        w_av = np.sum(w * Lsu) / Ls
         H = a * w_av
+        # compute elongation
         for i in range(len(L)):
-            e[i] = (
-                np.sqrt(
-                    H**2 + (np.sum(w[i:] * Lsu[i:]) + w[i] * Lsu[i]) ** 2
-                )
-                * Lsu[i]
-                / EA[i]
+            # integrate tension
+            T_int = integrate_tension(
+                0, Lsu[i], w[i], H, np.sum(w[:i] * Lsu[:i])
             )
+            # get elongation
+            e[i] = T_int / EA[i]
         et = np.sum(e)
         X0 = Lt + et - Ls
         diff = X0 + x0 - d

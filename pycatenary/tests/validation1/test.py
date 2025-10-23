@@ -68,6 +68,40 @@ class TestCatenaryValidation(unittest.TestCase):
                 names="xpos,Ls,Tfx,Tfy,Tfz",
             )
 
+    def test_elastic_multisegmented(self):
+        ref_filename = "elastic.txt"
+        ref = csv2array(ref_filename, names=True, delimiter=",")
+        xpos = ref["xpos"]
+        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+        Ls_ref = ref["Ls"]
+
+        # make mooring line
+        length = 6.98
+        l1 = cable.MooringLine(
+            L=[length / 3.0, length * 2.0 / 3.0],
+            w=[1.036, 1.036],
+            EA=[560e3, 560e3],
+            anchor=[0.0, 0.0, 0.0],
+            fairlead=[5.3, 0.0, 2.65],
+            floor=True,
+        )
+
+        # test for different positions of fairlead
+        for ii, x in enumerate(xpos):
+            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
+            l1.computeSolution()
+            # tension at fairlead
+            Tf = l1.getTension(length)
+            # total lifted line length
+            Ls = np.sum(l1.catenary.Ls)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(Tf[0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf[1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf[2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ls, Ls_ref[ii])
+
     def test_rigid(self):
         # load reference data
         ref_filename = "rigid.txt"
