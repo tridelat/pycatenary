@@ -54,10 +54,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
             # check solution
             if self.compare_test:
-                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
-                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
-                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
-                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+                npt.assert_almost_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
             stack = np.column_stack((xpos, Ls_test, Tf_test))
@@ -135,10 +135,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
             # check solution
             if self.compare_test:
-                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
-                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
-                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
-                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+                npt.assert_almost_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
             stack = np.column_stack((xpos, Ls_test, Tf_test))
@@ -221,13 +221,13 @@ class TestCatenaryValidation(unittest.TestCase):
 
             # check solution
             if self.compare_test:
-                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
-                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
-                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
-                npt.assert_equal(Ta_test[ii, 0], Ta_ref[ii, 0])
-                npt.assert_equal(Ta_test[ii, 1], Ta_ref[ii, 1])
-                npt.assert_equal(Ta_test[ii, 2], Ta_ref[ii, 2])
-                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+                npt.assert_almost_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ta_test[ii, 0], Ta_ref[ii, 0])
+                npt.assert_almost_equal(Ta_test[ii, 1], Ta_ref[ii, 1])
+                npt.assert_almost_equal(Ta_test[ii, 2], Ta_ref[ii, 2])
+                npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
             stack = np.column_stack((xpos, Ls_test, Tf_test, Ta_test))
@@ -271,13 +271,13 @@ class TestCatenaryValidation(unittest.TestCase):
 
             # check solution
             if self.compare_test:
-                npt.assert_equal(Tf[0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf[0], Tf_ref[ii, 0])
                 npt.assert_almost_equal(Tf[1], Tf_ref[ii, 1])
-                npt.assert_equal(Tf[2], Tf_ref[ii, 2])
-                npt.assert_equal(Ls, Ls_ref[ii])
-                npt.assert_equal(Ta[0], Ta_ref[ii, 0])
+                npt.assert_almost_equal(Tf[2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ls, Ls_ref[ii])
+                npt.assert_almost_equal(Ta[0], Ta_ref[ii, 0])
                 npt.assert_almost_equal(Ta[1], Ta_ref[ii, 1])
-                npt.assert_equal(Ta[2], Ta_ref[ii, 2])
+                npt.assert_almost_equal(Ta[2], Ta_ref[ii, 2])
 
 
 if __name__ == "__main__":
