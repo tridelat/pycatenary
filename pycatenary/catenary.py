@@ -91,20 +91,6 @@ class CatenaryBase(object):
         xy = np.array([x + self._x_offset, y + self._y_offset])
         return xy
 
-    def ds2xy(self, s):
-        s0 = self.d - self.x0
-        s = s + self._s_offset
-        a = self.a
-        if s < s0 and self.line.floor:
-            x = 1.0
-            y = 0.0
-        else:
-            s = s - s0
-            x = a / np.sqrt(a**2 + s**2)
-            y = s / np.sqrt(a**2 + s**2)
-        xy = np.array([x, y])
-        return xy
-
     def plot(self, npoints=100):
         """Plots catenary in 2D from (0, 0) to (d, h)"""
         import matplotlib.pyplot as plt

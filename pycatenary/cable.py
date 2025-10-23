@@ -100,16 +100,6 @@ class MooringLine:
         else:
             return self._transformVector(self.catenary.getTension(s))
 
-    def ds2xyz(self, s):
-        """Gives xyz direction along line
-
-        Parameters
-        ----------
-        s: double
-            distance along line (from anchor)
-        """
-        return self._transformVector(self.catenary.ds2xy(s))
-
     def plot(self, npoints=100):
         """Plots line from anchor to fairlead"""
         self.plot3D(npoints=npoints)
