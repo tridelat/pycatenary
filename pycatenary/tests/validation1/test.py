@@ -12,88 +12,163 @@ def csv2array(filename, delimiter=",", names=None):
     return np.genfromtxt(fname, delimiter=delimiter, names=names)
 
 
+def array2csv(filename, array, delimiter=",", names=None):
+    fname = os.path.join(os.path.dirname(__file__), filename)
+    np.savetxt(fname, array, delimiter=delimiter, header=names, comments="")
+
+
 class TestCatenaryValidation(unittest.TestCase):
+    def setUp(self):
+        self.save_test2ref = False  # whether to save test results to ref file
+        self.compare_test = True  # compare test results to ref
+
     def test_elastic(self):
-        # results to compare to
-        pos = csv2array("xpos.csv")
-        T = csv2array("T.csv")
+        ref_filename = "elastic.txt"
+        ref = csv2array(ref_filename, names=True, delimiter=",")
+        xpos = ref["xpos"]
+        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+        Ls_ref = ref["Ls"]
 
         # make mooring line
         length = 6.98
-        w = 1.036
-        EA = 560e3
-        anchor1 = [0.0, 0.0, 0.0]
-        fairlead1 = [5.3, 0.0, 2.65]
-        l1 = cable.MooringLine(
-            L=length, w=w, EA=EA, anchor=anchor1, fairlead=fairlead1
-        )
-        Tfs = []
-        Txs = []
-        Tys = []
-        x0s = []
-        for x in pos:
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
-            TT = l1.getTension(length)
-            Tfs += [np.linalg.norm(TT)]
-            Txs += [TT[0]]
-            Tys += [TT[1]]
-            x0s += [l1.catenary.x0]
-        L2 = np.linalg.norm(np.array(Tfs) - T) / len(T)
-        npt.assert_almost_equal(L2, 0.001353)
-
-    def test_rigid(self):
-        # results to compare to
-        pos = csv2array("xpos.csv")
-        T = csv2array("T.csv")
-
-        # make mooring line
-        length = 6.98
-        w = 1.036
-        EA = None
-        anchor1 = [0.0, 0.0, 0.0]
-        fairlead1 = [5.3, 0.0, 2.65]
-        l1 = cable.MooringLine(
-            L=length, w=w, EA=EA, anchor=anchor1, fairlead=fairlead1
-        )
-        Tfs = []
-        Txs = []
-        Tys = []
-        x0s = []
-        for x in pos:
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
-            TT = l1.getTension(length)
-            Tfs += [np.linalg.norm(TT)]
-            Txs += [TT[0]]
-            Tys += [TT[1]]
-            x0s += [l1.catenary.x0]
-            print(l1.catenary.Ls, TT)
-        # import matplotlib.pyplot as plt
-        # fig, ax = plt.subplots()
-        # ax.plot(pos, Tfs, 'b-')
-        # ax.plot(pos, T, 'r--')
-        # plt.show()
-        L2 = np.linalg.norm(np.array(Tfs) - T) / len(T)
-        npt.assert_almost_equal(L2, 0.001530)
-
-    def test_rigid_without_floor(self):
-        """Check that computation is running without floor"""
-        # make mooring line
-        length = 6.98
-        w = 1.036
-        EA = None
-        anchor1 = [0.0, 0.0, 0.0]
-        fairlead1 = [5.3, 0.0, 2.65]
         l1 = cable.MooringLine(
             L=length,
-            w=w,
-            EA=EA,
-            anchor=anchor1,
-            fairlead=fairlead1,
+            w=1.036,
+            EA=560e3,
+            anchor=[0.0, 0.0, 0.0],
+            fairlead=[5.3, 0.0, 2.65],
+            floor=True,
+        )
+
+        # test for different positions of fairlead
+        Tf_test = np.zeros_like(Tf_ref)
+        Ls_test = np.zeros(len(Tf_ref))
+        for ii, x in enumerate(xpos):
+            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
+            l1.computeSolution()
+            # tension at fairlead
+            Tf = l1.getTension(length)
+            Tf_test[ii] = Tf
+            # total lifted line length
+            Ls_test[ii] = np.sum(l1.catenary.Ls)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+
+        if self.save_test2ref:
+            stack = np.column_stack((xpos, Ls_test, Tf_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="xpos,Ls,Tfx,Tfy,Tfz",
+            )
+
+    def test_rigid(self):
+        # load reference data
+        ref_filename = "rigid.txt"
+        ref = csv2array(ref_filename, names=True, delimiter=",")
+        xpos = ref["xpos"]
+        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+        Ls_ref = ref["Ls"]
+
+        # make mooring line
+        length = 6.98
+        l1 = cable.MooringLine(
+            L=length,
+            w=1.036,
+            EA=None,
+            anchor=[0.0, 0.0, 0.0],
+            fairlead=[5.3, 0.0, 2.65],
+            floor=True,
+        )
+
+        # test for different positions of fairlead
+        Tf_test = np.zeros_like(Tf_ref)
+        Ls_test = np.zeros(len(Tf_ref))
+        for ii, x in enumerate(xpos):
+            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
+            l1.computeSolution()
+            # tension at fairlead
+            Tf = l1.getTension(length)
+            Tf_test[ii] = Tf
+            # total lifted line length
+            Ls_test[ii] = np.sum(l1.catenary.Ls)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+
+        if self.save_test2ref:
+            stack = np.column_stack((xpos, Ls_test, Tf_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="xpos,Ls,Tfx,Tfy,Tfz",
+            )
+
+    def test_rigid_without_floor(self):
+        # load reference data
+        ref_filename = "rigid_nofloor.txt"
+        ref = csv2array(ref_filename, names=True, delimiter=",")
+        xpos = ref["xpos"]
+        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+        Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
+        Ls_ref = ref["Ls"]
+
+        # make mooring line
+        length = 6.98
+        l1 = cable.MooringLine(
+            L=length,
+            w=1.036,
+            EA=None,
+            anchor=[0.0, 0.0, 0.0],
+            fairlead=[5.3, 0.0, 2.65],
             floor=False,
         )
-        l1.computeSolution()
+
+        # test for different positions of fairlead
+        Tf_test = np.zeros_like(Tf_ref)
+        Ta_test = np.zeros_like(Ta_ref)
+        Ls_test = np.zeros(len(Tf_ref))
+        for ii, x in enumerate(xpos):
+            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
+            l1.computeSolution()
+            # tension at fairlead
+            Tf = l1.getTension(length)
+            Tf_test[ii] = Tf
+            # tension at anchor
+            Ta = l1.getTension(0.0)
+            Ta_test[ii] = Ta
+            # total lifted line length
+            Ls_test[ii] = np.sum(l1.catenary.Ls)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
+                npt.assert_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
+                npt.assert_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
+                npt.assert_equal(Ta_test[ii, 0], Ta_ref[ii, 0])
+                npt.assert_equal(Ta_test[ii, 1], Ta_ref[ii, 1])
+                npt.assert_equal(Ta_test[ii, 2], Ta_ref[ii, 2])
+                npt.assert_equal(Ls_test[ii], Ls_ref[ii])
+
+        if self.save_test2ref:
+            stack = np.column_stack((xpos, Ls_test, Tf_test, Ta_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="xpos,Ls,Tfx,Tfy,Tfz,Tax,Tay,Taz",
+            )
 
 
 if __name__ == "__main__":
