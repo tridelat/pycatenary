@@ -158,10 +158,18 @@ def nofloor_rigid(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> float:
     Lt = np.sum(L)
     g = lambda a: 2 * a * np.sinh(d / (2 * a)) - np.sqrt(Lt**2 - h**2)
-    a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+    a0 = bisection(
+        f=g,
+        int1=int1,
+        int2=int2,
+        tol=tol,
+        maxit=maxit,
+        must_converge=must_converge,
+    )
     return a0
 
 
@@ -175,6 +183,7 @@ def nofloor_elastic(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
@@ -185,7 +194,14 @@ def nofloor_elastic(
         niter += 1
         Lte = np.sum(L + e)
         g = lambda a: 2 * a * np.sinh(d / (2 * a)) - np.sqrt(Lte**2 - h**2)
-        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        a = bisection(
+            f=g,
+            int1=int1,
+            int2=int2,
+            tol=tol,
+            maxit=maxit,
+            must_converge=must_converge,
+        )
         # HACK: not real elongation if multi-segmented line here
         T = np.sqrt((a * w_av) ** 2 + np.sum(w * L))
         e = T * L / EA
@@ -205,6 +221,7 @@ def fully_lifted_elastic(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
     Ls_tot = Le_tot = 0
     Lt = np.sum(L)  # total length of cable
@@ -227,7 +244,14 @@ def fully_lifted_elastic(
             * (np.cosh(d / a + np.arcsinh(t)) - np.cosh(np.arcsinh(t)))
             - h
         )
-        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        a = bisection(
+            f=g,
+            int1=int1,
+            int2=int2,
+            tol=tol,
+            maxit=maxit,
+            must_converge=must_converge,
+        )
         # dg = lambda a: np.cosh(d / a + np.arcsinh(t)) - d / a * np.sinh(
         #     d / a + np.arcsinh(t)
         # )
@@ -268,6 +292,7 @@ def fully_lifted_rigid(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> float:
     g = lambda a: 2.0 * a * np.sinh(d / (2.0 * a)) - np.sqrt(
         np.sum(L) ** 2.0 - h**2.0
@@ -275,8 +300,17 @@ def fully_lifted_rigid(
     dg = (
         lambda a: 2.0 * np.sinh(d / (2.0 * a)) - d * np.cosh(d / (2.0 * a)) / a
     )
-    a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
-    a1 = newton_raphson(f=g, df=dg, x0=a0, tol=tol, maxit=maxit)
+    a0 = bisection(
+        f=g,
+        int1=int1,
+        int2=int2,
+        tol=tol,
+        maxit=maxit,
+        must_converge=must_converge,
+    )
+    a1 = newton_raphson(
+        f=g, df=dg, x0=a0, tol=tol, maxit=maxit, must_converge=False
+    )
     if np.isnan(a1) or a1 < 0:
         a = a0
     else:
@@ -294,6 +328,7 @@ def partly_lifted_elastic(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> tuple[float, np.ndarray, np.ndarray]:
     diff = 1.0
     niter = 0
@@ -310,7 +345,14 @@ def partly_lifted_elastic(
         niter += 1
         x0 = (x0_low + x0_high) / 2.0
         g = lambda a: a * (np.cosh(x0 / a) - 1.0) - h
-        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        a = bisection(
+            f=g,
+            int1=int1,
+            int2=int2,
+            tol=tol,
+            maxit=maxit,
+            must_converge=must_converge,
+        )
         # dg = lambda a: np.cosh(d / a + np.arcsinh(t)) - d / a * np.sinh(
         #     d / a + np.arcsinh(t)
         # )
@@ -355,6 +397,7 @@ def partly_lifted_rigid(
     maxit: int = maxit_default,
     int1: float = int1_default,
     int2: float = int2_default,
+    must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
     diff = 1.0
     niter = 0
@@ -370,7 +413,14 @@ def partly_lifted_rigid(
         # dg = lambda a: np.cosh(d / a + np.arcsinh(t)) - d / a * np.sinh(
         #     d / a + np.arcsinh(t)
         # )
-        a = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
+        a = bisection(
+            f=g,
+            int1=int1,
+            int2=int2,
+            tol=tol,
+            maxit=maxit,
+            must_converge=must_converge,
+        )
         Ls = h * np.sqrt(1 + 2 * a / h)
         Lns_tot_check = 0
         ground = d - x0
@@ -404,6 +454,7 @@ def straight_elastic(
     H_high: float = 1e10,
     tol: float = tol_default,
     maxit: int = maxit_default,
+    must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
     Lt = np.sum(L)  # total length of cable
     assert Lt <= np.sqrt(d**2 + h**2)

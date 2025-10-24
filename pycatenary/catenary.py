@@ -199,6 +199,13 @@ class CatenaryRigid(CatenaryBase):
         s_offset = 0.0
         a = 1.0
         x0 = 0.0
+        a2f = np.sqrt(h**2 + d**2)  # distance between anchor and fairlead
+        if Lt + tol < a2f:
+            raise RuntimeError(
+                f"Cannot find solution for rigid line of length ({Lt})"
+                f" inferior to distance between anchor and fairlead "
+                f"({a2f}), delta={Lt - a2f} < tol={tol}."
+            )
         if floor is False:
             a = utils.nofloor_rigid(d=d, h=h, L=L, tol=tol, maxit=maxit)
             x0 = d
@@ -247,8 +254,17 @@ class CatenaryRigid(CatenaryBase):
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
                     a = utils.fully_lifted_rigid(
-                        d=d, h=h, L=L, maxit=maxit, tol=tol
+                        d=d,
+                        h=h,
+                        L=L,
+                        maxit=maxit,
+                        tol=tol,
+                        must_converge=False,
                     )
+                    if a is np.nan:
+                        raise RuntimeError(
+                            "Line is too stretched, cannot solve catenary."
+                        )
                     Ls[:] = L
                     Lst = Lt
                     x0 = d
@@ -257,10 +273,6 @@ class CatenaryRigid(CatenaryBase):
                     x_offset = -xx
                     y_offset = h - a * np.cosh(xy / a)
                     s_offset = a * np.sinh(xx / a)
-                    if a is np.nan:
-                        raise RuntimeError(
-                            "Line is too stretchy, cannot find catenary shape"
-                        )
         self.Ls = Ls
         self._x_offset = x_offset
         self._y_offset = y_offset
@@ -413,11 +425,19 @@ class CatenaryElastic(CatenaryBase):
                     x0 = d
                     Ls[:] = L
                     a, e = utils.fully_lifted_elastic(
-                        d=d, h=h, L=L, w=w, EA=EA, int1=a, maxit=maxit, tol=tol
+                        d=d,
+                        h=h,
+                        L=L,
+                        w=w,
+                        EA=EA,
+                        int1=a,
+                        maxit=maxit,
+                        tol=tol,
+                        must_converge=False,
                     )
-                    if a is np.nan:  # assume line is straight
+                    if a is np.nan:
                         raise RuntimeError(
-                            "Line is too stretchy, cannot find catenary shape"
+                            "Line is too stretched, cannot solve catenary."
                         )
                     Lst = np.sum(Ls + e)
                     xx = 0.5 * (a * np.log((Lst + h) / (Lst - h)) - d)
