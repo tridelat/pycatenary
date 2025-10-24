@@ -127,21 +127,60 @@ class CatenaryBase(object):
         xy = np.array([x + self._x_offset, y + self._y_offset])
         return xy
 
-    def plot(self, npoints: int = 100) -> None:
-        """Plots catenary in 2D from (0, 0) to (d, h)"""
+    def plot(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        """Plots catenary in 2D from (0, 0) to (d, h).
+
+        Parameters
+        ----------
+        npoints: int, optional
+            Number of points along the line, by default 100.
+        show_tension: bool, optional
+            If True, color the line by tension magnitude, by default True.
+        colormap: str, optional
+            Matplotlib colormap name, by default "viridis".
+        """
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots()
-        xys = []
-        xx = []
-        yy = []
+        xys = list()
+        xx = list()
+        yy = list()
+        tensions = list()
         ss = np.linspace(0.0, np.sum(self.L), npoints)
+
         for s in ss:
             xy = self.s2xy(s)
+            tension = self.getTension(s)
             xys.append(xy)
             xx.append(xy[0])
             yy.append(xy[1])
-        ax.plot(xx, yy)
+            tensions.append(tension)
+
+        if show_tension:
+            from matplotlib.collections import LineCollection
+
+            tension_magnitudes = np.linalg.norm(np.array(tensions), axis=1)
+            # create segments
+            points = np.array([xx, yy]).T.reshape(-1, 1, 2)
+            segments = np.concatenate([points[:-1], points[1:]], axis=1)
+            # make a line with tension-based colors
+            lc = LineCollection(segments, cmap=colormap, linewidths=2)
+            lc.set_array(tension_magnitudes)
+            line = ax.add_collection(lc)
+            # add colorbar
+            cbar = plt.colorbar(line, ax=ax)
+            cbar.set_label("Tension Magnitude [N]")
+        else:
+            ax.plot(xx, yy)
+
+        ax.grid("both")
+        ax.set_xlabel("x [m]")
+        ax.set_ylabel("y [m]")
         plt.show()
 
     def _get_elongation_at_s(self, s: float) -> float:

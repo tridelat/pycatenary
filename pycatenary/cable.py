@@ -45,7 +45,6 @@ class MooringLine:
             self.fairlead = np.zeros(nd)  # coordinates of fairlead
         else:
             self.fairlead = np.array(fairlead)
-        self.anchor_coords_system = np.eye(3)
         if EA is None:
             self.catenary = catenary.CatenaryRigid(L=L, w=w, floor=floor)
         else:
@@ -117,52 +116,168 @@ class MooringLine:
         """Returns tension at anchor."""
         return self.getTension(0.0)
 
-    def plot(self, npoints: int = 100) -> None:
-        """Plots line from anchor to fairlead"""
-        self.plot3D(npoints=npoints)
+    def plot(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        """Plots line from anchor to fairlead.
 
-    def plot2D(self, npoints: int = 100) -> None:
-        """Plots line from anchor to fairlead in 2D"""
+        Parameters
+        ----------
+        npoints: int, optional
+            Number of points along the line, by default 100.
+        show_tension: bool, optional
+            If True, color the line by tension magnitude, by default True.
+        colormap: str, optional
+            Matplotlib colormap name, by default "viridis".
+        """
+        if self.nd == 2:
+            self.plot2D(
+                npoints=npoints, show_tension=show_tension, colormap=colormap
+            )
+        else:
+            self.plot3D(
+                npoints=npoints, show_tension=show_tension, colormap=colormap
+            )
+
+    def plot2D(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        """Plots line from anchor to fairlead in 2D.
+
+        Parameters
+        ----------
+        npoints: int, optional
+            Number of points along the line, by default 100.
+        show_tension: bool, optional
+            If True, color the line by tension magnitude, by default True.
+        colormap: str, optional
+            Matplotlib colormap name, by default "viridis".
+        """
         import matplotlib.pyplot as plt
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        xyzs = []
-        dd = []
-        hh = []
+        xyzs = list()
+        dd = list()
+        hh = list()
+        tensions = list()
         ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
+
         for s in ss:
             xyz = self.s2xyz(s)
+            tension = self.getTension(s)
             xyzs.append(xyz)
-            dd.append(np.sqrt(xyz[0] ** 2 + xyz[1] ** 2))
-            hh.append(xyz[2])
-        ax.plot(dd, hh)
+            if self.nd == 2:
+                dd.append(xyz[0])
+                hh.append(xyz[1])
+            else:
+                dd.append(np.linalg.norm(xyz[:2] - self.anchor[:2]))
+                hh.append(xyz[2])
+            tensions.append(tension)
+
+        if show_tension:
+            from matplotlib.collections import LineCollection
+
+            tension_magnitudes = np.linalg.norm(np.array(tensions), axis=1)
+            # create segments
+            points = np.array([dd, hh]).T.reshape(-1, 1, 2)
+            segments = np.concatenate([points[:-1], points[1:]], axis=1)
+            # make a line with tension-based colors
+            lc = LineCollection(segments, cmap=colormap, linewidths=2)
+            lc.set_array(tension_magnitudes)
+            line = ax.add_collection(lc)
+            # add colorbar
+            cbar = plt.colorbar(line, ax=ax)
+            cbar.set_label("Tension Magnitude [N]")
+        else:
+            ax.plot(dd, hh)
+
         ax.grid("both")
-        ax.set_xlabel("d")
-        ax.set_ylabel("h")
+        if self.nd == 2:
+            ax.set_xlabel("x [m]")
+            ax.set_ylabel("y [m]")
+            ax.plot(self.anchor[0], self.anchor[1], "ko")
+            ax.plot(self.fairlead[0], self.fairlead[1], "ko")
+        else:
+            ax.set_xlabel("distance from anchor [m]")
+            ax.set_ylabel("z [m]")
+
+            ax.plot(0.0, self.anchor[2], "ko")
+            ax.plot(
+                np.linalg.norm(self.fairlead[:2] - self.anchor[:2]),
+                self.fairlead[2],
+                "ko",
+            )
         plt.show()
 
-    def plot3D(self, npoints: int = 100) -> None:
-        """Plots line from anchor to fairlead in 3D"""
+    def plot3D(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        """Plots line from anchor to fairlead in 3D.
+
+        Parameters
+        ----------
+        npoints: int, optional
+            Number of points along the line, by default 100.
+        show_tension: bool, optional
+            If True, color the line by tension magnitude, by default True.
+        colormap: str, optional
+            Matplotlib colormap name, by default "viridis".
+        """
         import matplotlib.pyplot as plt
+
+        if self.nd == 2:
+            raise ValueError("3D plot not available for 2D cables.")
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
-        xyzs = []
-        xx = []
-        yy = []
-        zz = []
+        xyzs = list()
+        xx = list()
+        yy = list()
+        zz = list()
+        tensions = list()
         ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
+
         for s in ss:
             xyz = self.s2xyz(s)
+            tension = self.getTension(s)
             xyzs.append(xyz)
             xx.append(xyz[0])
             yy.append(xyz[1])
             zz.append(xyz[2])
-        ax.plot(xx, yy, zz)
-        ax.set_xlabel("x")
-        ax.set_ylabel("y")
-        ax.set_zlabel("z")
+            tensions.append(tension)
+
+        if show_tension:
+            from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
+            tension_magnitudes = np.linalg.norm(np.array(tensions), axis=1)
+            # create segments
+            points = np.array([xx, yy, zz]).T.reshape(-1, 1, 3)
+            segments = np.concatenate([points[:-1], points[1:]], axis=1)
+            # make a line with tension-based colors
+            lc = Line3DCollection(segments, cmap=colormap, linewidths=2)
+            lc.set_array(tension_magnitudes)
+            line = ax.add_collection(lc)
+            # add colorbar
+            cbar = plt.colorbar(line, ax=ax, shrink=0.5, aspect=5)
+            cbar.set_label("Tension Magnitude [N]")
+        else:
+            ax.plot(xx, yy, zz)
+
+        ax.plot(self.anchor[0], self.anchor[1], self.anchor[2], "ko")
+        ax.plot(self.fairlead[0], self.fairlead[1], self.fairlead[2], "ko")
+        ax.set_xlabel("x [m]")
+        ax.set_ylabel("y [m]")
+        ax.set_zlabel("z [m]")
         plt.show()
 
     def _setDirectionDistance(self) -> None:
@@ -196,7 +311,7 @@ class MooringLine:
             len(vector) == 2
         ), f"Length of input vector is {len(vector)} (should be 2)."
         if self.nd == 2:
-            return np.array([vector[0] * self.direction[0], vector[1], 0.0])
+            return np.array([vector[0] * self.direction[0], vector[1]])
         elif self.nd == 3:
             vector3D = np.zeros(3)
             vector3D[0] = vector[0] * self.direction[0]
