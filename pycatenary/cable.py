@@ -6,34 +6,43 @@ from . import catenary
 
 
 class MooringLine:
-    """Class to create a mooring line
+    """Class to create a mooring line.
+
+    Mooring lines can be elastic or rigid, and multisegmented or not.
 
     Parameters
     ----------
-    L: double
-        unstretched line length [m]
-    w: double
-        submerged weight [N/m]
-    EA: double
-        axial stiffness
-    anchor: np.ndarray
-        anchor coordinates
-    fairlead: np.ndarray
-        fairlead coordinates
+    fairlead: sequence of floats
+        Fairlead coordinates [x, y, z] (3D) or [x, y] (2D).
+    anchor: sequence of floats
+        Anchor coordinates [x, y, z] (3D) or [x, y] (2D).
+    L: float, or sequence of floats
+        Unstretched line length [m].
+        If a list is provided, it is assumed to be a multisegmented cable.
+    w: float, or sequence of floats
+        Submerged weight [N/m].
+        If a list is provided, it must match the length of the L list.
+    EA: float, or sequence of floats
+        Axial stiffness [N].
+        Must be provided if the cable is elastic.
+        If EA is None, the cable is assumed to be rigid.
+        If a list is provided, it must match the length of the L list.
+    floor: bool
+        If True, the floor is assumed to be at the anchor level.
+        If fairlead is below anchor, the floor will be at fairlead level.
     """
 
     count = 0
 
     def __init__(
         self,
+        fairlead: Sequence[float],
+        anchor: Sequence[float],
         L: Union[float, Sequence[float]],
         w: Union[float, Sequence[float]],
-        anchor: Sequence[float],
-        fairlead: Sequence[float],
         EA: Optional[Union[float, Sequence[float]]] = None,
         floor: bool = True,
     ) -> None:
-        self.__class__.count += 1
         self._nd = len(fairlead)
         assert (
             len(anchor) == self._nd
@@ -43,9 +52,8 @@ class MooringLine:
                 "Invalid fairlead or anchor vector length"
                 "(should be 2 or 3)."
             )
-        self.anchor = np.array(anchor)
-        self.fairlead = np.array(fairlead)
-        self.name = "cable_" + str(self.count)
+        self._anchor = np.array(anchor)
+        self._fairlead = np.array(fairlead)
         if EA is None:
             self.catenary = catenary.CatenaryRigid(L=L, w=w, floor=floor)
         else:
@@ -55,8 +63,16 @@ class MooringLine:
         self._setDirectionDistance()
 
     def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
+        """Updates the axial stiffness of the cable.
+
+        Parameters
+        ----------
+        EA: float, or sequence of floats
+            Axial stiffness [N].
+            Must be of the same length as the original EA list.
+        """
         if isinstance(self.catenary, catenary.CatenaryElastic):
-            EA = get_array(EA)
+            EA = catenary.get_array(EA)
             old_len = len(self.catenary.EA)
             if len(EA) != old_len:
                 raise ValueError(
@@ -65,56 +81,82 @@ class MooringLine:
             self.catenary.EA = EA
         else:
             raise ValueError(
-                "Catenary is not elastic, cannot update axial stiffness."
+                "Catenary is rigid, cannot update axial stiffness."
             )
 
     def computeSolution(self) -> None:
-        """Computes solution of the catenary"""
+        """Computes solution of the catenary.
+
+        It is computed according to current anchor and fairlead positions."""
         self.catenary.getState(
             d=self.distance_h,
             h=self.distance_v,
         )
 
     def s2xyz(self, s: float) -> np.ndarray:
-        """Gives xyz coordinates along line
+        """Returns xyz coordinates at a given distance along the from anchor.
 
         Parameters
         ----------
-        s: double
-            distance along line (from anchor)
+        s: float
+            Distance along line (from anchor) [m].
+
+        Returns
+        -------
+        xyz: np.ndarray
+            xyz coordinates [x, y, z] (3D) or [x, y] (2D).
         """
         Lt = np.sum(self.catenary.L)
         assert (
             0.0 <= s <= Lt
         ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
-        if not self.fairlead_above_anchor:
-            return self.fairlead + self._transformVector2D(
+        if not self._fairlead_above_anchor:
+            return self._fairlead + self._transformVector2D(
                 self.catenary.s2xy(Lt - s)
             )
         else:
-            return self.anchor + self._transformVector2D(self.catenary.s2xy(s))
+            return self._anchor + self._transformVector2D(
+                self.catenary.s2xy(s)
+            )
 
     def getTension(self, s: float) -> np.ndarray:
-        """Gives tension along line
+        """Returns tension at a given distance along line from anchor.
 
         Parameters
         ----------
         s: double
             distance along line (from anchor)
+
+        Returns
+        -------
+        tension: np.ndarray
+            Tension vector [N].
         """
         Lt = np.sum(self.catenary.L)
 
-        if not self.fairlead_above_anchor:
+        if not self._fairlead_above_anchor:
             return self._transformVector2D(self.catenary.getTension(Lt - s))
         else:
             return self._transformVector2D(self.catenary.getTension(s))
 
     def getTensionFairlead(self) -> np.ndarray:
-        """Returns tension at fairlead."""
+        """Returns tension at fairlead.
+
+        Returns
+        -------
+        tension: np.ndarray
+            Tension vector [N].
+        """
         return self.getTension(np.sum(self.catenary.L))
 
     def getTensionAnchor(self) -> np.ndarray:
-        """Returns tension at anchor."""
+        """Returns tension at anchor.
+
+        Returns
+        -------
+        tension: np.ndarray
+            Tension vector [N].
+        """
         return self.getTension(0.0)
 
     def plot(
@@ -178,7 +220,7 @@ class MooringLine:
                 dd.append(xyz[0])
                 hh.append(xyz[1])
             else:
-                dd.append(np.linalg.norm(xyz[:2] - self.anchor[:2]))
+                dd.append(np.linalg.norm(xyz[:2] - self._anchor[:2]))
                 hh.append(xyz[2])
             tensions.append(tension)
 
@@ -203,15 +245,15 @@ class MooringLine:
         if self._nd == 2:
             ax.set_xlabel("x")
             ax.set_ylabel("y")
-            ax.plot(self.anchor[0], self.anchor[1], "ko")
-            ax.plot(self.fairlead[0], self.fairlead[1], "ko")
+            ax.plot(self._anchor[0], self._anchor[1], "ko")
+            ax.plot(self._fairlead[0], self._fairlead[1], "ko")
         else:
             ax.set_xlabel("distance from anchor")
             ax.set_ylabel("z")
-            ax.plot(0.0, self.anchor[2], "ko")
+            ax.plot(0.0, self._anchor[2], "ko")
             ax.plot(
-                np.linalg.norm(self.fairlead[:2] - self.anchor[:2]),
-                self.fairlead[2],
+                np.linalg.norm(self._fairlead[:2] - self._anchor[:2]),
+                self._fairlead[2],
                 "ko",
             )
         # add tension information
@@ -280,8 +322,8 @@ class MooringLine:
         else:
             ax.plot(xx, yy, zz)
 
-        ax.plot(self.anchor[0], self.anchor[1], self.anchor[2], "ko")
-        ax.plot(self.fairlead[0], self.fairlead[1], self.fairlead[2], "ko")
+        ax.plot(self._anchor[0], self._anchor[1], self._anchor[2], "ko")
+        ax.plot(self._fairlead[0], self._fairlead[1], self._fairlead[2], "ko")
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         ax.set_zlabel("z")
@@ -296,24 +338,31 @@ class MooringLine:
         plt.show()
 
     def _setDirectionDistance(self) -> None:
+        """Sets the direction and distance between the anchor and the fairlead
+
+        For internal use only, do not call this method directly."""
         if self._nd == 3:
             self.distance_h = np.sqrt(
-                np.sum((self.fairlead[:2] - self.anchor[:2]) ** 2)
+                np.sum((self._fairlead[:2] - self._anchor[:2]) ** 2)
             )
-            self.distance_v = np.abs(self.fairlead[2] - self.anchor[2])
-            self.fairlead_above_anchor = self.fairlead[2] - self.anchor[2] > 0
+            self.distance_v = np.abs(self._fairlead[2] - self._anchor[2])
+            self._fairlead_above_anchor = (
+                self._fairlead[2] - self._anchor[2] > 0
+            )
             self.direction = (
-                self.fairlead[:2] - self.anchor[:2]
+                self._fairlead[:2] - self._anchor[:2]
             ) / self.distance_h
         elif self._nd == 2:
-            if self.fairlead[0] - self.anchor[0] > 0:
+            if self._fairlead[0] - self._anchor[0] > 0:
                 self.direction = np.array([1.0, 0.0])
             else:
                 self.direction = np.array([-1.0, 0.0])
-            self.distance_h = np.abs(self.fairlead[0] - self.anchor[0])
-            self.distance_v = np.abs(self.fairlead[1] - self.anchor[1])
-            self.fairlead_above_anchor = self.fairlead[1] - self.anchor[1] > 0
-        if not self.fairlead_above_anchor:
+            self.distance_h = np.abs(self._fairlead[0] - self._anchor[0])
+            self.distance_v = np.abs(self._fairlead[1] - self._anchor[1])
+            self._fairlead_above_anchor = (
+                self._fairlead[1] - self._anchor[1] > 0
+            )
+        if not self._fairlead_above_anchor:
             self.direction = -self.direction
 
     def _transformVector2D(self, vector: Sequence[float]) -> np.ndarray:
@@ -338,32 +387,24 @@ class MooringLine:
                 f"Dimension nd = {self._nd} (should be 2 or 3)."
             )
 
-    def setAnchorCoords(self, coords):
-        """Sets coordinates of anchor
+    def setAnchorCoords(self, coords: Sequence[float]) -> None:
+        """Sets coordinates of anchor.
 
         Parameters
         ----------
-        coords: array
-            coordinates of anchor
+        coords: sequence of floats
+            Anchor coordinates [x, y, z] (3D) or [x, y] (2D).
         """
-        self.anchor[:] = np.array(coords)
+        self._anchor[:] = np.array(coords)
         self._setDirectionDistance()
 
-    def setFairleadCoords(self, coords):
-        """Sets coordinates of fairlead
+    def setFairleadCoords(self, coords: Sequence[float]) -> None:
+        """Sets coordinates of fairlead.
 
         Parameters
         ----------
-        coords: array
-            coordinates of fairlead
+        coords: sequence of floats
+            Fairlead coordinates [x, y, z] (3D) or [x, y] (2D).
         """
-        self.fairlead[:] = np.array(coords)
+        self._fairlead[:] = np.array(coords)
         self._setDirectionDistance()
-
-
-def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
-    if np.isscalar(x):
-        x = np.array([x])
-    else:
-        x = np.asarray(x)
-    return x

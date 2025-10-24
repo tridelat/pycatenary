@@ -23,6 +23,32 @@ def get_root_a(
     int1: float = int1_default,
     int2: float = int2_default,
 ) -> float:
+    """Returns the initial guess for the catenary a parameter.
+
+    Parameters
+    ----------
+    L: float
+        Unstretched line length [m].
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    a0: float
+        Initial guess for the catenary a parameter.
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+
+    Returns
+    -------
+    a: float
+        Initial guess for the catenary a parameter.
+    """
     g = lambda a: 2.0 * a * np.sinh(d / (2.0 * a)) - np.sqrt(
         L**2.0 - h**2.0
     )
@@ -43,25 +69,28 @@ def newton_raphson(
     maxit: int = maxit_default,
     must_converge: bool = True,
 ) -> float:
-    """Root finding algorithm (for transcendental equations)
+    """Newton-Raphson root finding algorithm (for transcendental equations).
 
     Parameters
     ----------
     f: function
-        must be a function (so f(x) = 0 returns the required x)
+        Function to find the root of.
     df: function
-        derivative of the function f (df/dx)
-    x0: double
-        initial guess of x
-    tol: double
-        tolerance
+        Derivative of the function f (df/dx).
+    x0: float
+        Initial guess of x.
+    tol: float
+        Tolerance for the root finding algorithm.
     maxit: int
-        maximum number of iterations
+        Maximum number of iterations for the root finding algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
 
     Returns
     -------
-    x: double
-        root
+    x: float
+        Root of the function.
     """
     x_prev = x0
     x = x0 - f(x0) / df(x0)
@@ -89,25 +118,25 @@ def bisection(
     maxit: int = maxit_default,
     must_converge: bool = True,
 ) -> float:
-    """Root finding algorithm (for transcendental equations)
+    """Bisection root finding algorithm (for transcendental equations).
 
     Parameters
     ----------
     f: function
-        must be a function (so f(x) = 0 returns the required x)
-    int1: double
-        lower end value
-    int2: double
-        lower end value
-    tol: double
-        tolerance
+        Function to find the root of.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    tol: float
+        Tolerance for the root finding algorithm.
     maxit: int
-        maximum number of iterations
+        Maximum number of iterations for the root finding algorithm.
 
     Returns
     -------
-    x: double
-        root
+    x: float
+        Root of the function.
     """
     err = np.abs(int2 - int1) / 2.0
     niter = 0
@@ -131,6 +160,26 @@ def bisection(
 def integrate_tension(
     s1: float, s2: float, w: float, Ha: float, Va: float
 ) -> float:
+    """Helper function to integrate tension along a cable segment.
+
+    Parameters
+    ----------
+    s1: float
+        Start of the cable segment [m].
+    s2: float
+        End of the cable segment [m].
+    w: float
+        Submerged weight [N/m].
+    Ha: float
+        Horizontal tension at s1 [N].
+    Va: float
+        Vertical tension at s1 [N].
+
+    Returns
+    -------
+    Ts: float
+        Integrated tension.
+    """
     Ts1 = (
         1
         / (2 * w)
@@ -160,6 +209,33 @@ def nofloor_rigid(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> float:
+    """Returns catenary shape for rigid cable with no floor.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    """
     Lt = np.sum(L)
     g = lambda a: 2 * a * np.sinh(d / (2 * a)) - np.sqrt(Lt**2 - h**2)
     a0 = bisection(
@@ -185,6 +261,39 @@ def nofloor_elastic(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
+    """Returns catenary solution for elastic cable with no floor.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    w: Sequence[float]
+        Submerged weight [N/m].
+    EA: Sequence[float]
+        Axial stiffness [N].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    e: np.ndarray
+        Elongation of the cable segments [m].
+    """
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
@@ -223,6 +332,39 @@ def fully_lifted_elastic(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
+    """Returns catenary solution for fully lifted elastic cable.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    w: Sequence[float]
+        Submerged weight [N/m].
+    EA: Sequence[float]
+        Axial stiffness [N].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    e: np.ndarray
+        Elongation of the cable segments [m].
+    """
     Ls_tot = Le_tot = 0
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
@@ -294,6 +436,33 @@ def fully_lifted_rigid(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> float:
+    """Returns catenary solution for fully lifted rigid cable.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    """
     g = lambda a: 2.0 * a * np.sinh(d / (2.0 * a)) - np.sqrt(
         np.sum(L) ** 2.0 - h**2.0
     )
@@ -330,6 +499,41 @@ def partly_lifted_elastic(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> tuple[float, np.ndarray, np.ndarray]:
+    """Returns catenary solution for partly lifted elastic cable.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    w: Sequence[float]
+        Submerged weight [N/m].
+    EA: Sequence[float]
+        Axial stiffness [N].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    e: np.ndarray
+        Elongation of the cable segments [m].
+    Lsu: np.ndarray
+        Lifted line lengths of the cable segments [m].
+    """
     diff = 1.0
     niter = 0
     a = 1.0
@@ -399,6 +603,35 @@ def partly_lifted_rigid(
     int2: float = int2_default,
     must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
+    """Returns catenary solution for partly lifted rigid cable.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    int1: float
+        Lower bound for the bisection algorithm.
+    int2: float
+        Upper bound for the bisection algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    a: float
+        Catenary shape parameter.
+    Lsu: np.ndarray
+        Lifted line lengths of the cable segments [m].
+    """
     diff = 1.0
     niter = 0
     a = 1.0
@@ -456,6 +689,39 @@ def straight_elastic(
     maxit: int = maxit_default,
     must_converge: bool = True,
 ) -> tuple[float, np.ndarray]:
+    """Returns horizontal tension and elongation for straight elastic cable.
+
+    Parameters
+    ----------
+    d: float
+        Horizontal distance between anchor and fairlead [m].
+    h: float
+        Vertical distance between anchor and fairlead [m].
+    L: Sequence[float]
+        Unstretched line length [m].
+    w: Sequence[float]
+        Submerged weight [N/m].
+    EA: Sequence[float]
+        Axial stiffness [N].
+    H_low: float
+        Lower bound for the horizontal tension at anchor [N].
+    H_high: float
+        Upper bound for the horizontal tension at anchor [N].
+    tol: float
+        Tolerance for the root finding algorithm.
+    maxit: int
+        Maximum number of iterations for the root finding algorithm.
+    must_converge: bool
+        If True, an error will be raised if the algorithm does not converge.
+        If False, a warning will be issued if the algorithm does not converge.
+
+    Returns
+    -------
+    H: float
+        Horizontal tension at anchor [N].
+    e: np.ndarray
+        Elongation of the cable segments [m].
+    """
     Lt = np.sum(L)  # total length of cable
     assert Lt <= np.sqrt(d**2 + h**2)
     e = np.zeros(len(L))  # stretching of cable segments

@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Sequence, Union
 
 import numpy as np
@@ -6,6 +7,18 @@ from . import utils
 
 
 def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
+    """Converts input to numpy array.
+
+    Parameters
+    ----------
+    x: Union[float, Sequence[float]]
+        Input to convert to numpy array.
+
+    Returns
+    -------
+    x: np.ndarray
+        Numpy array of the input.
+    """
     if np.isscalar(x):
         x = np.array([x])
     else:
@@ -13,17 +26,19 @@ def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
     return x
 
 
-class CatenaryBase(object):
-    """Base class for catenaries
+class CatenaryBase(ABC):
+    """Base class for catenaries.
 
     Parameters
     ----------
     L: Union[float, Sequence[float]]
-        unstretched line length [m]
+        Unstretched line length [m].
+        If a list is provided, it is assumed to be a multisegmented cable.
     w: Union[float, Sequence[float]]
-        submerged weight [N/m]
+        Submerged weight [N/m].
+        If a list is provided, it must match the length of the L list.
     floor: bool
-        if True, the floor is assumed to be at the anchor level
+        If True, the floor is assumed to be at the anchor level.
     """
 
     def __init__(
@@ -36,6 +51,9 @@ class CatenaryBase(object):
         self.L = get_array(L)
         # submerged weight
         self.w = get_array(w)
+        # check if lengths are the same
+        if len(self.L) != len(self.w):
+            raise ValueError("Length of L and w vectors must be the same.")
         # floor
         self.floor = floor
         # elongation
@@ -66,6 +84,18 @@ class CatenaryBase(object):
         self._s_offset = 0.0
 
     def getTension(self, s: float) -> np.ndarray:
+        """Returns tension at a given distance along the line from the anchor.
+
+        Parameters
+        ----------
+        s: float
+            Distance along line [m].
+
+        Returns
+        -------
+        tension: np.ndarray
+            Tension vector [N].
+        """
         s0 = self.d - self.x0
         # total line lengths
         Lt = np.sum(self.L)  # unstretched
@@ -96,6 +126,18 @@ class CatenaryBase(object):
         return Ts
 
     def s2xy(self, s: float) -> np.ndarray:
+        """Returns [x,y] coords at a given distance along line.
+
+        Parameters
+        ----------
+        s: float
+            Distance along line [m].
+
+        Returns
+        -------
+        xy: np.ndarray
+            [x,y] coordinates.
+        """
         s0 = self.d - self.x0
         Lt = np.sum(self.L)
         if self.x0 == 0.0:  # line straight to seabed
@@ -187,24 +229,53 @@ class CatenaryBase(object):
         plt.show()
 
     def _get_elongation_at_s(self, s: float) -> float:
+        """Returns total elongation at a given distance along line.
+
+        Parameters
+        ----------
+        s: float
+            Distance along line [m].
+
+        Returns
+        -------
+        elongation: float
+            Total elongation [m].
+        """
         for ii in range(len(self.L)):
             if s <= np.sum(self.L[: ii + 1]):
                 s_frac = 1 - (np.sum(self.L[: ii + 1]) - s) / self.L[ii]
                 return np.sum(self.e[:ii]) + s_frac * self.e[ii]
-        raise RuntimeError("Could not calculate elongation along line.")
+
+    @abstractmethod
+    def getState(self, d: float, h: float) -> None:
+        """Abstract method to calculate the catenary solution.
+
+        This method must be implemented by subclasses to define the specific
+        catenary calculation algorithm (rigid or elastic).
+
+        Parameters
+        ----------
+        d: float
+            Horizontal distance between anchor and fairlead [m].
+        h: float
+            Vertical distance between anchor and fairlead [m].
+        """
+        pass
 
 
 class CatenaryRigid(CatenaryBase):
-    """A class for rigid catenary
+    """A class for rigid catenary.
 
     Parameters
     ----------
     L: Union[float, Sequence[float]]
-        unstretched line length [m]
+        Unstretched line length [m].
+        If a list is provided, it is assumed to be a multisegmented cable.
     w: Union[float, Sequence[float]]
-        submerged weight [N/m]
+        Submerged weight [N/m].
+        If a list is provided, it must match the length of the L list.
     floor: bool
-        if True, the floor is assumed to be at the anchor level
+        If True, the floor is assumed to be at the anchor level.
     """
 
     def __init__(
@@ -216,16 +287,14 @@ class CatenaryRigid(CatenaryBase):
         super(CatenaryRigid, self).__init__(L=L, w=w, floor=floor)
 
     def getState(self, d: float, h: float) -> None:
-        """Calculates the solution for rigid catenary
+        """Calculates the solution for rigid catenary.
 
         Parameters
         ----------
-        d: double
-            horizontal distance between anchor and fairlead
-        h: double
-            vertical distance between anchor and fairlead
-        floor: bool
-            if True, the floor is assumed to be at the anchor level
+        d: float
+            Horizontal distance between anchor and fairlead [m].
+        h: float
+            Vertical distance between anchor and fairlead [m].
         """
         self.d = d
         self.h = h
@@ -329,13 +398,16 @@ class CatenaryElastic(CatenaryBase):
     Parameters
     ----------
     L: Union[float, Sequence[float]]
-        unstretched line length [m]
+        Unstretched line length [m].
+        If a list is provided, it is assumed to be a multisegmented cable.
     w: Union[float, Sequence[float]]
-        submerged weight [N/m]
+        Submerged weight [N/m].
+        If a list is provided, it must match the length of the L list.
     EA: Union[float, Sequence[float]]
-        axial stiffness
+        Axial stiffness [N].
+        If a list is provided, it must match the length of the L list.
     floor: bool
-        if True, the floor is assumed to be at the anchor level
+        If True, the floor is assumed to be at the anchor level.
     """
 
     def __init__(
@@ -348,18 +420,19 @@ class CatenaryElastic(CatenaryBase):
         super(CatenaryElastic, self).__init__(L=L, w=w, floor=floor)
         # axial stiffness
         self.EA = get_array(EA)
+        # check if lengths are the same
+        if len(self.L) != len(self.EA):
+            raise ValueError("Length of L and EA vectors must be the same.")
 
     def getState(self, d: float, h: float) -> None:
-        """Calculates the solution for elastic catenary
+        """Calculates the solution for elastic catenary.
 
         Parameters
         ----------
-        d: double
-            horizontal distance between anchor and fairlead
-        h: double
-            vertical distance between anchor and fairlead
-        floor: bool
-            if True, the floor is assumed to be at the anchor level
+        d: float
+            Horizontal distance between anchor and fairlead [m].
+        h: float
+            Vertical distance between anchor and fairlead [m].
         """
         self.d = d
         self.h = h
