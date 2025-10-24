@@ -35,11 +35,6 @@ class MooringLine:
         floor: bool = True,
     ) -> None:
         self.__class__.count += 1
-        self.L = get_array(L)
-        self.w = get_array(w)
-        self.EA = EA
-        if self.EA is not None:
-            self.EA = get_array(self.EA)
         self.nd = nd
         self.name = "cable_" + str(self.count)
         if anchor is None:
@@ -51,11 +46,12 @@ class MooringLine:
         else:
             self.fairlead = np.array(fairlead)
         self.anchor_coords_system = np.eye(3)
-        self.floor = floor
-        if self.EA is None:
-            self.catenary = catenary.CatenaryRigid(self)
+        if EA is None:
+            self.catenary = catenary.CatenaryRigid(L=L, w=w, floor=floor)
         else:
-            self.catenary = catenary.CatenaryElastic(self)
+            self.catenary = catenary.CatenaryElastic(
+                L=L, w=w, EA=EA, floor=floor
+            )
         self._setDirectionDistance()
 
     def computeSolution(self) -> None:
@@ -63,7 +59,6 @@ class MooringLine:
         self.catenary.getState(
             d=self.distance_h,
             h=self.distance_v,
-            floor=self.floor,
         )
 
     def s2xyz(self, s: float) -> np.ndarray:
@@ -74,7 +69,7 @@ class MooringLine:
         s: double
             distance along line (from anchor)
         """
-        Lt = np.sum(self.L)
+        Lt = np.sum(self.catenary.L)
         assert (
             0.0 <= s <= Lt
         ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
@@ -93,7 +88,7 @@ class MooringLine:
         s: double
             distance along line (from anchor)
         """
-        Lt = np.sum(self.L)
+        Lt = np.sum(self.catenary.L)
 
         if not self.fairlead_above_anchor:
             return self._transformVector2D(self.catenary.getTension(Lt - s))
@@ -102,7 +97,7 @@ class MooringLine:
 
     def getTensionFairlead(self) -> np.ndarray:
         """Returns tension at fairlead."""
-        return self.getTension(np.sum(self.L))
+        return self.getTension(np.sum(self.catenary.L))
 
     def getTensionAnchor(self) -> np.ndarray:
         """Returns tension at anchor."""
@@ -121,7 +116,7 @@ class MooringLine:
         xyzs = []
         dd = []
         hh = []
-        ss = np.linspace(0.0, np.sum(self.L), npoints)
+        ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
         for s in ss:
             xyz = self.s2xyz(s)
             xyzs.append(xyz)
@@ -143,7 +138,7 @@ class MooringLine:
         xx = []
         yy = []
         zz = []
-        ss = np.linspace(0.0, np.sum(self.L), npoints)
+        ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
         for s in ss:
             xyz = self.s2xyz(s)
             xyzs.append(xyz)

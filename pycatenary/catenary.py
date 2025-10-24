@@ -18,12 +18,30 @@ class CatenaryBase(object):
 
     Parameters
     ----------
-    line: pycatenary.cable.MooringLine
-        line holding properties necessary for calculation of catenary
+    L: Union[float, Sequence[float]]
+        unstretched line length [m]
+    w: Union[float, Sequence[float]]
+        submerged weight [N/m]
+    floor: bool
+        if True, the floor is assumed to be at the anchor level
     """
 
-    def __init__(self, line) -> None:
-        self.line = line
+    def __init__(
+        self,
+        L: Union[float, Sequence[float]],
+        w: Union[float, Sequence[float]],
+        floor: bool = True,
+    ) -> None:
+        # unstretched line length
+        self.L = get_array(L)
+        # submerged weight
+        self.w = get_array(w)
+        # floor
+        self.floor = floor
+        # elongation
+        self.e = np.zeros_like(self.L)
+        # lifted line length
+        self.Ls = np.zeros_like(self.L)
         # horizontal distance
         self.d = 0.0
         # vertical distance
@@ -32,11 +50,7 @@ class CatenaryBase(object):
         self.a = 0.0
         # horizontal span
         self.x0 = 0.0
-        # elongation
-        self.e = np.zeros(1)
-        # lifted line length
-        self.Ls = np.zeros(1)
-        # submerged weight
+        # maximum number of iterations
         self.maxit = 1000
         # tolerance
         self.tol = 1e-10
@@ -54,12 +68,12 @@ class CatenaryBase(object):
     def getTension(self, s: float) -> np.ndarray:
         s0 = self.d - self.x0
         # total line lengths
-        Lt = np.sum(self.line.L)  # unstretched
+        Lt = np.sum(self.L)  # unstretched
         Lst = np.sum(self.Ls)  # unstretched
         Lset = Lst + np.sum(self.e)  # stretched
         if Lt >= s >= s0:
             # average w
-            w_av = np.sum(self.line.w * self.Ls) / Lst
+            w_av = np.sum(self.w * self.Ls) / Lst
             # horizontal tension
             Th = self.a * w_av * (Lst / Lset)
             # reverse sign for Th if s > 0 for catenary
@@ -83,7 +97,7 @@ class CatenaryBase(object):
 
     def s2xy(self, s: float) -> np.ndarray:
         s0 = self.d - self.x0
-        Lt = np.sum(self.line.L)
+        Lt = np.sum(self.L)
         if self.x0 == 0.0:  # line straight to seabed
             # length of line on floor
             L_floor = Lt - np.sum(self.Ls)
@@ -94,7 +108,7 @@ class CatenaryBase(object):
                 x = self.d
                 y = s - L_floor + self._get_elongation_at_s(s)
         elif (
-            0.0 <= s < s0 and self.line.floor
+            0.0 <= s < s0 and self.floor
         ):  # line partly lifted, with s on floor
             x = s
             y = 0.0 - self._y_offset
@@ -121,7 +135,7 @@ class CatenaryBase(object):
         xys = []
         xx = []
         yy = []
-        ss = np.linspace(0.0, np.sum(self.line.L), npoints)
+        ss = np.linspace(0.0, np.sum(self.L), npoints)
         for s in ss:
             xy = self.s2xy(s)
             xys.append(xy)
@@ -131,11 +145,9 @@ class CatenaryBase(object):
         plt.show()
 
     def _get_elongation_at_s(self, s: float) -> float:
-        for ii in range(len(self.line.L)):
-            if s <= np.sum(self.line.L[: ii + 1]):
-                s_frac = (
-                    1 - (np.sum(self.line.L[: ii + 1]) - s) / self.line.L[ii]
-                )
+        for ii in range(len(self.L)):
+            if s <= np.sum(self.L[: ii + 1]):
+                s_frac = 1 - (np.sum(self.L[: ii + 1]) - s) / self.L[ii]
                 return np.sum(self.e[:ii]) + s_frac * self.e[ii]
         raise RuntimeError("Could not calculate elongation along line.")
 
@@ -145,14 +157,23 @@ class CatenaryRigid(CatenaryBase):
 
     Parameters
     ----------
-    line: pycatenary.cable.MooringLine
-        line holding properties necessary for calculation of catenary
+    L: Union[float, Sequence[float]]
+        unstretched line length [m]
+    w: Union[float, Sequence[float]]
+        submerged weight [N/m]
+    floor: bool
+        if True, the floor is assumed to be at the anchor level
     """
 
-    def __init__(self, line) -> None:
-        super(CatenaryRigid, self).__init__(line)
+    def __init__(
+        self,
+        L: Union[float, Sequence[float]],
+        w: Union[float, Sequence[float]],
+        floor: bool = True,
+    ) -> None:
+        super(CatenaryRigid, self).__init__(L=L, w=w, floor=floor)
 
-    def getState(self, d: float, h: float, floor: bool = True) -> None:
+    def getState(self, d: float, h: float) -> None:
         """Calculates the solution for rigid catenary
 
         Parameters
@@ -168,8 +189,9 @@ class CatenaryRigid(CatenaryBase):
         self.h = h
         tol = self.tol
         maxit = self.maxit
-        L = self.line.L
+        L = self.L
         self.e = np.zeros(len(L))
+        floor = self.floor
         Ls = np.zeros(len(L))
         Lt = np.sum(L)
         x_offset = 0.0
@@ -252,14 +274,28 @@ class CatenaryElastic(CatenaryBase):
 
     Parameters
     ----------
-    line: pycatenary.cable.MooringLine
-        line holding properties necessary for calculation of catenary
+    L: Union[float, Sequence[float]]
+        unstretched line length [m]
+    w: Union[float, Sequence[float]]
+        submerged weight [N/m]
+    EA: Union[float, Sequence[float]]
+        axial stiffness
+    floor: bool
+        if True, the floor is assumed to be at the anchor level
     """
 
-    def __init__(self, line) -> None:
-        super(CatenaryElastic, self).__init__(line)
+    def __init__(
+        self,
+        L: Union[float, Sequence[float]],
+        w: Union[float, Sequence[float]],
+        EA: Union[float, Sequence[float]] = None,
+        floor: bool = True,
+    ) -> None:
+        super(CatenaryElastic, self).__init__(L=L, w=w, floor=floor)
+        # axial stiffness
+        self.EA = get_array(EA)
 
-    def getState(self, d: float, h: float, floor: bool = True) -> None:
+    def getState(self, d: float, h: float) -> None:
         """Calculates the solution for elastic catenary
 
         Parameters
@@ -275,11 +311,10 @@ class CatenaryElastic(CatenaryBase):
         self.h = h
         tol = self.tol
         maxit = self.maxit
-        L = self.line.L
-
-        L = get_array(self.line.L)  # unstretched line length
-        w = get_array(self.line.w)  # submerged weight
-        EA = get_array(self.line.EA)  # axial stiffness
+        L = self.L
+        w = self.w
+        EA = self.EA
+        floor = self.floor
 
         Lt = np.sum(L)  # total unstretched line length
         Ls = np.zeros(len(L))  # unstretched lifted line length
