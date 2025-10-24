@@ -28,23 +28,24 @@ class MooringLine:
         self,
         L: Union[float, Sequence[float]],
         w: Union[float, Sequence[float]],
+        anchor: Sequence[float],
+        fairlead: Sequence[float],
         EA: Optional[Union[float, Sequence[float]]] = None,
-        anchor: Optional[Sequence[float]] = None,
-        fairlead: Optional[Sequence[float]] = None,
-        nd: int = 3,
         floor: bool = True,
     ) -> None:
         self.__class__.count += 1
-        self.nd = nd
+        self._nd = len(fairlead)
+        assert (
+            len(anchor) == self._nd
+        ), "Anchor and fairlead vectors must have the same length."
+        if not 2 <= self._nd <= 3:
+            raise ValueError(
+                "Invalid fairlead or anchor vector length"
+                "(should be 2 or 3)."
+            )
+        self.anchor = np.array(anchor)
+        self.fairlead = np.array(fairlead)
         self.name = "cable_" + str(self.count)
-        if anchor is None:
-            self.anchor = np.zeros(nd)  # coordinates of anchor
-        else:
-            self.anchor = np.array(anchor)
-        if fairlead is None:
-            self.fairlead = np.zeros(nd)  # coordinates of fairlead
-        else:
-            self.fairlead = np.array(fairlead)
         if EA is None:
             self.catenary = catenary.CatenaryRigid(L=L, w=w, floor=floor)
         else:
@@ -133,7 +134,7 @@ class MooringLine:
         colormap: str, optional
             Matplotlib colormap name, by default "viridis".
         """
-        if self.nd == 2:
+        if self._nd == 2:
             self.plot2D(
                 npoints=npoints, show_tension=show_tension, colormap=colormap
             )
@@ -173,7 +174,7 @@ class MooringLine:
             xyz = self.s2xyz(s)
             tension = self.getTension(s)
             xyzs.append(xyz)
-            if self.nd == 2:
+            if self._nd == 2:
                 dd.append(xyz[0])
                 hh.append(xyz[1])
             else:
@@ -199,7 +200,7 @@ class MooringLine:
             ax.plot(dd, hh)
 
         ax.grid("both")
-        if self.nd == 2:
+        if self._nd == 2:
             ax.set_xlabel("x")
             ax.set_ylabel("y")
             ax.plot(self.anchor[0], self.anchor[1], "ko")
@@ -241,7 +242,7 @@ class MooringLine:
         """
         import matplotlib.pyplot as plt
 
-        if self.nd == 2:
+        if self._nd == 2:
             raise ValueError("3D plot not available for 2D cables.")
 
         fig = plt.figure()
@@ -295,7 +296,7 @@ class MooringLine:
         plt.show()
 
     def _setDirectionDistance(self) -> None:
-        if self.nd == 3:
+        if self._nd == 3:
             self.distance_h = np.sqrt(
                 np.sum((self.fairlead[:2] - self.anchor[:2]) ** 2)
             )
@@ -304,7 +305,7 @@ class MooringLine:
             self.direction = (
                 self.fairlead[:2] - self.anchor[:2]
             ) / self.distance_h
-        elif self.nd == 2:
+        elif self._nd == 2:
             if self.fairlead[0] - self.anchor[0] > 0:
                 self.direction = np.array([1.0, 0.0])
             else:
@@ -324,16 +325,18 @@ class MooringLine:
         assert (
             len(vector) == 2
         ), f"Length of input vector is {len(vector)} (should be 2)."
-        if self.nd == 2:
+        if self._nd == 2:
             return np.array([vector[0] * self.direction[0], vector[1]])
-        elif self.nd == 3:
+        elif self._nd == 3:
             vector3D = np.zeros(3)
             vector3D[0] = vector[0] * self.direction[0]
             vector3D[1] = vector[0] * self.direction[1]
             vector3D[2] = vector[1]
             return vector3D
         else:
-            raise RuntimeError(f"Dimension nd = {self.nd} (should be 2 or 3).")
+            raise RuntimeError(
+                f"Dimension nd = {self._nd} (should be 2 or 3)."
+            )
 
     def setAnchorCoords(self, coords):
         """Sets coordinates of anchor
