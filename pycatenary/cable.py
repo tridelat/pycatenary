@@ -54,6 +54,20 @@ class MooringLine:
             )
         self._setDirectionDistance()
 
+    def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
+        if isinstance(self.catenary, catenary.CatenaryElastic):
+            EA = get_array(EA)
+            old_len = len(self.catenary.EA)
+            if len(EA) != old_len:
+                raise ValueError(
+                    f"Length of new EA is {len(EA)} (should be {old_len})."
+                )
+            self.catenary.EA = EA
+        else:
+            raise ValueError(
+                "Catenary is not elastic, cannot update axial stiffness."
+            )
+
     def computeSolution(self) -> None:
         """Computes solution of the catenary"""
         self.catenary.getState(
