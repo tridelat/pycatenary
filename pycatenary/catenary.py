@@ -28,12 +28,12 @@ class CatenaryBase(object):
         self.h = 0.0
         # catenary a
         self.a = 0.0
-        # elongation
-        self.e = 0.0
         # horizontal span
         self.x0 = 0.0
+        # elongation
+        self.e = np.zeros(1)
         # lifted line length
-        self.Ls = 0.0
+        self.Ls = np.zeros(1)
         # submerged weight
         self.maxit = 1000
         # tolerance
@@ -79,13 +79,25 @@ class CatenaryBase(object):
 
     def s2xy(self, s):
         s0 = self.d - self.x0
-        s = s + self._s_offset
-        s = s * np.sum(self.Ls + self.e) / np.sum(self.Ls)
-        a = self.a
-        if s < s0 and self.line.floor:
+        if self.x0 == 0.0:  # line straight to seabed
+            # length of line on floor
+            L_floor = np.sum(self.line.L) - np.sum(self.Ls)
+            print(L_floor)
+            if s < L_floor:
+                x = s * self.d / L_floor
+                y = 0.0
+            else:
+                x = self.d
+                y = s - L_floor + self._get_elongation_at_s(s)
+        elif s < s0 and self.line.floor:  # line partly lifted, with s on floor
             x = s
             y = 0.0 - self._y_offset
-        else:
+        else:  # s in lifted line part
+            s += self._get_elongation_at_s(s)
+            # add offset from catenary
+            s = s + self._s_offset
+            # calculate x and y coordinates
+            a = self.a
             x = s0 + a * np.arcsinh((s - s0) / a)
             y = a * np.cosh((x - s0) / a)
         xy = np.array([x + self._x_offset, y + self._y_offset])
@@ -109,6 +121,15 @@ class CatenaryBase(object):
         print("anchor: {anchor}".format(anchor=str(xys[0])))
         print("fairlead: {fairlead}".format(fairlead=str(xys[-1])))
         plt.show()
+
+    def _get_elongation_at_s(self, s):
+        for ii in range(len(self.line.L)):
+            if s <= np.sum(self.line.L[: ii + 1]):
+                s_frac = (
+                    1 - (np.sum(self.line.L[: ii + 1]) - s) / self.line.L[ii]
+                )
+                return np.sum(self.e[:ii]) + s_frac * self.e[ii]
+        raise RuntimeError("Could not calculate elongation along line.")
 
 
 class CatenaryRigid(CatenaryBase):
@@ -140,6 +161,7 @@ class CatenaryRigid(CatenaryBase):
         tol = self.tol
         maxit = self.maxit
         L = self.line.L
+        self.e = np.zeros(len(L))
         Ls = np.zeros(len(L))
         Lt = np.sum(L)
         x_offset = 0.0
