@@ -174,13 +174,16 @@ class CatenaryBase(object):
             line = ax.add_collection(lc)
             # add colorbar
             cbar = plt.colorbar(line, ax=ax)
-            cbar.set_label("Tension Magnitude [N]")
+            cbar.set_label("Tension Magnitude")
+            # Set axis limits to show the line
+            ax.set_xlim(min(xx), max(xx))
+            ax.set_ylim(min(yy), max(yy))
         else:
             ax.plot(xx, yy)
 
         ax.grid("both")
-        ax.set_xlabel("x [m]")
-        ax.set_ylabel("y [m]")
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
         plt.show()
 
     def _get_elongation_at_s(self, s: float) -> float:

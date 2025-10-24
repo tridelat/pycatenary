@@ -194,26 +194,32 @@ class MooringLine:
             line = ax.add_collection(lc)
             # add colorbar
             cbar = plt.colorbar(line, ax=ax)
-            cbar.set_label("Tension Magnitude [N]")
+            cbar.set_label("Tension Magnitude")
         else:
             ax.plot(dd, hh)
 
         ax.grid("both")
         if self.nd == 2:
-            ax.set_xlabel("x [m]")
-            ax.set_ylabel("y [m]")
+            ax.set_xlabel("x")
+            ax.set_ylabel("y")
             ax.plot(self.anchor[0], self.anchor[1], "ko")
             ax.plot(self.fairlead[0], self.fairlead[1], "ko")
         else:
-            ax.set_xlabel("distance from anchor [m]")
-            ax.set_ylabel("z [m]")
-
+            ax.set_xlabel("distance from anchor")
+            ax.set_ylabel("z")
             ax.plot(0.0, self.anchor[2], "ko")
             ax.plot(
                 np.linalg.norm(self.fairlead[:2] - self.anchor[:2]),
                 self.fairlead[2],
                 "ko",
             )
+        # add tension information
+        anchor_tension = np.linalg.norm(self.getTensionAnchor())
+        fairlead_tension = np.linalg.norm(self.getTensionFairlead())
+        ax.set_title(
+            f"Tensions: Fairlead: {fairlead_tension:.0f} | "
+            f"Anchor: {anchor_tension:.0f}"
+        )
         plt.show()
 
     def plot3D(
@@ -269,15 +275,23 @@ class MooringLine:
             line = ax.add_collection(lc)
             # add colorbar
             cbar = plt.colorbar(line, ax=ax, shrink=0.5, aspect=5)
-            cbar.set_label("Tension Magnitude [N]")
+            cbar.set_label("Tension Magnitude")
         else:
             ax.plot(xx, yy, zz)
 
         ax.plot(self.anchor[0], self.anchor[1], self.anchor[2], "ko")
         ax.plot(self.fairlead[0], self.fairlead[1], self.fairlead[2], "ko")
-        ax.set_xlabel("x [m]")
-        ax.set_ylabel("y [m]")
-        ax.set_zlabel("z [m]")
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_zlabel("z")
+        ax.set_zlim(bottom=min(zz), top=max(zz))
+        # add tension information
+        anchor_tension = np.linalg.norm(self.getTensionAnchor())
+        fairlead_tension = np.linalg.norm(self.getTensionFairlead())
+        ax.set_title(
+            f"Tensions: Fairlead: {fairlead_tension:.0f} | "
+            f"Anchor: {anchor_tension:.0f}"
+        )
         plt.show()
 
     def _setDirectionDistance(self) -> None:
