@@ -100,6 +100,14 @@ class MooringLine:
         else:
             return self._transformVector(self.catenary.getTension(s))
 
+    def getTensionFairlead(self):
+        """Returns tension at fairlead."""
+        return self.getTension(np.sum(self.L))
+
+    def getTensionAnchor(self):
+        """Returns tension at anchor."""
+        return self.getTension(0.0)
+
     def plot(self, npoints=100):
         """Plots line from anchor to fairlead"""
         self.plot3D(npoints=npoints)
