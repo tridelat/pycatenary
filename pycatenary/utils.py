@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 
 # ignore overflow warnings
@@ -32,7 +34,9 @@ def get_root_a(
     return a
 
 
-def newton_raphson(f, df, x0, tol=tol_default, maxit=maxit_default):
+def newton_raphson(
+    f, df, x0, tol=tol_default, maxit=maxit_default, must_converge=True
+):
     """Root finding algorithm (for transcendental equations)
 
     Parameters
@@ -62,14 +66,18 @@ def newton_raphson(f, df, x0, tol=tol_default, maxit=maxit_default):
         x_prev = x
         x = x - f(x) / df(x)
         err = np.abs(x - x_prev)
-    # print('Newton-Raphson: iterations', niter, ', solution', x, ', err', err)
     if maxit <= niter:
-        print("did not converge!")
+        if must_converge:
+            raise RuntimeError("Newton-Raphson did not converge!")
+        else:
+            warnings.warn("Newton-Raphson did not converge!")
         x = np.nan
     return x
 
 
-def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
+def bisection(
+    f, int1, int2, tol=tol_default, maxit=maxit_default, must_converge=True
+):
     """Root finding algorithm (for transcendental equations)
 
     Parameters
@@ -100,9 +108,11 @@ def bisection(f, int1, int2, tol=tol_default, maxit=maxit_default):
         else:
             int2 = x
         err = np.abs(int2 - int1) / 2.0
-    # print('Bisection: iterations', niter, ', solution', x, ', err', err)
     if maxit <= niter:
-        print("did not converge!")
+        if must_converge:
+            raise RuntimeError("Bisection did not converge!")
+        else:
+            warnings.warn("Bisection did not converge!")
         x = np.nan
     return x
 

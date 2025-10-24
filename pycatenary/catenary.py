@@ -74,25 +74,29 @@ class CatenaryBase(object):
         elif 0 <= s < s0:
             Ts = np.array([0.0, 0.0])
         else:
-            assert False, "wrong value for s"
+            raise RuntimeError(
+                f"Cannot get tension for s = {s} (should be 0.0 <= s <= {Lt})."
+            )
         return Ts
 
     def s2xy(self, s):
         s0 = self.d - self.x0
+        Lt = np.sum(self.line.L)
         if self.x0 == 0.0:  # line straight to seabed
             # length of line on floor
-            L_floor = np.sum(self.line.L) - np.sum(self.Ls)
-            print(L_floor)
+            L_floor = Lt - np.sum(self.Ls)
             if s < L_floor:
                 x = s * self.d / L_floor
                 y = 0.0
             else:
                 x = self.d
                 y = s - L_floor + self._get_elongation_at_s(s)
-        elif s < s0 and self.line.floor:  # line partly lifted, with s on floor
+        elif (
+            0.0 <= s < s0 and self.line.floor
+        ):  # line partly lifted, with s on floor
             x = s
             y = 0.0 - self._y_offset
-        else:  # s in lifted line part
+        elif 0.0 <= s <= Lt:  # s in lifted line part
             s += self._get_elongation_at_s(s)
             # add offset from catenary
             s = s + self._s_offset
@@ -100,6 +104,10 @@ class CatenaryBase(object):
             a = self.a
             x = s0 + a * np.arcsinh((s - s0) / a)
             y = a * np.cosh((x - s0) / a)
+        else:
+            raise RuntimeError(
+                f"Cannot get coords for s = {s} (should be 0.0 <= s <= {Lt})."
+            )
         xy = np.array([x + self._x_offset, y + self._y_offset])
         return xy
 
@@ -118,8 +126,6 @@ class CatenaryBase(object):
             xx.append(xy[0])
             yy.append(xy[1])
         ax.plot(xx, yy)
-        print("anchor: {anchor}".format(anchor=str(xys[0])))
-        print("fairlead: {fairlead}".format(fairlead=str(xys[-1])))
         plt.show()
 
     def _get_elongation_at_s(self, s):

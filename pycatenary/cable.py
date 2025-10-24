@@ -77,11 +77,11 @@ class MooringLine:
             0.0 <= s <= Lt
         ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
         if not self.fairlead_above_anchor:
-            return self.fairlead + self._transformVector(
+            return self.fairlead + self._transformVector2D(
                 self.catenary.s2xy(Lt - s)
             )
         else:
-            return self.anchor + self._transformVector(self.catenary.s2xy(s))
+            return self.anchor + self._transformVector2D(self.catenary.s2xy(s))
 
     def getTension(self, s):
         """Gives tension along line
@@ -92,13 +92,11 @@ class MooringLine:
             distance along line (from anchor)
         """
         Lt = np.sum(self.L)
-        assert (
-            0.0 <= s <= Lt
-        ), f"Cannot get tension for s = {s} (should be 0.0 <= s <= L = {Lt})."
+
         if not self.fairlead_above_anchor:
-            return self._transformVector(self.catenary.getTension(Lt - s))
+            return self._transformVector2D(self.catenary.getTension(Lt - s))
         else:
-            return self._transformVector(self.catenary.getTension(s))
+            return self._transformVector2D(self.catenary.getTension(s))
 
     def getTensionFairlead(self):
         """Returns tension at fairlead."""
@@ -177,22 +175,26 @@ class MooringLine:
         if not self.fairlead_above_anchor:
             self.direction = -self.direction
 
-    def _transformVector(self, vector):
+    def _transformVector2D(self, vector):
         """Transforms a 2D vector back in 3D (or 2D) according to direction
 
         Note that it is assumed that gravity acts in the Y direction in 2D,
         and Z direction in 3D
         """
-        assert len(vector) == 2, "must be 2D vector"
+        assert (
+            len(vector) == 2
+        ), f"Length of input vector is {len(vector)} (should be 2)."
         if self.nd == 2:
             vector[0] *= self.direction[0]
             return np.array([vector[0], vector[1], 0.0])
-        else:
+        elif self.nd == 3:
             vector3D = np.zeros(3)
             vector3D[0] = vector[0] * self.direction[0]
             vector3D[1] = vector[0] * self.direction[1]
             vector3D[2] = vector[1]
             return vector3D
+        else:
+            raise RuntimeError(f"Dimension nd = {self.nd} (should be 2 or 3).")
 
     def setAnchorCoords(self, coords):
         """Sets coordinates of anchor
