@@ -1,9 +1,11 @@
+from typing import Sequence, Union
+
 import numpy as np
 
 from . import utils
 
 
-def get_array(x):
+def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
     if np.isscalar(x):
         x = np.array([x])
     else:
@@ -20,7 +22,7 @@ class CatenaryBase(object):
         line holding properties necessary for calculation of catenary
     """
 
-    def __init__(self, line):
+    def __init__(self, line) -> None:
         self.line = line
         # horizontal distance
         self.d = 0.0
@@ -49,7 +51,7 @@ class CatenaryBase(object):
         # offset for s
         self._s_offset = 0.0
 
-    def getTension(self, s):
+    def getTension(self, s: float) -> np.ndarray:
         s0 = self.d - self.x0
         # total line lengths
         Lt = np.sum(self.line.L)  # unstretched
@@ -79,7 +81,7 @@ class CatenaryBase(object):
             )
         return Ts
 
-    def s2xy(self, s):
+    def s2xy(self, s: float) -> np.ndarray:
         s0 = self.d - self.x0
         Lt = np.sum(self.line.L)
         if self.x0 == 0.0:  # line straight to seabed
@@ -111,7 +113,7 @@ class CatenaryBase(object):
         xy = np.array([x + self._x_offset, y + self._y_offset])
         return xy
 
-    def plot(self, npoints=100):
+    def plot(self, npoints: int = 100) -> None:
         """Plots catenary in 2D from (0, 0) to (d, h)"""
         import matplotlib.pyplot as plt
 
@@ -128,7 +130,7 @@ class CatenaryBase(object):
         ax.plot(xx, yy)
         plt.show()
 
-    def _get_elongation_at_s(self, s):
+    def _get_elongation_at_s(self, s: float) -> float:
         for ii in range(len(self.line.L)):
             if s <= np.sum(self.line.L[: ii + 1]):
                 s_frac = (
@@ -147,10 +149,10 @@ class CatenaryRigid(CatenaryBase):
         line holding properties necessary for calculation of catenary
     """
 
-    def __init__(self, line):
+    def __init__(self, line) -> None:
         super(CatenaryRigid, self).__init__(line)
 
-    def getState(self, d, h, floor=True):
+    def getState(self, d: float, h: float, floor: bool = True) -> None:
         """Calculates the solution for rigid catenary
 
         Parameters
@@ -254,10 +256,10 @@ class CatenaryElastic(CatenaryBase):
         line holding properties necessary for calculation of catenary
     """
 
-    def __init__(self, line):
+    def __init__(self, line) -> None:
         super(CatenaryElastic, self).__init__(line)
 
-    def getState(self, d, h, floor=True):
+    def getState(self, d: float, h: float, floor: bool = True) -> None:
         """Calculates the solution for elastic catenary
 
         Parameters

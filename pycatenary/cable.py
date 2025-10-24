@@ -1,3 +1,5 @@
+from typing import Optional, Sequence, Union
+
 import numpy as np
 
 from . import catenary
@@ -24,14 +26,14 @@ class MooringLine:
 
     def __init__(
         self,
-        L,
-        w,
-        EA=None,
-        anchor=None,
-        fairlead=None,
-        nd=3,
-        floor=True,
-    ):
+        L: Union[float, Sequence[float]],
+        w: Union[float, Sequence[float]],
+        EA: Optional[Union[float, Sequence[float]]] = None,
+        anchor: Optional[Sequence[float]] = None,
+        fairlead: Optional[Sequence[float]] = None,
+        nd: int = 3,
+        floor: bool = True,
+    ) -> None:
         self.__class__.count += 1
         self.L = get_array(L)
         self.w = get_array(w)
@@ -56,7 +58,7 @@ class MooringLine:
             self.catenary = catenary.CatenaryElastic(self)
         self._setDirectionDistance()
 
-    def computeSolution(self):
+    def computeSolution(self) -> None:
         """Computes solution of the catenary"""
         self.catenary.getState(
             d=self.distance_h,
@@ -64,7 +66,7 @@ class MooringLine:
             floor=self.floor,
         )
 
-    def s2xyz(self, s):
+    def s2xyz(self, s: float) -> np.ndarray:
         """Gives xyz coordinates along line
 
         Parameters
@@ -83,7 +85,7 @@ class MooringLine:
         else:
             return self.anchor + self._transformVector2D(self.catenary.s2xy(s))
 
-    def getTension(self, s):
+    def getTension(self, s: float) -> np.ndarray:
         """Gives tension along line
 
         Parameters
@@ -98,19 +100,19 @@ class MooringLine:
         else:
             return self._transformVector2D(self.catenary.getTension(s))
 
-    def getTensionFairlead(self):
+    def getTensionFairlead(self) -> np.ndarray:
         """Returns tension at fairlead."""
         return self.getTension(np.sum(self.L))
 
-    def getTensionAnchor(self):
+    def getTensionAnchor(self) -> np.ndarray:
         """Returns tension at anchor."""
         return self.getTension(0.0)
 
-    def plot(self, npoints=100):
+    def plot(self, npoints: int = 100) -> None:
         """Plots line from anchor to fairlead"""
         self.plot3D(npoints=npoints)
 
-    def plot2D(self, npoints=100):
+    def plot2D(self, npoints: int = 100) -> None:
         """Plots line from anchor to fairlead in 2D"""
         import matplotlib.pyplot as plt
 
@@ -131,7 +133,7 @@ class MooringLine:
         ax.set_ylabel("h")
         plt.show()
 
-    def plot3D(self, npoints=100):
+    def plot3D(self, npoints: int = 100) -> None:
         """Plots line from anchor to fairlead in 3D"""
         import matplotlib.pyplot as plt
 
@@ -154,7 +156,7 @@ class MooringLine:
         ax.set_zlabel("z")
         plt.show()
 
-    def _setDirectionDistance(self):
+    def _setDirectionDistance(self) -> None:
         if self.nd == 3:
             self.distance_h = np.sqrt(
                 np.sum((self.fairlead[:2] - self.anchor[:2]) ** 2)
@@ -175,7 +177,7 @@ class MooringLine:
         if not self.fairlead_above_anchor:
             self.direction = -self.direction
 
-    def _transformVector2D(self, vector):
+    def _transformVector2D(self, vector: Sequence[float]) -> np.ndarray:
         """Transforms a 2D vector back in 3D (or 2D) according to direction
 
         Note that it is assumed that gravity acts in the Y direction in 2D,
@@ -185,8 +187,7 @@ class MooringLine:
             len(vector) == 2
         ), f"Length of input vector is {len(vector)} (should be 2)."
         if self.nd == 2:
-            vector[0] *= self.direction[0]
-            return np.array([vector[0], vector[1], 0.0])
+            return np.array([vector[0] * self.direction[0], vector[1], 0.0])
         elif self.nd == 3:
             vector3D = np.zeros(3)
             vector3D[0] = vector[0] * self.direction[0]
@@ -219,7 +220,7 @@ class MooringLine:
         self._setDirectionDistance()
 
 
-def get_array(x):
+def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
     if np.isscalar(x):
         x = np.array([x])
     else:

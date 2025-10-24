@@ -1,4 +1,5 @@
 import warnings
+from typing import Callable, Sequence
 
 import numpy as np
 
@@ -13,17 +14,17 @@ tol_default = 1e-6
 
 
 def get_root_a(
-    L,
-    d,
-    h,
-    a0=1.0,
-    tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    L: float,
+    d: float,
+    h: float,
+    a0: float = 1.0,
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> float:
     g = lambda a: 2.0 * a * np.sinh(d / (2.0 * a)) - np.sqrt(
-        (L) ** 2.0 - h**2.0
+        L**2.0 - h**2.0
     )
     dg = (
         lambda a: 2.0 * np.sinh(d / (2.0 * a)) - d * np.cosh(d / (2.0 * a)) / a
@@ -35,8 +36,13 @@ def get_root_a(
 
 
 def newton_raphson(
-    f, df, x0, tol=tol_default, maxit=maxit_default, must_converge=True
-):
+    f: Callable[[float], float],
+    df: Callable[[float], float],
+    x0: float,
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    must_converge: bool = True,
+) -> float:
     """Root finding algorithm (for transcendental equations)
 
     Parameters
@@ -76,8 +82,13 @@ def newton_raphson(
 
 
 def bisection(
-    f, int1, int2, tol=tol_default, maxit=maxit_default, must_converge=True
-):
+    f: Callable[[float], float],
+    int1: float,
+    int2: float,
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    must_converge: bool = True,
+) -> float:
     """Root finding algorithm (for transcendental equations)
 
     Parameters
@@ -117,7 +128,9 @@ def bisection(
     return x
 
 
-def integrate_tension(s1, s2, w, Ha, Va):
+def integrate_tension(
+    s1: float, s2: float, w: float, Ha: float, Va: float
+) -> float:
     Ts1 = (
         1
         / (2 * w)
@@ -138,14 +151,14 @@ def integrate_tension(s1, s2, w, Ha, Va):
 
 
 def nofloor_rigid(
-    d,
-    h,
-    L,
-    tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    d: float,
+    h: float,
+    L: Sequence[float],
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> float:
     Lt = np.sum(L)
     g = lambda a: 2 * a * np.sinh(d / (2 * a)) - np.sqrt(Lt**2 - h**2)
     a0 = bisection(f=g, int1=int1, int2=int2, tol=tol, maxit=maxit)
@@ -153,16 +166,16 @@ def nofloor_rigid(
 
 
 def nofloor_elastic(
-    d,
-    h,
-    L,
-    w,
-    EA,
+    d: float,
+    h: float,
+    L: Sequence[float],
+    w: Sequence[float],
+    EA: Sequence[float],
     tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> tuple[float, np.ndarray]:
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
@@ -183,16 +196,16 @@ def nofloor_elastic(
 
 
 def fully_lifted_elastic(
-    d,
-    h,
-    L,
-    w,
-    EA,
-    tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    d: float,
+    h: float,
+    L: Sequence[float],
+    w: Sequence[float],
+    EA: Sequence[float],
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> tuple[float, np.ndarray]:
     Ls_tot = Le_tot = 0
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
@@ -248,14 +261,14 @@ def fully_lifted_elastic(
 
 
 def fully_lifted_rigid(
-    d,
-    h,
-    L,
+    d: float,
+    h: float,
+    L: Sequence[float],
     tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> float:
     g = lambda a: 2.0 * a * np.sinh(d / (2.0 * a)) - np.sqrt(
         np.sum(L) ** 2.0 - h**2.0
     )
@@ -272,16 +285,16 @@ def fully_lifted_rigid(
 
 
 def partly_lifted_elastic(
-    d,
-    h,
-    L,
-    w,
-    EA,
-    tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    d: float,
+    h: float,
+    L: Sequence[float],
+    w: Sequence[float],
+    EA: Sequence[float],
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> tuple[float, np.ndarray, np.ndarray]:
     diff = 1.0
     niter = 0
     a = 1.0
@@ -335,14 +348,14 @@ def partly_lifted_elastic(
 
 
 def partly_lifted_rigid(
-    d,
-    h,
-    L,
-    tol=tol_default,
-    maxit=maxit_default,
-    int1=int1_default,
-    int2=int2_default,
-):
+    d: float,
+    h: float,
+    L: Sequence[float],
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+    int1: float = int1_default,
+    int2: float = int2_default,
+) -> tuple[float, np.ndarray]:
     diff = 1.0
     niter = 0
     a = 1.0
@@ -382,8 +395,16 @@ def partly_lifted_rigid(
 
 
 def straight_elastic(
-    d, h, L, w, EA, H_low=0, H_high=1e10, tol=tol_default, maxit=maxit_default
-):
+    d: float,
+    h: float,
+    L: Sequence[float],
+    w: Sequence[float],
+    EA: Sequence[float],
+    H_low: float = 0,
+    H_high: float = 1e10,
+    tol: float = tol_default,
+    maxit: int = maxit_default,
+) -> tuple[float, np.ndarray]:
     Lt = np.sum(L)  # total length of cable
     assert Lt <= np.sqrt(d**2 + h**2)
     e = np.zeros(len(L))  # stretching of cable segments
