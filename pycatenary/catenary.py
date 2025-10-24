@@ -108,7 +108,7 @@ class CatenaryBase(object):
         ax.plot(xx, yy)
         print("anchor: {anchor}".format(anchor=str(xys[0])))
         print("fairlead: {fairlead}".format(fairlead=str(xys[-1])))
-        fig.show()
+        plt.show()
 
 
 class CatenaryRigid(CatenaryBase):

@@ -123,7 +123,7 @@ class MooringLine:
         ax.grid("both")
         ax.set_xlabel("d")
         ax.set_ylabel("h")
-        fig.show()
+        plt.show()
 
     def plot3D(self, npoints=100):
         """Plots line from anchor to fairlead in 3D"""
@@ -146,7 +146,7 @@ class MooringLine:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         ax.set_zlabel("z")
-        fig.show()
+        plt.show()
 
     def _setDirectionDistance(self):
         if self.nd == 3:
