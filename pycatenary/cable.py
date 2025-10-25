@@ -9,6 +9,8 @@ class MooringLine:
     """Class to create a mooring line.
 
     Mooring lines can be elastic or rigid, and multisegmented or not.
+    If the line is multisegmented, the properties must be given in a list
+    going from the anchor to the fairlead.
 
     Parameters
     ----------
@@ -364,6 +366,18 @@ class MooringLine:
             )
         if not self._fairlead_above_anchor:
             self.direction = -self.direction
+
+        # reverse properties for catenary if necessary
+        if (
+            self._fairlead_above_anchor
+            and self.catenary._has_reversed_properties
+        ):
+            self.catenary._reverseProperties()
+        elif (
+            not self._fairlead_above_anchor
+            and not self.catenary._has_reversed_properties
+        ):
+            self.catenary._reverseProperties()
 
     def _transformVector2D(self, vector: Sequence[float]) -> np.ndarray:
         """Transforms a 2D vector back in 3D (or 2D) according to direction

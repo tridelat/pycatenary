@@ -82,6 +82,8 @@ class CatenaryBase(ABC):
         self._y_offset = 0.0
         # offset for s
         self._s_offset = 0.0
+        # properties not reversed initially
+        self._has_reversed_properties = False
 
     def getTension(self, s: float) -> np.ndarray:
         """Returns tension at a given distance along the line from the anchor.
@@ -262,6 +264,14 @@ class CatenaryBase(ABC):
         """
         pass
 
+    def _reverseProperties(self) -> None:
+        """Reverses the properties of the catenary (for internal use)."""
+        self.L = self.L[::-1]
+        self.w = self.w[::-1]
+        self.e = self.e[::-1]
+        self.Ls = self.Ls[::-1]
+        self._has_reversed_properties = not self._has_reversed_properties
+
 
 class CatenaryRigid(CatenaryBase):
     """A class for rigid catenary.
@@ -423,6 +433,11 @@ class CatenaryElastic(CatenaryBase):
         # check if lengths are the same
         if len(self.L) != len(self.EA):
             raise ValueError("Length of L and EA vectors must be the same.")
+
+    def _reverseProperties(self) -> None:
+        """Reverses the properties of the catenary (for internal use)."""
+        super(CatenaryElastic, self)._reverseProperties()
+        self.EA = self.EA[::-1]
 
     def getState(self, d: float, h: float) -> None:
         """Calculates the solution for elastic catenary.
