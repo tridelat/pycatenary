@@ -311,9 +311,63 @@ def nofloor_elastic(
             maxit=maxit,
             must_converge=must_converge,
         )
-        # HACK: not real elongation if multi-segmented line here
-        T = np.sqrt((a * w_av) ** 2 + np.sum(w * L))
-        e = T * L / EA
+
+        # find where is mid point along line
+        xx = 0.5 * (a * np.log((Lte + h) / (Lte - h)) - d)
+        s_offset = a * np.sinh(xx / a)
+        s_mid = s_offset
+        for i_mid in range(len(L)):
+            if s_mid + L[i_mid] + e[i_mid] <= 0.0:
+                s_mid += L[i_mid] + e[i_mid]
+            else:
+                break
+        mid_ratio = -s_mid / (L[i_mid] + e[i_mid])
+
+        # compute new elongations
+        # -----------------------
+        Ha = a * w_av * (Lt / Lte)
+        e[:] = 0.0
+        # left side of the catenary
+        left_side = np.zeros(len(L))
+        left_side[i_mid] = mid_ratio
+        for i in range(0, i_mid):
+            left_side[i] = 1.0
+        # compute elongation
+        for i in range(len(L)):
+            if left_side[-i] > 0.0:
+                # integrate tension
+                T_int = integrate_tension(
+                    0,
+                    L[-i] * left_side[-i],
+                    w[-i],
+                    Ha,
+                    np.sum(
+                        w[len(L) - i :]
+                        * L[len(L) - i :]
+                        * left_side[len(L) - i :]
+                    ),
+                )
+                # get elongation
+                e[-i] += T_int / EA[-i]
+        # -----------------------
+        # right side of the catenary
+        right_side = np.zeros(len(L))
+        right_side[i_mid] = 1.0 - mid_ratio
+        for ii in range(i_mid + 1, len(L)):
+            right_side[ii] = 1.0
+        for i in range(len(L)):
+            if right_side[i] > 0.0:
+                # integrate tension
+                T_int = integrate_tension(
+                    0,
+                    L[i] * right_side[i],
+                    w[i],
+                    Ha,
+                    np.sum(w[:i] * L[:i] * right_side[:i]),
+                )
+                # get elongation
+                e[i] += T_int / EA[i]
+
         et = np.sum(e)
         Lte_check = Lt + et  # store new Ls value as calculated with stretching
         diff = np.abs(Lte - Lte_check)
