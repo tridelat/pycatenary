@@ -1,3 +1,4 @@
+import warnings
 from abc import ABC, abstractmethod
 from typing import Sequence, Union
 
@@ -85,7 +86,7 @@ class CatenaryBase(ABC):
         # properties not reversed initially
         self._has_reversed_properties = False
 
-    def getTension(self, s: float) -> np.ndarray:
+    def get_tension(self, s: float) -> np.ndarray:
         """Returns tension at a given distance along the line from the anchor.
 
         Parameters
@@ -199,7 +200,7 @@ class CatenaryBase(ABC):
 
         for s in ss:
             xy = self.s2xy(s)
-            tension = self.getTension(s)
+            tension = self.get_tension(s)
             xys.append(xy)
             xx.append(xy[0])
             yy.append(xy[1])
@@ -249,7 +250,7 @@ class CatenaryBase(ABC):
                 return np.sum(self.e[:ii]) + s_frac * self.e[ii]
 
     @abstractmethod
-    def getState(self, d: float, h: float) -> None:
+    def get_state(self, d: float, h: float) -> None:
         """Abstract method to calculate the catenary solution.
 
         This method must be implemented by subclasses to define the specific
@@ -271,6 +272,25 @@ class CatenaryBase(ABC):
         self.e = self.e[::-1]
         self.Ls = self.Ls[::-1]
         self._has_reversed_properties = not self._has_reversed_properties
+
+    # Deprecated camelCase methods with warnings
+    def getTension(self, s: float) -> np.ndarray:
+        import warnings
+
+        warnings.warn(
+            "getTension is deprecated, use get_tension.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_tension(s)
+
+    def getState(self, d: float, h: float) -> None:
+        warnings.warn(
+            "getState is deprecated, use get_state.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_state(d, h)
 
 
 class CatenaryRigid(CatenaryBase):
@@ -296,7 +316,7 @@ class CatenaryRigid(CatenaryBase):
     ) -> None:
         super(CatenaryRigid, self).__init__(L=L, w=w, floor=floor)
 
-    def getState(self, d: float, h: float) -> None:
+    def get_state(self, d: float, h: float) -> None:
         """Calculates the solution for rigid catenary.
 
         Parameters
@@ -439,7 +459,7 @@ class CatenaryElastic(CatenaryBase):
         super(CatenaryElastic, self)._reverseProperties()
         self.EA = self.EA[::-1]
 
-    def getState(self, d: float, h: float) -> None:
+    def get_state(self, d: float, h: float) -> None:
         """Calculates the solution for elastic catenary.
 
         Parameters

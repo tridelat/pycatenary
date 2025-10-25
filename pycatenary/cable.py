@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Sequence, Union
 
 import numpy as np
@@ -62,9 +63,11 @@ class MooringLine:
             self.catenary = catenary.CatenaryElastic(
                 L=L, w=w, EA=EA, floor=floor
             )
-        self._setDirectionDistance()
+        self._set_direction_distance()
 
-    def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
+    def update_axial_stiffness(
+        self, EA: Union[float, Sequence[float]]
+    ) -> None:
         """Updates the axial stiffness of the cable.
 
         Parameters
@@ -80,23 +83,57 @@ class MooringLine:
                 raise ValueError(
                     f"Length of new EA is {len(EA)} (should be {old_len})."
                 )
-            self.catenary.EA = EA
+            if self.catenary._has_reversed_properties:
+                self.catenary.EA = EA[::-1]
+            else:
+                self.catenary.EA[:] = EA
         else:
             raise ValueError(
                 "Catenary is rigid, cannot update axial stiffness."
             )
 
-    def computeSolution(self) -> None:
+    def compute_solution(self) -> None:
         """Computes solution of the catenary.
 
         It is computed according to current anchor and fairlead positions."""
-        self.catenary.getState(
+        self.catenary.get_state(
             d=self.distance_h,
             h=self.distance_v,
         )
 
+    def get_position_from_anchor(self, s: float) -> np.ndarray:
+        """Returns position at a given distance along line from anchor.
+
+        Parameters
+        ----------
+        s: float
+            Distance along line (from anchor) [m].
+
+        Returns
+        -------
+        position: np.ndarray
+            Position [x, y, z] (3D) or [x, y] (2D).
+        """
+        return self.s2xyz(s)
+
+    def get_position_from_fairlead(self, s: float) -> np.ndarray:
+        """Returns position at a given distance along line from fairlead.
+
+        Parameters
+        ----------
+        s: float
+            Distance along line (from fairlead) [m].
+
+        Returns
+        -------
+        position: np.ndarray
+            Position [x, y, z] (3D) or [x, y] (2D).
+        """
+        Lt = np.sum(self.catenary.L)
+        return self.s2xyz(Lt - s)
+
     def s2xyz(self, s: float) -> np.ndarray:
-        """Returns xyz coordinates at a given distance along the from anchor.
+        """Returns xyz coordinates at a given distance line from anchor.
 
         Parameters
         ----------
@@ -113,15 +150,15 @@ class MooringLine:
             0.0 <= s <= Lt
         ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
         if not self._fairlead_above_anchor:
-            return self._fairlead + self._transformVector2D(
+            return self._fairlead + self._transform_vector_2d(
                 self.catenary.s2xy(Lt - s)
             )
         else:
-            return self._anchor + self._transformVector2D(
+            return self._anchor + self._transform_vector_2d(
                 self.catenary.s2xy(s)
             )
 
-    def getTension(self, s: float) -> np.ndarray:
+    def get_tension(self, s: float) -> np.ndarray:
         """Returns tension at a given distance along line from anchor.
 
         Parameters
@@ -137,11 +174,11 @@ class MooringLine:
         Lt = np.sum(self.catenary.L)
 
         if not self._fairlead_above_anchor:
-            return self._transformVector2D(self.catenary.getTension(Lt - s))
+            return self._transform_vector_2d(self.catenary.get_tension(Lt - s))
         else:
-            return self._transformVector2D(self.catenary.getTension(s))
+            return self._transform_vector_2d(self.catenary.get_tension(s))
 
-    def getTensionFairlead(self) -> np.ndarray:
+    def get_tension_fairlead(self) -> np.ndarray:
         """Returns tension at fairlead.
 
         Returns
@@ -149,9 +186,9 @@ class MooringLine:
         tension: np.ndarray
             Tension vector [N].
         """
-        return self.getTension(np.sum(self.catenary.L))
+        return self.get_tension(np.sum(self.catenary.L))
 
-    def getTensionAnchor(self) -> np.ndarray:
+    def get_tension_anchor(self) -> np.ndarray:
         """Returns tension at anchor.
 
         Returns
@@ -159,7 +196,7 @@ class MooringLine:
         tension: np.ndarray
             Tension vector [N].
         """
-        return self.getTension(0.0)
+        return self.get_tension(0.0)
 
     def plot(
         self,
@@ -179,15 +216,15 @@ class MooringLine:
             Matplotlib colormap name, by default "viridis".
         """
         if self._nd == 2:
-            self.plot2D(
+            self.plot_2d(
                 npoints=npoints, show_tension=show_tension, colormap=colormap
             )
         else:
-            self.plot3D(
+            self.plot_3d(
                 npoints=npoints, show_tension=show_tension, colormap=colormap
             )
 
-    def plot2D(
+    def plot_2d(
         self,
         npoints: int = 100,
         show_tension: bool = True,
@@ -216,7 +253,7 @@ class MooringLine:
 
         for s in ss:
             xyz = self.s2xyz(s)
-            tension = self.getTension(s)
+            tension = self.get_tension(s)
             xyzs.append(xyz)
             if self._nd == 2:
                 dd.append(xyz[0])
@@ -259,15 +296,15 @@ class MooringLine:
                 "ko",
             )
         # add tension information
-        anchor_tension = np.linalg.norm(self.getTensionAnchor())
-        fairlead_tension = np.linalg.norm(self.getTensionFairlead())
+        anchor_tension = np.linalg.norm(self.get_tension_anchor())
+        fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
         ax.set_title(
             f"Tensions: Fairlead: {fairlead_tension:.0f} | "
             f"Anchor: {anchor_tension:.0f}"
         )
         plt.show()
 
-    def plot3D(
+    def plot_3d(
         self,
         npoints: int = 100,
         show_tension: bool = True,
@@ -300,7 +337,7 @@ class MooringLine:
 
         for s in ss:
             xyz = self.s2xyz(s)
-            tension = self.getTension(s)
+            tension = self.get_tension(s)
             xyzs.append(xyz)
             xx.append(xyz[0])
             yy.append(xyz[1])
@@ -331,15 +368,15 @@ class MooringLine:
         ax.set_zlabel("z")
         ax.set_zlim(bottom=min(zz), top=max(zz))
         # add tension information
-        anchor_tension = np.linalg.norm(self.getTensionAnchor())
-        fairlead_tension = np.linalg.norm(self.getTensionFairlead())
+        anchor_tension = np.linalg.norm(self.get_tension_anchor())
+        fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
         ax.set_title(
             f"Tensions: Fairlead: {fairlead_tension:.0f} | "
             f"Anchor: {anchor_tension:.0f}"
         )
         plt.show()
 
-    def _setDirectionDistance(self) -> None:
+    def _set_direction_distance(self) -> None:
         """Sets the direction and distance between the anchor and the fairlead
 
         For internal use only, do not call this method directly."""
@@ -379,7 +416,7 @@ class MooringLine:
         ):
             self.catenary._reverseProperties()
 
-    def _transformVector2D(self, vector: Sequence[float]) -> np.ndarray:
+    def _transform_vector_2d(self, vector: Sequence[float]) -> np.ndarray:
         """Transforms a 2D vector back in 3D (or 2D) according to direction
 
         Note that it is assumed that gravity acts in the Y direction in 2D,
@@ -401,24 +438,108 @@ class MooringLine:
                 f"Dimension nd = {self._nd} (should be 2 or 3)."
             )
 
-    def setAnchorCoords(self, coords: Sequence[float]) -> None:
+    def set_anchor_position(self, position: Sequence[float]) -> None:
         """Sets coordinates of anchor.
 
         Parameters
         ----------
-        coords: sequence of floats
-            Anchor coordinates [x, y, z] (3D) or [x, y] (2D).
+        position: sequence of floats
+            Anchor position [x, y, z] (3D) or [x, y] (2D).
         """
-        self._anchor[:] = np.array(coords)
-        self._setDirectionDistance()
+        self._anchor[:] = np.array(position)
+        self._set_direction_distance()
 
-    def setFairleadCoords(self, coords: Sequence[float]) -> None:
+    def set_fairlead_position(self, position: Sequence[float]) -> None:
         """Sets coordinates of fairlead.
 
         Parameters
         ----------
         coords: sequence of floats
-            Fairlead coordinates [x, y, z] (3D) or [x, y] (2D).
+            Fairlead position [x, y, z] (3D) or [x, y] (2D).
         """
-        self._fairlead[:] = np.array(coords)
-        self._setDirectionDistance()
+        self._fairlead[:] = np.array(position)
+        self._set_direction_distance()
+
+    def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
+        warnings.warn(
+            "updateAxialStiffness is deprecated, use update_axial_stiffness.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.update_axial_stiffness(EA)
+
+    def computeSolution(self) -> None:
+        """Deprecated: Use compute_solution instead."""
+        warnings.warn(
+            "computeSolution is deprecated, use compute_solution.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.compute_solution()
+
+    def getTension(self, s: float) -> np.ndarray:
+        warnings.warn(
+            "getTension is deprecated, use get_tension.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_tension(s)
+
+    def getTensionFairlead(self) -> np.ndarray:
+        warnings.warn(
+            "getTensionFairlead is deprecated, use get_tension_fairlead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_tension_fairlead()
+
+    def getTensionAnchor(self) -> np.ndarray:
+        warnings.warn(
+            "getTensionAnchor is deprecated, use get_tension_anchor.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_tension_anchor()
+
+    def setAnchorCoords(self, coords: Sequence[float]) -> None:
+        warnings.warn(
+            "setAnchorCoords is deprecated, use set_anchor_coords.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.set_anchor_position(coords)
+
+    def setFairleadCoords(self, coords: Sequence[float]) -> None:
+        warnings.warn(
+            "setFairleadCoords is deprecated, use set_fairlead_coords.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.set_fairlead_position(coords)
+
+    # Additional deprecated camelCase methods with warnings
+    def plot2D(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        warnings.warn(
+            "plot2D is deprecated, use plot_2d.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.plot_2d(npoints, show_tension, colormap)
+
+    def plot3D(
+        self,
+        npoints: int = 100,
+        show_tension: bool = True,
+        colormap: str = "viridis",
+    ) -> None:
+        warnings.warn(
+            "plot3D is deprecated, use plot_3d.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.plot_3d(npoints, show_tension, colormap)

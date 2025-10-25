@@ -51,17 +51,17 @@ l1 = cable.MooringLine(L=length,
                        floor=floor)
 
 # compute calculations
-l1.computeSolution()
+l1.compute_solution()
 ```
 
 Position of fairlead and anchor can be changed as follows:
 
 ```python
 # change fairlead position
-l1.setFairleadCoords([5.4, 1., 2.65])
+l1.set_fairlead_position([5.4, 1., 2.65])
 
 # recompute solution
-l1.computeSolution()
+l1.compute_position()
 ```
 
 Other useful functions:
@@ -69,10 +69,16 @@ Other useful functions:
 ```python
 # get tension along line (between 0. and total line length)
 s = 5.
-T = l1.getTension(s)
+# starting from fairlead (s=0 is fairlead position)
+T1 = l1.get_tension_from_fairlead(s)
+# starting from anchor (s=0 is anchor position)
+T1 = l1.get_tension_from_fairlead(s)
 
 # get xyz coordinates along line
-xyz = l1.s2xyz(s)
+# starting from fairlead (s=0 is fairlead position)
+xyz1 = l1.get_position_from_fairlead(s)
+# starting from anchor (s=0 is anchor position)
+xyz2 = l1.get_tension_from_anchor(s)
 
 ```
 
@@ -84,16 +90,16 @@ With matplotlib installed, the cable can be plotted in 2D:
 
 ```python
 # plot cable cable.MooringLine instance l1
-l1.plot2D()
+l1.plot_2d()
 ```
 
-![plot2D](docs/source/line_plot_2D.svg)
+![plot_2d](docs/source/line_plot_2D.svg)
 
 Or in 3D:
 
 ```python
 # plot cable cable.MooringLine instance l1
-l1.plot3D()
+l1.plot_3d()
 ```
 
-![plot3D](docs/source/line_plot_3D.svg)
+![plot_3d](docs/source/line_plot_3D.svg)

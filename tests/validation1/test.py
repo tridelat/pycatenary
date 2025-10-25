@@ -44,10 +44,10 @@ class TestCatenaryValidation(unittest.TestCase):
         Tf_test = np.zeros_like(Tf_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             Tf_test[ii] = Tf
             # total lifted line length
             Ls_test[ii] = np.sum(l1.catenary.Ls)
@@ -88,10 +88,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             # total lifted line length
             Ls = np.sum(l1.catenary.Ls)
 
@@ -125,10 +125,10 @@ class TestCatenaryValidation(unittest.TestCase):
         Tf_test = np.zeros_like(Tf_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             Tf_test[ii] = Tf
             # total lifted line length
             Ls_test[ii] = np.sum(l1.catenary.Ls)
@@ -169,10 +169,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             # total lifted line length
             Ls = np.sum(l1.catenary.Ls)
 
@@ -208,13 +208,13 @@ class TestCatenaryValidation(unittest.TestCase):
         Ta_test = np.zeros_like(Ta_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             Tf_test[ii] = Tf
             # tension at anchor
-            Ta = l1.getTension(0.0)
+            Ta = l1.get_tension(0.0)
             Ta_test[ii] = Ta
             # total lifted line length
             Ls_test[ii] = np.sum(l1.catenary.Ls)
@@ -263,13 +263,13 @@ class TestCatenaryValidation(unittest.TestCase):
         Ta_test = np.zeros_like(Ta_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.setFairleadCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(length)
+            Tf = l1.get_tension(length)
             Tf_test[ii] = Tf
             # tension at anchor
-            Ta = l1.getTension(0.0)
+            Ta = l1.get_tension(0.0)
             Ta_test[ii] = Ta
             # total lifted line length
             Ls_test[ii] = np.sum(l1.catenary.Ls)
@@ -315,12 +315,12 @@ class TestCatenaryValidation(unittest.TestCase):
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.setAnchorCoords(np.array([x, 0.0, 2.65]))
-            l1.computeSolution()
+            l1.set_anchor_position(np.array([x, 0.0, 2.65]))
+            l1.compute_solution()
             # tension at fairlead
-            Tf = l1.getTension(0.0)
+            Tf = l1.get_tension(0.0)
             # tension at anchor
-            Ta = l1.getTension(length)
+            Ta = l1.get_tension(length)
             # total lifted line length
             Ls = np.sum(l1.catenary.Ls)
 
