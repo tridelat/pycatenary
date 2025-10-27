@@ -17,6 +17,34 @@ def array2csv(filename, array, delimiter=",", names=None):
     np.savetxt(fname, array, delimiter=delimiter, header=names, comments="")
 
 
+def get_mooring_line(
+    elastic: bool = True, floor: bool = True, multisegmented: bool = False
+) -> cable.MooringLine:
+    """Returns a mooring line instance.
+
+    Parameters
+    ----------
+    elastic: bool
+        If True, the cable is elastic.
+    floor: bool
+        If True, the floor is assumed to be at the anchor level.
+    """
+    if elastic:
+        EA = [560.0e3, 560.0e3] if multisegmented else 560.0e3
+    else:
+        EA = None
+
+    mooring = cable.MooringLine(
+        fairlead=[5.3, 0.0, 2.65],
+        anchor=[0.0, 0.0, 0.0],
+        L=[6.98 / 3.0, 6.98 * 2.0 / 3.0] if multisegmented else 6.98,
+        w=[1.036, 1.036] if multisegmented else 1.036,
+        EA=EA,
+        floor=floor,
+    )
+    return mooring
+
+
 class TestCatenaryValidation(unittest.TestCase):
     def setUp(self):
         self.save_test2ref = False  # whether to save test results to ref file
@@ -30,27 +58,20 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=length,
-            w=1.036,
-            EA=560e3,
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=True,
-        )
+        mooring = get_mooring_line(elastic=True, floor=True)
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros_like(Tf_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             Tf_test[ii] = Tf
             # total lifted line length
-            Ls_test[ii] = np.sum(l1.catenary.Ls)
+            Ls_test[ii] = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -76,24 +97,19 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=[length / 3.0, length * 2.0 / 3.0],
-            w=[1.036, 1.036],
-            EA=[560e3, 560e3],
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=True,
+        mooring = get_mooring_line(
+            elastic=True, floor=True, multisegmented=True
         )
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             # total lifted line length
-            Ls = np.sum(l1.catenary.Ls)
+            Ls = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -111,27 +127,20 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=length,
-            w=1.036,
-            EA=None,
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=True,
-        )
+        mooring = get_mooring_line(elastic=False, floor=True)
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros_like(Tf_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             Tf_test[ii] = Tf
             # total lifted line length
-            Ls_test[ii] = np.sum(l1.catenary.Ls)
+            Ls_test[ii] = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -157,24 +166,19 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=[length / 3.0, length * 2.0 / 3.0],
-            w=[1.036, 1.036],
-            EA=None,
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=True,
+        mooring = get_mooring_line(
+            elastic=False, floor=True, multisegmented=True
         )
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             # total lifted line length
-            Ls = np.sum(l1.catenary.Ls)
+            Ls = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -193,31 +197,24 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=length,
-            w=1.036,
-            EA=None,
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=False,
-        )
+        mooring = get_mooring_line(elastic=False, floor=False)
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros_like(Tf_ref)
         Ta_test = np.zeros_like(Ta_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             Tf_test[ii] = Tf
             # tension at anchor
-            Ta = l1.get_tension(0.0)
+            Ta = mooring.get_tension(0.0)
             Ta_test[ii] = Ta
             # total lifted line length
-            Ls_test[ii] = np.sum(l1.catenary.Ls)
+            Ls_test[ii] = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -248,31 +245,26 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=[length / 3.0, length * 2.0 / 3.0],
-            w=[1.036, 1.036],
-            EA=None,
-            anchor=[0.0, 0.0, 0.0],
-            fairlead=[5.3, 0.0, 2.65],
-            floor=False,
+        mooring = get_mooring_line(
+            elastic=False, floor=False, multisegmented=True
         )
+        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros_like(Tf_ref)
         Ta_test = np.zeros_like(Ta_ref)
         Ls_test = np.zeros(len(Tf_ref))
         for ii, x in enumerate(xpos):
-            l1.set_fairlead_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(length)
+            Tf = mooring.get_tension(length)
             Tf_test[ii] = Tf
             # tension at anchor
-            Ta = l1.get_tension(0.0)
+            Ta = mooring.get_tension(0.0)
             Ta_test[ii] = Ta
             # total lifted line length
-            Ls_test[ii] = np.sum(l1.catenary.Ls)
+            Ls_test[ii] = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
@@ -303,26 +295,26 @@ class TestCatenaryValidation(unittest.TestCase):
         Ls_ref = ref["Ls"]
 
         # make mooring line
-        length = 6.98
-        l1 = cable.MooringLine(
-            L=length,
-            w=1.036,
-            EA=None,
-            anchor=[5.3, 0.0, 2.65],
-            fairlead=[0.0, 0.0, 0.0],
-            floor=False,
-        )
+        mooring = get_mooring_line(elastic=False, floor=False)
+        length = np.sum(mooring.catenary.L)
+
+        # switch anchor and fairlead positions
+        anchor_position = mooring.get_anchor_position()
+        fairlead_position = mooring.get_fairlead_position()
+        mooring.set_anchor_position(fairlead_position + 1)
+        mooring.set_fairlead_position(anchor_position)
+        mooring.set_anchor_position(fairlead_position)
 
         # test for different positions of fairlead
         for ii, x in enumerate(xpos):
-            l1.set_anchor_position(np.array([x, 0.0, 2.65]))
-            l1.compute_solution()
+            mooring.set_anchor_position(np.array([x, 0.0, 2.65]))
+            mooring.compute_solution()
             # tension at fairlead
-            Tf = l1.get_tension(0.0)
+            Tf = mooring.get_tension(0.0)
             # tension at anchor
-            Ta = l1.get_tension(length)
+            Ta = mooring.get_tension(length)
             # total lifted line length
-            Ls = np.sum(l1.catenary.Ls)
+            Ls = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:

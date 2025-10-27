@@ -364,6 +364,12 @@ class MooringLine:
         """Sets the direction and distance between the anchor and the fairlead
 
         For internal use only, do not call this method directly."""
+        if (
+            self._fairlead[0] - self._anchor[0] == 0.0
+            and self._fairlead[1] - self._anchor[1] == 0.0
+            and self._fairlead[2] - self._anchor[2] == 0.0
+        ):
+            raise ValueError("Anchor and fairlead are at the same position.")
         if self._nd == 3:
             self.distance_h = np.sqrt(
                 np.sum((self._fairlead[:2] - self._anchor[:2]) ** 2)
@@ -433,6 +439,16 @@ class MooringLine:
         self._anchor[:] = np.array(position)
         self._set_direction_distance()
 
+    def get_anchor_position(self) -> np.ndarray:
+        """Returns coordinates of anchor.
+
+        Returns
+        -------
+        position: np.ndarray
+            Anchor position [x, y, z] (3D) or [x, y] (2D).
+        """
+        return np.array(self._anchor)
+
     def set_fairlead_position(self, position: Sequence[float]) -> None:
         """Sets coordinates of fairlead.
 
@@ -443,6 +459,16 @@ class MooringLine:
         """
         self._fairlead[:] = np.array(position)
         self._set_direction_distance()
+
+    def get_fairlead_position(self) -> np.ndarray:
+        """Returns coordinates of fairlead.
+
+        Returns
+        -------
+        position: np.ndarray
+            Fairlead position [x, y, z] (3D) or [x, y] (2D).
+        """
+        return np.array(self._fairlead)
 
     def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
         warnings.warn(

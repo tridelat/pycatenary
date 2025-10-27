@@ -17,6 +17,39 @@ def array2csv(filename, array, delimiter=",", names=None):
     np.savetxt(fname, array, delimiter=delimiter, header=names, comments="")
 
 
+def get_mooring_line(
+    elastic: bool = True, floor: bool = True
+) -> cable.MooringLine:
+    """Returns a mooring line instance.
+
+    Parameters
+    ----------
+    elastic: bool
+        If True, the cable is elastic.
+    floor: bool
+        If True, the floor is assumed to be at the anchor level.
+    """
+    diameter = 0.185 * 1.80  # studless chain equivalent outer diameter
+    area = np.pi * diameter**2 / 4.0  # area of cable
+    w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+    if elastic:
+        EA = 3.27e9
+    else:
+        EA = None
+
+    # create cable instance
+    mooring = cable.MooringLine(
+        fairlead=[-58.0, 0.0, -14.0],
+        anchor=[-837.6, 0.0, -200],
+        L=850.0,
+        w=w,
+        EA=EA,
+        floor=floor,
+    )
+
+    return mooring
+
+
 class TestCatenaryValidation(unittest.TestCase):
     def setUp(self):
         self.save_test2ref = False  # whether to save test results to ref file
@@ -29,29 +62,20 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=3.27e9,
-            floor=True,
-        )
-        l1.compute_solution()
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -78,29 +102,20 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=False, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=None,
-            floor=True,
-        )
-        l1.compute_solution()
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -127,29 +142,20 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=False)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=3.27e9,
-            floor=False,
-        )
-        l1.compute_solution()
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -176,29 +182,20 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=False, floor=False)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=None,
-            floor=False,
-        )
-        l1.compute_solution()
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -225,29 +222,27 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            anchor=[-58.0, 0.0, -14.0],
-            fairlead=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=3.27e9,
-            floor=True,
-        )
-        l1.compute_solution()
+        # switch anchor and fairlead positions
+        anchor_position = mooring.get_anchor_position()
+        fairlead_position = mooring.get_fairlead_position()
+        mooring.set_anchor_position(fairlead_position + 1)
+        mooring.set_fairlead_position(anchor_position)
+        mooring.set_anchor_position(fairlead_position)
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -265,29 +260,27 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=False, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            anchor=[-58.0, 0.0, -14.0],
-            fairlead=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=None,
-            floor=True,
-        )
-        l1.compute_solution()
+        # switch anchor and fairlead positions
+        anchor_position = mooring.get_anchor_position()
+        fairlead_position = mooring.get_fairlead_position()
+        mooring.set_anchor_position(fairlead_position + 1)
+        mooring.set_fairlead_position(anchor_position)
+        mooring.set_anchor_position(fairlead_position)
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -305,29 +298,25 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850.0  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0 - 150.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=3.27e9,
-            floor=True,
+        # set fairlead position
+        mooring.set_fairlead_position(
+            mooring.get_fairlead_position() - np.array([150.0, 0.0, 0.0])
         )
-        l1.compute_solution()
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -354,29 +343,25 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850.0  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=False, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0 - 150.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=None,
-            floor=True,
+        # set fairlead position
+        mooring.set_fairlead_position(
+            mooring.get_fairlead_position() - np.array([150.0, 0.0, 0.0])
         )
-        l1.compute_solution()
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -403,29 +388,23 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=False)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-0.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=3.27e9,
-            floor=False,
-        )
-        l1.compute_solution()
+        # set fairlead position
+        mooring.set_fairlead_position(np.array([-20.0, 0.0, 0.0]))
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
@@ -452,29 +431,23 @@ class TestCatenaryValidation(unittest.TestCase):
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
             T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
 
-        length = 850  # length of line
-        diameter = 0.185 * 1.80  # diameter of cable
-        area = np.pi * diameter**2 / 4.0  # area of cable
-        w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
+        # create mooring line
+        mooring = get_mooring_line(elastic=False, floor=True)
+        length = np.sum(mooring.catenary.L)
 
-        # create cable instance
-        l1 = cable.MooringLine(
-            fairlead=[-58.0 - 100.0, 0.0, -14.0],
-            anchor=[-837.6, 0.0, -200],
-            L=length,
-            w=w,
-            EA=None,
-            floor=True,
-        )
-        l1.compute_solution()
+        # set fairlead position
+        mooring.set_fairlead_position(np.array([-20.0, 0.0, 0.0]))
+
+        # compute solution
+        mooring.compute_solution()
 
         # test for different positions of fairlead
         ss_test = np.linspace(0.0, length, 101)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
-            T_test[ii] = l1.get_tension(s)
-            xyz_test[ii] = l1.get_position(s)
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
 
             # check solution
             if self.compare_test:
