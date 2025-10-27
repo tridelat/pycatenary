@@ -10,12 +10,16 @@ from pycatenary import cable
 NPOINTS = 10
 
 
-def csv2array(filename, delimiter=",", names=None):
+def csv2array(
+    filename: str, delimiter: str = ",", names: bool = None
+) -> np.ndarray:
     fname = os.path.join(os.path.dirname(__file__), filename)
     return np.genfromtxt(fname, delimiter=delimiter, names=names)
 
 
-def array2csv(filename, array, delimiter=",", names=None):
+def array2csv(
+    filename: str, array: np.ndarray, delimiter: str = ",", names: bool = None
+) -> None:
     fname = os.path.join(os.path.dirname(__file__), filename)
     np.savetxt(fname, array, delimiter=delimiter, header=names, comments="")
 
@@ -48,7 +52,7 @@ def get_mooring_line(
     return mooring
 
 
-class TestCatenaryValidation(unittest.TestCase):
+class TestSingleLineWEC(unittest.TestCase):
     def setUp(self):
         self.save_test2ref = False  # whether to save test results to ref file
         self.compare_test = True  # compare test results to ref
