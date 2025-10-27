@@ -233,8 +233,19 @@ class MooringLine:
             If True, color the line by tension magnitude, by default True.
         colormap: str, optional
             Matplotlib colormap name, by default "viridis".
+
+        Raises
+        ------
+        ImportError
+            If matplotlib is not installed.
         """
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "matplotlib is required for plotting. Install with: "
+                "pip install matplotlib or pip install pycatenary[plotting]"
+            )
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -313,8 +324,19 @@ class MooringLine:
             If True, color the line by tension magnitude, by default True.
         colormap: str, optional
             Matplotlib colormap name, by default "viridis".
+
+        Raises
+        ------
+        ImportError
+            If matplotlib is not installed.
         """
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "matplotlib is required for plotting. Install with: "
+                "pip install matplotlib or pip install pycatenary[plotting]"
+            )
 
         if self._nd == 2:
             raise ValueError("3D plot not available for 2D cables.")

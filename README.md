@@ -69,16 +69,16 @@ Other useful functions:
 ```python
 # get tension along line (between 0. and total line length)
 s = 5.
-# starting from fairlead (s=0 is fairlead position)
-T1 = l1.get_tension_from_fairlead(s)
 # starting from anchor (s=0 is anchor position)
-T1 = l1.get_tension_from_fairlead(s)
+T1 = l1.get_tension(s)
+# starting from fairlead (s=0 is fairlead position)
+T1 = l1.get_tension(s, from_fairlead=True)
 
 # get xyz coordinates along line
-# starting from fairlead (s=0 is fairlead position)
-xyz1 = l1.get_position_from_fairlead(s)
 # starting from anchor (s=0 is anchor position)
 xyz2 = l1.get_tension_from_anchor(s)
+# starting from fairlead (s=0 is fairlead position)
+xyz1 = l1.get_position(s, from_fairlead=True)
 
 ```
 

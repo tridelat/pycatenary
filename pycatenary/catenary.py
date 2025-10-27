@@ -203,8 +203,19 @@ class CatenaryBase(ABC):
             If True, color the line by tension magnitude, by default True.
         colormap: str, optional
             Matplotlib colormap name, by default "viridis".
+
+        Raises
+        ------
+        ImportError
+            If matplotlib is not installed.
         """
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "matplotlib is required for plotting. Install with: "
+                "pip install matplotlib or pip install pycatenary[plotting]"
+            )
 
         fig, ax = plt.subplots()
         xys = list()
