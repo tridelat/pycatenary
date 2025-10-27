@@ -20,6 +20,16 @@ def array2csv(filename, array, delimiter=",", names=None):
     np.savetxt(fname, array, delimiter=delimiter, header=names, comments="")
 
 
+def rotate_vector_2d(vector, angle):
+    return np.array(
+        [
+            vector[0] * np.cos(angle) - vector[1] * np.sin(angle),
+            vector[0] * np.sin(angle) + vector[1] * np.cos(angle),
+            vector[2],
+        ]
+    )
+
+
 def get_mooring_line(
     elastic: bool = True, floor: bool = True, heavy_section: bool = False
 ) -> cable.MooringLine:
@@ -633,6 +643,50 @@ class TestCatenaryValidation(unittest.TestCase):
                 npt.assert_almost_equal(xyz_test[0], xyz_ref[-(ii + 1), 0])
                 npt.assert_almost_equal(xyz_test[1], xyz_ref[-(ii + 1), 1])
                 npt.assert_almost_equal(xyz_test[2], xyz_ref[-(ii + 1), 2])
+
+    def test_elastic_120degrees(self):
+        ref_filename = "elastic.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
+
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, floor=True)
+        length = np.sum(mooring.catenary.L)
+
+        # rotate anchor and fairlead positions (120 degrees)
+        fairlead_position = mooring.get_fairlead_position()
+        anchor_position = mooring.get_anchor_position()
+        mooring.set_fairlead_position(
+            rotate_vector_2d(fairlead_position, 120 * np.pi / 180)
+        )
+        mooring.set_anchor_position(
+            rotate_vector_2d(anchor_position, 120 * np.pi / 180)
+        )
+
+        # compute solution
+        mooring.compute_solution()
+
+        # test for different positions of fairlead
+        ss_test = np.linspace(0.0, length, NPOINTS)
+        for ii, s in enumerate(ss_test):
+            # rotate tension and position back (-120 degrees)
+            T_test = rotate_vector_2d(
+                mooring.get_tension(s), -120 * np.pi / 180
+            )
+            xyz_test = rotate_vector_2d(
+                mooring.get_position(s), -120 * np.pi / 180
+            )
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T_test[0], T_ref[ii, 0])
+                npt.assert_almost_equal(T_test[1], T_ref[ii, 1])
+                npt.assert_almost_equal(T_test[2], T_ref[ii, 2])
+                npt.assert_almost_equal(xyz_test[0], xyz_ref[ii, 0])
+                npt.assert_almost_equal(xyz_test[1], xyz_ref[ii, 1])
+                npt.assert_almost_equal(xyz_test[2], xyz_ref[ii, 2])
 
 
 if __name__ == "__main__":
