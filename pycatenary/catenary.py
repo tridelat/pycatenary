@@ -256,8 +256,22 @@ class CatenaryBase(ABC):
         """
         for ii in range(len(self.L)):
             if s <= np.sum(self.L[: ii + 1]):
-                s_frac = 1 - (np.sum(self.L[: ii + 1]) - s) / self.L[ii]
-                return np.sum(self.e[:ii]) + s_frac * self.e[ii]
+                if self.Ls[ii] > 0:
+                    s_segment = np.sum(self.L[: ii + 1]) - s
+                    if s_segment > self.L[ii] - self.Ls[ii]:
+                        # line lifted at s --> elongation
+                        s_frac = (
+                            1
+                            - s_segment
+                            - (self.L[ii] - self.Ls[ii]) / self.Ls[ii]
+                        )
+                        return np.sum(self.e[:ii]) + s_frac * self.e[ii]
+                    else:
+                        # line lifted at s --> no elongation
+                        return 0.0
+                else:
+                    # line not lifted yet at s --> no elongation
+                    return 0.0
 
     @abstractmethod
     def get_state(self, d: float, h: float) -> None:

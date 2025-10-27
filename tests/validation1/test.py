@@ -33,15 +33,15 @@ def get_mooring_line(
         If True, the floor is assumed to be at the anchor level.
     """
     if elastic:
-        EA = [560.0e3, 560.0e3] if multisegmented else 560.0e3
+        EA = 560.0e3 if not multisegmented else [560.0e3, 560.0e3]
     else:
         EA = None
 
     mooring = cable.MooringLine(
         fairlead=[5.3, 0.0, 2.65],
         anchor=[0.0, 0.0, 0.0],
-        L=[6.98 / 3.0, 6.98 * 2.0 / 3.0] if multisegmented else 6.98,
-        w=[1.036, 1.036] if multisegmented else 1.036,
+        L=6.98 if not multisegmented else [6.98 / 3.0, 6.98 * 2.0 / 3.0],
+        w=1.036 if not multisegmented else [1.036, 1.036],
         EA=EA,
         floor=floor,
     )
@@ -320,7 +320,3 @@ class TestCatenaryValidation(unittest.TestCase):
                 npt.assert_almost_equal(Ta[0], Ta_ref[ii, 0])
                 npt.assert_almost_equal(Ta[1], Ta_ref[ii, 1])
                 npt.assert_almost_equal(Ta[2], Ta_ref[ii, 2])
-
-
-if __name__ == "__main__":
-    unittest.main()

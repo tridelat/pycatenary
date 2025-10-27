@@ -21,7 +21,7 @@ def array2csv(filename, array, delimiter=",", names=None):
 
 
 def get_mooring_line(
-    elastic: bool = True, floor: bool = True
+    elastic: bool = True, floor: bool = True, heavy_section: bool = False
 ) -> cable.MooringLine:
     """Returns a mooring line instance.
 
@@ -36,7 +36,7 @@ def get_mooring_line(
     area = np.pi * diameter**2 / 4.0  # area of cable
     w = (685.0 - area * 1025.0) * 9.81  # submerged weight of cable
     if elastic:
-        EA = 3.27e9
+        EA = 3.27e9 if not heavy_section else [3.27e9, 3.27e9]
     else:
         EA = None
 
@@ -44,8 +44,8 @@ def get_mooring_line(
     mooring = cable.MooringLine(
         fairlead=[-58.0, 0.0, -14.0],
         anchor=[-837.6, 0.0, -200],
-        L=850.0,
-        w=w,
+        L=850.0 if not heavy_section else [840.0, 10.0],
+        w=w if not heavy_section else [w, w * 5],
         EA=EA,
         floor=floor,
     )
@@ -469,6 +469,170 @@ class TestCatenaryValidation(unittest.TestCase):
                 delimiter=",",
                 names="s,x,y,z,Tx,Ty,Tz",
             )
+
+    def test_elastic_heavy_section(self):
+        ref_filename = "elastic_heavy_section.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
+
+        # create mooring line
+        mooring = get_mooring_line(
+            elastic=True, floor=True, heavy_section=True
+        )
+        length = np.sum(mooring.catenary.L)
+
+        # compute solution
+        mooring.compute_solution()
+
+        # test for different positions of fairlead
+        ss_test = np.linspace(0.0, length, NPOINTS)
+        T_test = np.zeros((len(ss_test), 3))
+        xyz_test = np.zeros((len(ss_test), 3))
+        for ii, s in enumerate(ss_test):
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T_test[ii, 0], T_ref[ii, 0])
+                npt.assert_almost_equal(T_test[ii, 1], T_ref[ii, 1])
+                npt.assert_almost_equal(T_test[ii, 2], T_ref[ii, 2])
+                npt.assert_almost_equal(xyz_test[ii, 0], xyz_ref[ii, 0])
+                npt.assert_almost_equal(xyz_test[ii, 1], xyz_ref[ii, 1])
+                npt.assert_almost_equal(xyz_test[ii, 2], xyz_ref[ii, 2])
+
+        if self.save_test2ref:
+            stack = np.column_stack((ss_test, xyz_test, T_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="s,x,y,z,Tx,Ty,Tz",
+            )
+
+    def test_elastic_heavy_section_reversed(self):
+        ref_filename = "elastic.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
+
+        # create mooring line
+        mooring = get_mooring_line(
+            elastic=True, floor=True, heavy_section=True
+        )
+        length = np.sum(mooring.catenary.L)
+
+        # switch anchor and fairlead positions
+        anchor_position = mooring.get_anchor_position()
+        fairlead_position = mooring.get_fairlead_position()
+        mooring.set_anchor_position(fairlead_position + 1)
+        mooring.set_fairlead_position(anchor_position)
+        mooring.set_anchor_position(fairlead_position)
+
+        # compute solution
+        mooring.compute_solution()
+
+        # test for different positions of fairlead
+        ss_test = np.linspace(0.0, length, NPOINTS)
+        T_test = np.zeros((len(ss_test), 3))
+        xyz_test = np.zeros((len(ss_test), 3))
+        for ii, s in enumerate(ss_test):
+            T_test = mooring.get_tension(s)
+            xyz_test = mooring.get_position(s)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T_test[0], T_ref[-(ii + 1), 0])
+                npt.assert_almost_equal(T_test[1], T_ref[-(ii + 1), 1])
+                npt.assert_almost_equal(T_test[2], T_ref[-(ii + 1), 2])
+                npt.assert_almost_equal(xyz_test[0], xyz_ref[-(ii + 1), 0])
+                npt.assert_almost_equal(xyz_test[1], xyz_ref[-(ii + 1), 1])
+                npt.assert_almost_equal(xyz_test[2], xyz_ref[-(ii + 1), 2])
+
+    def test_rigid_heavy_section(self):
+        ref_filename = "rigid_heavy_section.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
+
+        # create mooring line
+        mooring = get_mooring_line(
+            elastic=False, floor=True, heavy_section=True
+        )
+        length = np.sum(mooring.catenary.L)
+
+        # compute solution
+        mooring.compute_solution()
+
+        # test for different positions of fairlead
+        ss_test = np.linspace(0.0, length, NPOINTS)
+        T_test = np.zeros((len(ss_test), 3))
+        xyz_test = np.zeros((len(ss_test), 3))
+        for ii, s in enumerate(ss_test):
+            T_test[ii] = mooring.get_tension(s)
+            xyz_test[ii] = mooring.get_position(s)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T_test[ii, 0], T_ref[ii, 0])
+                npt.assert_almost_equal(T_test[ii, 1], T_ref[ii, 1])
+                npt.assert_almost_equal(T_test[ii, 2], T_ref[ii, 2])
+                npt.assert_almost_equal(xyz_test[ii, 0], xyz_ref[ii, 0])
+                npt.assert_almost_equal(xyz_test[ii, 1], xyz_ref[ii, 1])
+                npt.assert_almost_equal(xyz_test[ii, 2], xyz_ref[ii, 2])
+
+        if self.save_test2ref:
+            stack = np.column_stack((ss_test, xyz_test, T_test))
+            array2csv(
+                ref_filename,
+                stack,
+                delimiter=",",
+                names="s,x,y,z,Tx,Ty,Tz",
+            )
+
+    def test_rigid_heavy_section_reversed(self):
+        ref_filename = "rigid.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"], ref["Tz"]))
+
+        # create mooring line
+        mooring = get_mooring_line(
+            elastic=False, floor=True, heavy_section=True
+        )
+        length = np.sum(mooring.catenary.L)
+
+        # switch anchor and fairlead positions
+        anchor_position = mooring.get_anchor_position()
+        fairlead_position = mooring.get_fairlead_position()
+        mooring.set_anchor_position(fairlead_position + 1)
+        mooring.set_fairlead_position(anchor_position)
+        mooring.set_anchor_position(fairlead_position)
+
+        # compute solution
+        mooring.compute_solution()
+
+        # test for different positions of fairlead
+        ss_test = np.linspace(0.0, length, NPOINTS)
+        T_test = np.zeros((len(ss_test), 3))
+        xyz_test = np.zeros((len(ss_test), 3))
+        for ii, s in enumerate(ss_test):
+            T_test = mooring.get_tension(s)
+            xyz_test = mooring.get_position(s)
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T_test[0], T_ref[-(ii + 1), 0])
+                npt.assert_almost_equal(T_test[1], T_ref[-(ii + 1), 1])
+                npt.assert_almost_equal(T_test[2], T_ref[-(ii + 1), 2])
+                npt.assert_almost_equal(xyz_test[0], xyz_ref[-(ii + 1), 0])
+                npt.assert_almost_equal(xyz_test[1], xyz_ref[-(ii + 1), 1])
+                npt.assert_almost_equal(xyz_test[2], xyz_ref[-(ii + 1), 2])
 
 
 if __name__ == "__main__":
