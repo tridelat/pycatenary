@@ -131,7 +131,12 @@ class CatenaryBase(ABC):
             # tension at point
             Ts = np.array([Th, Tv])
         elif 0 <= s < s0:  # s on floor
-            Ts = np.array([0.0, 0.0])
+            # average w
+            w_av = np.sum(self.w * self.Ls) / Lst
+            # horizontal tension
+            Th = self.a * w_av * (Lst / Lset)
+            # tension at point
+            Ts = np.array([Th, 0.0])
         else:
             raise RuntimeError(
                 f"Cannot get tension for s = {s} (should be 0.0 <= s <= {Lt})."
