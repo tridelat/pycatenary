@@ -104,7 +104,17 @@ class CatenaryBase(ABC):
         Lt = np.sum(self.L)  # unstretched
         Lst = np.sum(self.Ls)  # unstretched
         Lset = Lst + np.sum(self.e)  # stretched
-        if Lt >= s >= s0:
+        if self.x0 == 0.0:  # line straight to seabed
+            # length of line on floor
+            L_floor = Lt - np.sum(self.Ls)
+            if s < L_floor:
+                Ts = np.array([0.0, 0.0])
+            else:
+                # average w
+                w_av = np.sum(self.w * self.Ls) / Lst
+                Tv = (s - L_floor) * w_av
+                Ts = np.array([0.0, Tv])
+        elif Lt >= s >= s0:  # s in lifted line part
             # average w
             w_av = np.sum(self.w * self.Ls) / Lst
             # horizontal tension
@@ -120,7 +130,7 @@ class CatenaryBase(ABC):
             Tv = -np.abs(Tv)
             # tension at point
             Ts = np.array([Th, Tv])
-        elif 0 <= s < s0:
+        elif 0 <= s < s0:  # s on floor
             Ts = np.array([0.0, 0.0])
         else:
             raise RuntimeError(
@@ -371,7 +381,7 @@ class CatenaryRigid(CatenaryBase):
                     if Lst < h:
                         Ls[ii] = L[ii]
                     if Lst >= h:
-                        Ls[ii] = Lst - h
+                        Ls[ii] = L[ii] - (Lst - h)
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a * (np.cosh(d / a) - 1) - h

@@ -101,7 +101,7 @@ class MooringLine:
             h=self.distance_v,
         )
 
-    def get_position_from_anchor(self, s: float) -> np.ndarray:
+    def get_position(self, s: float) -> np.ndarray:
         """Returns position at a given distance along line from anchor.
 
         Parameters
@@ -115,22 +115,6 @@ class MooringLine:
             Position [x, y, z] (3D) or [x, y] (2D).
         """
         return self.s2xyz(s)
-
-    def get_position_from_fairlead(self, s: float) -> np.ndarray:
-        """Returns position at a given distance along line from fairlead.
-
-        Parameters
-        ----------
-        s: float
-            Distance along line (from fairlead) [m].
-
-        Returns
-        -------
-        position: np.ndarray
-            Position [x, y, z] (3D) or [x, y] (2D).
-        """
-        Lt = np.sum(self.catenary.L)
-        return self.s2xyz(Lt - s)
 
     def s2xyz(self, s: float) -> np.ndarray:
         """Returns xyz coordinates at a given distance line from anchor.
