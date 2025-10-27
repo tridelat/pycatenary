@@ -101,22 +101,29 @@ class MooringLine:
             h=self.distance_v,
         )
 
-    def get_position(self, s: float) -> np.ndarray:
-        """Returns position at a given distance along line from anchor.
+    def get_position(
+        self, s: float, from_fairlead: bool = False
+    ) -> np.ndarray:
+        """Returns position at a given distance along line from 0 to L.
 
         Parameters
         ----------
         s: float
-            Distance along line (from anchor) [m].
+            Distance along line [m].
+        from_fairlead: bool, optional
+            False (by default): distance is measured from the anchor,
+            True: distance is measured from the fairlead.
 
         Returns
         -------
         position: np.ndarray
             Position [x, y, z] (3D) or [x, y] (2D).
         """
-        return self.s2xyz(s)
+        if from_fairlead:
+            s = np.sum(self.catenary.L) - s
+        return self._s2xyz(s)
 
-    def s2xyz(self, s: float) -> np.ndarray:
+    def _s2xyz(self, s: float) -> np.ndarray:
         """Returns xyz coordinates at a given distance line from anchor.
 
         Parameters
@@ -129,36 +136,38 @@ class MooringLine:
         xyz: np.ndarray
             xyz coordinates [x, y, z] (3D) or [x, y] (2D).
         """
-        Lt = np.sum(self.catenary.L)
-        assert (
-            0.0 <= s <= Lt
-        ), f"Cannot get position for s = {s} (should be 0.0 <= s <= L = {Lt})."
         if not self._fairlead_above_anchor:
             return self._fairlead + self._transform_vector_2d(
-                self.catenary.s2xy(Lt - s)
+                self.catenary.s2xy(np.sum(self.catenary.L) - s)
             )
         else:
             return self._anchor + self._transform_vector_2d(
                 self.catenary.s2xy(s)
             )
 
-    def get_tension(self, s: float) -> np.ndarray:
-        """Returns tension at a given distance along line from anchor.
+    def get_tension(self, s: float, from_fairlead: bool = False) -> np.ndarray:
+        """Returns tension at a given distance along line from 0 to L.
 
         Parameters
         ----------
-        s: double
-            distance along line (from anchor)
+        s: float
+            Distance along line [m].
+        from_fairlead: bool, optional
+            False (by default): distance is measured from the anchor,
+            True: distance is measured from the fairlead.
 
         Returns
         -------
         tension: np.ndarray
             Tension vector [N].
         """
-        Lt = np.sum(self.catenary.L)
+        if from_fairlead:
+            s = np.sum(self.catenary.L) - s
 
         if not self._fairlead_above_anchor:
-            return self._transform_vector_2d(self.catenary.get_tension(Lt - s))
+            return self._transform_vector_2d(
+                self.catenary.get_tension(np.sum(self.catenary.L) - s)
+            )
         else:
             return self._transform_vector_2d(self.catenary.get_tension(s))
 
@@ -236,7 +245,7 @@ class MooringLine:
         ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
 
         for s in ss:
-            xyz = self.s2xyz(s)
+            xyz = self._s2xyz(s)
             tension = self.get_tension(s)
             xyzs.append(xyz)
             if self._nd == 2:
@@ -320,7 +329,7 @@ class MooringLine:
         ss = np.linspace(0.0, np.sum(self.catenary.L), npoints)
 
         for s in ss:
-            xyz = self.s2xyz(s)
+            xyz = self._s2xyz(s)
             tension = self.get_tension(s)
             xyzs.append(xyz)
             xx.append(xyz[0])
