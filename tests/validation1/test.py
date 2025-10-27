@@ -6,6 +6,9 @@ import numpy.testing as npt
 
 from pycatenary import cable
 
+# number of points of displaced fairlead positions for testing
+NPOINTS = 10
+
 
 def csv2array(filename, delimiter=",", names=None):
     fname = os.path.join(os.path.dirname(__file__), filename)
@@ -52,19 +55,20 @@ class TestCatenaryValidation(unittest.TestCase):
 
     def test_elastic(self):
         ref_filename = "elastic.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(elastic=True, floor=True)
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        Tf_test = np.zeros_like(Tf_ref)
-        Ls_test = np.zeros(len(Tf_ref))
-        for ii, x in enumerate(xpos):
+        Tf_test = np.zeros((NPOINTS, 3))
+        Ls_test = np.zeros(NPOINTS)
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
@@ -81,7 +85,7 @@ class TestCatenaryValidation(unittest.TestCase):
                 npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
-            stack = np.column_stack((xpos, Ls_test, Tf_test))
+            stack = np.column_stack((xx_test, Ls_test, Tf_test))
             array2csv(
                 ref_filename,
                 stack,
@@ -91,10 +95,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
     def test_elastic_multisegmented(self):
         ref_filename = "elastic.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(
@@ -103,7 +107,8 @@ class TestCatenaryValidation(unittest.TestCase):
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        for ii, x in enumerate(xpos):
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
@@ -121,19 +126,20 @@ class TestCatenaryValidation(unittest.TestCase):
     def test_rigid(self):
         # load reference data
         ref_filename = "rigid.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=True)
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        Tf_test = np.zeros_like(Tf_ref)
-        Ls_test = np.zeros(len(Tf_ref))
-        for ii, x in enumerate(xpos):
+        Tf_test = np.zeros((NPOINTS, 3))
+        Ls_test = np.zeros(NPOINTS)
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
@@ -150,7 +156,7 @@ class TestCatenaryValidation(unittest.TestCase):
                 npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
-            stack = np.column_stack((xpos, Ls_test, Tf_test))
+            stack = np.column_stack((xx_test, Ls_test, Tf_test))
             array2csv(
                 ref_filename,
                 stack,
@@ -160,10 +166,10 @@ class TestCatenaryValidation(unittest.TestCase):
 
     def test_rigid_multisegmented(self):
         ref_filename = "rigid.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(
@@ -172,7 +178,8 @@ class TestCatenaryValidation(unittest.TestCase):
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        for ii, x in enumerate(xpos):
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
@@ -190,21 +197,22 @@ class TestCatenaryValidation(unittest.TestCase):
     def test_rigid_nofloor(self):
         # load reference data
         ref_filename = "rigid_nofloor.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=False)
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        Tf_test = np.zeros_like(Tf_ref)
-        Ta_test = np.zeros_like(Ta_ref)
-        Ls_test = np.zeros(len(Tf_ref))
-        for ii, x in enumerate(xpos):
+        Tf_test = np.zeros((NPOINTS, 3))
+        Ta_test = np.zeros((NPOINTS, 3))
+        Ls_test = np.zeros(NPOINTS)
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
@@ -227,7 +235,7 @@ class TestCatenaryValidation(unittest.TestCase):
                 npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
 
         if self.save_test2ref:
-            stack = np.column_stack((xpos, Ls_test, Tf_test, Ta_test))
+            stack = np.column_stack((xx_test, Ls_test, Tf_test, Ta_test))
             array2csv(
                 ref_filename,
                 stack,
@@ -238,12 +246,11 @@ class TestCatenaryValidation(unittest.TestCase):
     def test_rigid_nofloor_multisegmented(self):
         # load reference data
         ref_filename = "rigid_nofloor.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
-        Ls_ref = ref["Ls"]
-
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
+            Ls_ref = ref["Ls"]
         # make mooring line
         mooring = get_mooring_line(
             elastic=False, floor=False, multisegmented=True
@@ -251,48 +258,35 @@ class TestCatenaryValidation(unittest.TestCase):
         length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
-        Tf_test = np.zeros_like(Tf_ref)
-        Ta_test = np.zeros_like(Ta_ref)
-        Ls_test = np.zeros(len(Tf_ref))
-        for ii, x in enumerate(xpos):
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
             Tf = mooring.get_tension(length)
-            Tf_test[ii] = Tf
             # tension at anchor
             Ta = mooring.get_tension(0.0)
-            Ta_test[ii] = Ta
             # total lifted line length
-            Ls_test[ii] = np.sum(mooring.catenary.Ls)
+            Ls = np.sum(mooring.catenary.Ls)
 
             # check solution
             if self.compare_test:
-                npt.assert_almost_equal(Tf_test[ii, 0], Tf_ref[ii, 0])
-                npt.assert_almost_equal(Tf_test[ii, 1], Tf_ref[ii, 1])
-                npt.assert_almost_equal(Tf_test[ii, 2], Tf_ref[ii, 2])
-                npt.assert_almost_equal(Ta_test[ii, 0], Ta_ref[ii, 0])
-                npt.assert_almost_equal(Ta_test[ii, 1], Ta_ref[ii, 1])
-                npt.assert_almost_equal(Ta_test[ii, 2], Ta_ref[ii, 2])
-                npt.assert_almost_equal(Ls_test[ii], Ls_ref[ii])
-
-        if self.save_test2ref:
-            stack = np.column_stack((xpos, Ls_test, Tf_test, Ta_test))
-            array2csv(
-                ref_filename,
-                stack,
-                delimiter=",",
-                names="xpos,Ls,Tfx,Tfy,Tfz,Tax,Tay,Taz",
-            )
+                npt.assert_almost_equal(Tf[0], Tf_ref[ii, 0])
+                npt.assert_almost_equal(Tf[1], Tf_ref[ii, 1])
+                npt.assert_almost_equal(Tf[2], Tf_ref[ii, 2])
+                npt.assert_almost_equal(Ta[0], Ta_ref[ii, 0])
+                npt.assert_almost_equal(Ta[1], Ta_ref[ii, 1])
+                npt.assert_almost_equal(Ta[2], Ta_ref[ii, 2])
+                npt.assert_almost_equal(Ls, Ls_ref[ii])
 
     def test_rigid_nofloor_anchor_above(self):
         # load reference data
         ref_filename = "rigid_nofloor.txt"
-        ref = csv2array(ref_filename, names=True, delimiter=",")
-        xpos = ref["xpos"]
-        Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
-        Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
-        Ls_ref = ref["Ls"]
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
+            Ta_ref = np.column_stack((ref["Tax"], ref["Tay"], ref["Taz"]))
+            Ls_ref = ref["Ls"]
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=False)
@@ -306,7 +300,8 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.set_anchor_position(fairlead_position)
 
         # test for different positions of fairlead
-        for ii, x in enumerate(xpos):
+        xx_test = np.linspace(6.4, 4.9, NPOINTS)
+        for ii, x in enumerate(xx_test):
             mooring.set_anchor_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead

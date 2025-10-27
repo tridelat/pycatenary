@@ -6,6 +6,9 @@ import numpy.testing as npt
 
 from pycatenary import cable
 
+# number of points along line for testing
+NPOINTS = 101
+
 
 def csv2array(filename, delimiter=",", names=None):
     fname = os.path.join(os.path.dirname(__file__), filename)
@@ -70,7 +73,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -110,7 +113,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -150,7 +153,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -190,7 +193,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -237,7 +240,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -275,7 +278,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -311,7 +314,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -356,7 +359,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -399,7 +402,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
@@ -442,7 +445,7 @@ class TestCatenaryValidation(unittest.TestCase):
         mooring.compute_solution()
 
         # test for different positions of fairlead
-        ss_test = np.linspace(0.0, length, 101)
+        ss_test = np.linspace(0.0, length, NPOINTS)
         T_test = np.zeros((len(ss_test), 3))
         xyz_test = np.zeros((len(ss_test), 3))
         for ii, s in enumerate(ss_test):
