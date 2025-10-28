@@ -120,7 +120,7 @@ class CatenaryBase(ABC):
             # horizontal tension
             Th = self.a * w_av * (Lst / Lset)
             # reverse sign for Th if s > 0 for catenary
-            if s + self._s_offset > 0.0:
+            if s + self._get_elongation_at_s(s) + self._s_offset > 0.0:
                 Th = -Th
             # vertical tension
             dydx = np.sinh((self.s2xy(s)[0] - self._x_offset - s0) / self.a)

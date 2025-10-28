@@ -236,17 +236,8 @@ def nofloor_rigid(
     a: float
         Catenary shape parameter.
     """
-    Lt = np.sum(L)
-    g = lambda a: 2 * a * np.sinh(d / (2 * a)) - np.sqrt(Lt**2 - h**2)
-    a0 = bisection(
-        f=g,
-        int1=int1,
-        int2=int2,
-        tol=tol,
-        maxit=maxit,
-        must_converge=must_converge,
-    )
-    return a0
+
+    return fully_lifted_rigid(d, h, L, tol, maxit, int1, int2, must_converge)
 
 
 def nofloor_elastic(
@@ -299,6 +290,49 @@ def nofloor_elastic(
     e = np.zeros(len(L))  # stretching of cable segments
     diff = tol + 1
     niter = 0
+
+    # ------------------------------------------------------------
+    # first check if hanging or fully lifted
+    # ------------------------------------------------------------
+    if h > 0.0:
+        f = lambda a: a * (np.cosh(d / a) - 1) - h
+        a = bisection(
+            f=f,
+            int1=int1,
+            int2=int2,
+            tol=tol,
+            maxit=maxit,
+            must_converge=False,
+        )
+        Ls0 = a * np.sinh(d / a)  # maximum line length to be fully lifted
+        # get actual line length assuming fully lifted (from a)
+        H = a * np.sum(w * L) / Lt
+        Va = 0
+        # compute elongation
+        for i in range(len(e)):
+            # integrate tension
+            T_int = integrate_tension(
+                0, L[i], w[i], H, Va + np.sum(w[:i] * L[:i])
+            )
+            # get elongation
+            e[i] = T_int / EA[i]
+        Ls1 = Lt + np.sum(e)
+        if Ls1 <= Ls0:  # fully lifted
+            return fully_lifted_elastic(
+                d=d,
+                h=h,
+                L=L,
+                w=w,
+                EA=EA,
+                tol=tol,
+                maxit=maxit,
+                int1=a,
+                int2=int2,
+                must_converge=must_converge,
+            )
+    # ------------------------------------------------------------
+
+    # cable is hanging
     while diff > tol and niter < maxit:
         niter += 1
         Lte = np.sum(L + e)
@@ -312,7 +346,6 @@ def nofloor_elastic(
             must_converge=must_converge,
         )
 
-        # find where is mid point along line
         xx = 0.5 * (a * np.log((Lte + h) / (Lte - h)) - d)
         s_offset = a * np.sinh(xx / a)
         s_mid = s_offset
@@ -323,23 +356,25 @@ def nofloor_elastic(
                 break
         mid_ratio = -s_mid / (L[i_mid] + e[i_mid])
 
+        # ------------------------------------------------------------
         # compute new elongations
-        # -----------------------
+        # ------------------------------------------------------------
         Ha = a * w_av * (Lt / Lte)
         e[:] = 0.0
+        # ------------------------------------------------------------
         # left side of the catenary
         left_side = np.zeros(len(L))
         left_side[i_mid] = mid_ratio
         for i in range(0, i_mid):
             left_side[i] = 1.0
-        # compute elongation
-        for i in range(len(L)):
-            if left_side[-i] > 0.0:
+        # compute elongation-
+        for i in range(0, len(L)):
+            if left_side[-(i + 1)] > 0.0:
                 # integrate tension
                 T_int = integrate_tension(
                     0,
-                    L[-i] * left_side[-i],
-                    w[-i],
+                    L[-(i + 1)] * left_side[-(i + 1)],
+                    w[-(i + 1)],
                     Ha,
                     np.sum(
                         w[len(L) - i :]
@@ -348,13 +383,14 @@ def nofloor_elastic(
                     ),
                 )
                 # get elongation
-                e[-i] += T_int / EA[-i]
-        # -----------------------
+                e[-(i + 1)] += T_int / EA[-(i + 1)]
+        # ------------------------------------------------------------
         # right side of the catenary
         right_side = np.zeros(len(L))
         right_side[i_mid] = 1.0 - mid_ratio
         for ii in range(i_mid + 1, len(L)):
             right_side[ii] = 1.0
+        # compute elongation
         for i in range(len(L)):
             if right_side[i] > 0.0:
                 # integrate tension
@@ -367,7 +403,7 @@ def nofloor_elastic(
                 )
                 # get elongation
                 e[i] += T_int / EA[i]
-
+        # ------------------------------------------------------------
         et = np.sum(e)
         Lte_check = Lt + et  # store new Ls value as calculated with stretching
         diff = np.abs(Lte - Lte_check)
@@ -805,4 +841,5 @@ def straight_elastic(
             )
         et_check = np.sum(e)
         diff = np.abs(et_check - et)
+
     return H, e
