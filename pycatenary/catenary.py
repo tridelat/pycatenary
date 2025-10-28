@@ -273,17 +273,19 @@ class CatenaryBase(ABC):
         for ii in range(len(self.L)):
             if s <= np.sum(self.L[: ii + 1]):
                 if self.Ls[ii] > 0:
-                    s_segment = np.sum(self.L[: ii + 1]) - s
+                    # distance along segment
+                    s_segment = self.L[ii] - (np.sum(self.L[: ii + 1]) - s)
                     if s_segment > self.L[ii] - self.Ls[ii]:
-                        # line lifted at s --> elongation
-                        s_frac = (
-                            1
-                            - s_segment
-                            - (self.L[ii] - self.Ls[ii]) / self.Ls[ii]
-                        )
-                        return np.sum(self.e[:ii]) + s_frac * self.e[ii]
+                        # distance along lifted part of segment
+                        s_segment = s_segment - (self.L[ii] - self.Ls[ii])
+                        if s_segment > 0.0:  # in lifted part
+                            # line lifted at s --> elongation
+                            s_frac = s_segment / self.Ls[ii]
+                            return np.sum(self.e[:ii]) + s_frac * self.e[ii]
+                        else:  # line not lifted at s --> no elongation
+                            return 0.0
                     else:
-                        # line lifted at s --> no elongation
+                        # line not lifted at s --> no elongation
                         return 0.0
                 else:
                     # line not lifted yet at s --> no elongation
