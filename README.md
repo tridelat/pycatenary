@@ -6,23 +6,6 @@
 
 A Python library for solving catenary equations.
 
-## About pyCatenary
-
-### Features
-
-- Solves catenary equations for elastic or fully rigid cables.
-- Contact with flat floor/seabed for partly lifted lines.
-- Multisegmented cables with different properties.
-- Solution for catenary lines in both 2D or 3D coordinate systems.
-- Tension and position retrievable along line (2D/3D).
-
-### Assumptions
-
-- All lines, included multisegmented ones, have a single pure catenary shape.
-- Gravitational acceleration is along -Z in 3D, -Y in 2D.
-- If floor/seabed is enabled, it is assumed flat.
-- For multisegmented lines, elongation is calculated per section (so the order matter) and once the solution for the elongated catenary is found, tension along the line is retrieved directly from the catenary equation. This means that tensions at the fairlead and anchor are as intended, and tension along the line are calculated from the catenary shape using averaged submerged weight over the lifted line length.
-
 ## Installation
 
 ### PyPI version
@@ -43,9 +26,27 @@ cd pycatenary
 pip install -e .
 ```
 
+## About pyCatenary
+
+### Features
+
+- Catenary solutions for elastic or fully inextensible/rigid cables.
+- Contact with flat floor/seabed for partly lifted lines.
+- Multisegmented cables with different properties.
+- Catenary lines can be defined in both 2D or 3D coordinate systems.
+- Tension and position can be retrieved at fairlead/anchor and at arbitrary position along line.
+
+### Assumptions
+
+- All lines, included multisegmented ones, have a single pure catenary shape.
+- Gravitational acceleration is along -Z in 3D, -Y in 2D.
+- If floor/seabed is enabled, it is assumed flat.
+- For multisegmented lines, elongation is calculated per section, starting from the lowest segment (so the order along the lifted line section matter). Once the solution for the elongated catenary is found, tension along the line is retrieved directly from the catenary equation. This means that tensions at the fairlead and anchor are as intended, and tensions at arbitrary location along the line are calculated directly from the catenary shape using submerged weight averaged over the whole lifted line length.
+
+
 ## Getting Started
 
-To create a cable:
+### Creating a mooring line
 
 ```python
 from pycatenary import MooringLine
@@ -64,7 +65,27 @@ line1 = MooringLine(
 line1.compute_solution()
 ```
 
-Some useful of functions for retrieving tensions and positions of mooring line:
+### Plotting
+
+With matplotlib installed, the cable can be plotted in 3D:
+
+```python
+line1.plot()
+```
+
+Or in 2D:
+
+```python
+line1.plot_2d()
+```
+
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="docs/source/line_plot_3D.svg" alt="3D line" width="43%">
+  <img src="docs/source/line_plot_2D.svg" alt="2D line" width="55%">
+</div>
+
+### Retrieving tension/position along line
 
 ```python
 # get tension at the fairlead
@@ -84,30 +105,149 @@ line1.get_tension(5.0, from_fairlead=True)
 line1.get_position(5.0, from_fairlead=True)
 ```
 
-Position of fairlead and anchor can be changed as follows (do not forget to recompute solution after update positions):
+### Updating fairlead/anchor position
+
+Fairlead and anchor positions can be updated as follows:
 
 ```python
 # change fairlead position
-line1.set_fairlead_position([30.0, -50.23, -14.0])
+line1.set_fairlead_position([-50.0, -19.84, -14.0])
 
-# recompute solution
+# do not forget to recompute solution after updating positions
 line1.compute_solution()
 ```
 
+This can be used for quasi-static analysis, retrieving tension at fairlead/anchor, applying it to an external body dynamics solver, and updating fairlead/anchor positions of the pyCatenary line.
+
+
+
+### Other functionalities
+
 For extra functionality, please refer to the documentation: https://tridelat.github.io/pycatenary
 
-## Plotting
+## Examples
 
-With matplotlib installed, the cable can be plotted in 3D:
 
-```python
-line1.plot()
-```
-![plot_3d](docs/source/line_plot_3D.svg)
+### Cable hanging on own weight
 
-Or in 2D:
+This 2D example consists of an inextensible cable hanging on its own weight between 2 points placed at the same height, with no floor:
 
 ```python
-line1.plot_2d()
+from pycatenary import MooringLine
+
+# define properties of cable
+line2 = MooringLine(
+    fairlead=[17.69, 0.0],
+    anchor=[0.0, 0.0],
+    L=20.0,
+    w=1.962,
+    EA=None,
+    floor=False,
+)
+
+# compute solution for the catenary
+line2.compute_solution()
+
+# plot solution
+line2.plot()
 ```
-![plot_2d](docs/source/line_plot_2D.svg)
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="docs/source/line_plot_2D_hanging.svg" alt="Hanging line" width="70%">
+</div>
+
+
+### Partly / fully lifted cable
+
+The following 2D example showcases the different configurations possible for a mooring line.
+
+For a partly lifted line:
+```python
+from pycatenary import MooringLine
+import numpy as np
+
+# make mooring line in partly lifted line configuration
+line3 = MooringLine(
+    fairlead=[-58.0, -14.0],
+    anchor=[-836.7, -200.0],
+    L=850.0,
+    w=5844.1,
+    EA=3.27e9,
+    floor=True,
+)
+line3.compute_solution()
+line3.plot()
+
+# move fairlead for fully lifted line position
+new_position = line3.get_fairlead_position() + np.array([50.0, 0.0])
+line3.set_fairlead_position(new_position)
+line3.compute_solution()
+line3.plot()
+
+# move fairlead for taut line position
+new_position = line3.get_fairlead_position() + np.array([100.0, 0.0])
+line3.set_fairlead_position(new_position)
+line3.compute_solution()
+line3.plot()
+
+# move fairlead in hanging line position
+new_position = line3.get_fairlead_position() + np.array([-350.0, 0.0])
+line3.set_fairlead_position(new_position)
+line3.compute_solution()
+line3.plot()
+```
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="docs/source/line_plot_2D_partly.svg" alt="Partly lifted line" width="49%">
+  <img src="docs/source/line_plot_2D_fully.svg" alt="Fully lifted line" width="49%">
+</div>
+<div style="display: flex; justify-content: space-around;">
+  <img src="docs/source/line_plot_2D_taut.svg" alt="Taut line" width="49%">
+  <img src="docs/source/line_plot_2D_long.svg" alt="Long line" width="49%">
+</div>
+
+
+
+### Multisegmented cable
+
+The following 3D example consists of a mooring line with 4 segments of different properties with the floor placed at the anchor height. Segments must be defined from the anchor to the fairlead.
+
+```python
+from pycatenary import MooringLine
+import numpy as np
+
+line4 = MooringLine(
+    fairlead=[0.142, 0.0, 5.486],
+    anchor=[7.083, 0.0, 0.0],
+    L=[5.672, 0.126, 4.0, 0.259],
+    w=np.array([0.402, 1.558, 0.00425, 1.529]) * 9.81,
+    EA=[2.050e3, 3.636e6, 10.873e3, 6.464e6],
+    floor=True
+)
+
+line4.compute_solution()
+
+line4.plot()
+```
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="docs/source/line_plot_3D_multisegmented.svg" alt="Multisegmented line" width="70%">
+</div>
+
+Note that to make the cable inextensible, the axial stiffness only needs to be defined to None as follows:
+
+```python
+from pycatenary import MooringLine
+import numpy as np
+
+line4 = MooringLine(
+    fairlead=[0.142, 0.0, 5.486],
+    anchor=[7.083, 0.0, 0.0],
+    L=[5.672, 0.126, 4.0, 0.259],
+    w=np.array([0.402, 1.558, 0.00425, 1.529]) * 9.81,
+    EA=None,
+    floor=True
+)
+
+line4.compute_solution()
+```

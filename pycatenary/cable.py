@@ -303,8 +303,8 @@ class MooringLine:
         anchor_tension = np.linalg.norm(self.get_tension_anchor())
         fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
         ax.set_title(
-            f"Tensions: Fairlead {fairlead_tension:.0f} | "
-            f"Anchor {anchor_tension:.0f}"
+            f"Tensions: Fairlead {fairlead_tension:.3e} | "
+            f"Anchor {anchor_tension:.3e}"
         )
         plt.show()
 
@@ -386,8 +386,8 @@ class MooringLine:
         anchor_tension = np.linalg.norm(self.get_tension_anchor())
         fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
         ax.set_title(
-            f"Tensions: Fairlead {fairlead_tension:.0f} | "
-            f"Anchor {anchor_tension:.0f}"
+            f"Tensions: Fairlead {fairlead_tension:.3e} | "
+            f"Anchor {anchor_tension:.3e}"
         )
         plt.show()
 
