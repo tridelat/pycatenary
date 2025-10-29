@@ -288,6 +288,10 @@ def nofloor_elastic(
     Lt = np.sum(L)  # total length of cable
     w_av = np.sum(w * L / Lt)  # average weight of cable
     e = np.zeros(len(L))  # stretching of cable segments
+    left_side = np.ones(len(L))
+    right_side = np.zeros(len(L))
+    e_left = np.zeros(len(L))
+    e_right = np.zeros(len(L))
     diff = tol + 1
     niter = 0
 
@@ -333,6 +337,7 @@ def nofloor_elastic(
     # ------------------------------------------------------------
 
     # cable is hanging
+    e[:] = 0.0
     while diff > tol and niter < maxit:
         niter += 1
         Lte = np.sum(L + e)
@@ -346,21 +351,41 @@ def nofloor_elastic(
             must_converge=must_converge,
         )
 
+        # find midpoint of catenary (including stretching)
         xx = 0.5 * (a * np.log((Lte + h) / (Lte - h)) - d)
         s_offset = a * np.sinh(xx / a)
         s_mid = s_offset
         for i_mid in range(len(L)):
-            if s_mid + L[i_mid] + e[i_mid] <= 0.0:
-                s_mid += L[i_mid] + e[i_mid]
+            if s_mid + L[i_mid] * left_side[i_mid] + e_left[i_mid] <= 0.0:
+                s_mid += L[i_mid] * left_side[i_mid] + e_left[i_mid]
+                if (
+                    s_mid + L[i_mid] * right_side[i_mid] + e_right[i_mid]
+                    <= 0.0
+                ):
+                    s_mid += L[i_mid] * right_side[i_mid] + e_right[i_mid]
+                else:
+                    mid_ratio = (
+                        left_side[i_mid]
+                        - s_mid
+                        / (L[i_mid] * right_side[i_mid] + e_right[i_mid])
+                        * right_side[i_mid]
+                    )
+                    break
             else:
+                mid_ratio = (
+                    -s_mid
+                    / (L[i_mid] * left_side[i_mid] + e_left[i_mid])
+                    * left_side[i_mid]
+                )
                 break
-        mid_ratio = -s_mid / (L[i_mid] + e[i_mid])
 
         # ------------------------------------------------------------
         # compute new elongations
         # ------------------------------------------------------------
         Ha = a * w_av * (Lt / Lte)
         e[:] = 0.0
+        e_left = np.zeros(len(e))
+        e_right = np.zeros(len(e))
         # ------------------------------------------------------------
         # left side of the catenary
         left_side = np.zeros(len(L))
@@ -383,7 +408,7 @@ def nofloor_elastic(
                     ),
                 )
                 # get elongation
-                e[-(i + 1)] += T_int / EA[-(i + 1)]
+                e_left[-(i + 1)] = T_int / EA[-(i + 1)]
         # ------------------------------------------------------------
         # right side of the catenary
         right_side = np.zeros(len(L))
@@ -402,8 +427,9 @@ def nofloor_elastic(
                     np.sum(w[:i] * L[:i] * right_side[:i]),
                 )
                 # get elongation
-                e[i] += T_int / EA[i]
+                e_right[i] = T_int / EA[i]
         # ------------------------------------------------------------
+        e = e_left + e_right
         et = np.sum(e)
         Lte_check = Lt + et  # store new Ls value as calculated with stretching
         diff = np.abs(Lte - Lte_check)

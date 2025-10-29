@@ -207,3 +207,37 @@ class TestHangingCable(unittest.TestCase):
             Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], -T_ref[0, 1])
+
+    def test_elastic_multisegmented(self):
+        ref_filename = "elastic.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            T_ref = np.column_stack((ref["Tx"], ref["Ty"]))
+
+        # create mooring line
+        mooring = get_mooring_line(elastic=True, multisegmented=True)
+
+        # compute solution
+        mooring.compute_solution()
+
+        # NOTE: can only test tension at fairlead and anchor
+        # because elongation is more accurate when using multiple segments
+        # while it is averaged over the whole cable when using a single segment
+
+        if self.compare_test:
+            # compare tension at fairlead
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
+            npt.assert_almost_equal(Tf[1], -T_ref[-1, 1])
+            # compare tension at anchor
+            Ta = mooring.get_anchor_force()
+            npt.assert_almost_equal(Ta[0], T_ref[0, 0])
+            npt.assert_almost_equal(Ta[1], -T_ref[0, 1])
+
+        # NOTE: we can also copare elongation, proving that single segment and
+        # multisegmented approaches computed the same solution
+        mooring0 = get_mooring_line(elastic=True, multisegmented=False)
+        mooring0.compute_solution()
+        npt.assert_almost_equal(
+            np.sum(mooring.catenary.e), np.sum(mooring0.catenary.e)
+        )

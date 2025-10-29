@@ -505,7 +505,7 @@ class TestSingleLineFOWT(unittest.TestCase):
         length = np.sum(mooring.catenary.L)
 
         # set fairlead position
-        mooring.set_fairlead_position(np.array([-20.0, 0.0, 0.0]))
+        mooring.set_fairlead_position(np.array([-10.0, 0.0, 0.0]))
 
         # compute solution
         mooring.compute_solution()
@@ -537,7 +537,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
