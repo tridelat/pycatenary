@@ -35,7 +35,10 @@ def rotate_vector_2d(vector: np.ndarray, angle: float) -> np.ndarray:
 
 
 def get_mooring_line(
-    elastic: bool = True, floor: bool = True, heavy_section: bool = False
+    elastic: bool = True,
+    floor: bool = True,
+    heavy_section: bool = False,
+    reversed: bool = False,
 ) -> tuple[cable.MooringLine, cable.MooringLine]:
     """Returns a mooring line instance.
 
@@ -54,9 +57,9 @@ def get_mooring_line(
     else:
         EA = None
 
-    fairlead1 = [0.142, 0.0, 5.486]
+    fairlead1 = np.array([0.142, 0.0, 5.486])
     fairlead2 = rotate_vector_2d(fairlead1, 2.0 * np.pi / 3.0)
-    anchor1 = [7.083, 0.0, 0.0]
+    anchor1 = np.array([7.083, 0.0, 0.0])
     anchor2 = rotate_vector_2d(anchor1, 2.0 * np.pi / 3.0)
 
     mooring1 = cable.MooringLine(
@@ -65,6 +68,18 @@ def get_mooring_line(
     mooring2 = cable.MooringLine(
         fairlead=fairlead2, anchor=anchor2, L=L, w=w, EA=EA, floor=floor
     )
+
+    if reversed:
+        if EA is not None:
+            EA = EA[::-1]
+        L = L[::-1]
+        w = w[::-1]
+        mooring1 = cable.MooringLine(
+            fairlead=anchor1, anchor=fairlead1, L=L, w=w, EA=EA, floor=floor
+        )
+        mooring2 = cable.MooringLine(
+            fairlead=anchor2, anchor=fairlead2, L=L, w=w, EA=EA, floor=floor
+        )
 
     return (mooring1, mooring2)
 
@@ -115,6 +130,40 @@ class TestMultisegmentedWEC(unittest.TestCase):
                 names="xpos,T1x,T1y,T1z,T2x,T2y,T2z",
             )
 
+    def test_elastic_reversed(self):
+        ref_filename = "elastic.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
+            T2_ref = np.column_stack((ref["T2x"], ref["T2y"], ref["T2z"]))
+
+        # create mooring line
+        mooring1, mooring2 = get_mooring_line(
+            elastic=True, floor=True, reversed=True
+        )
+        anchor1 = mooring1.get_anchor_position()
+        anchor2 = mooring2.get_anchor_position()
+
+        T1s = np.zeros((len(XPOS), 3))
+        T2s = np.zeros((len(XPOS), 3))
+        for ii, x in enumerate(XPOS):
+            mooring1.set_anchor_position(anchor1 + [x, 0.0, 0.0])
+            mooring1.compute_solution()
+            T1s[ii] = mooring1.get_anchor_force()
+
+            mooring2.set_anchor_position(anchor2 + [x, 0.0, 0.0])
+            mooring2.compute_solution()
+            T2s[ii] = mooring2.get_anchor_force()
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T1s[ii, 0], T1_ref[ii, 0])
+                npt.assert_almost_equal(T1s[ii, 1], T1_ref[ii, 1])
+                npt.assert_almost_equal(T1s[ii, 2], T1_ref[ii, 2])
+                npt.assert_almost_equal(T2s[ii, 0], T2_ref[ii, 0])
+                npt.assert_almost_equal(T2s[ii, 1], T2_ref[ii, 1])
+                npt.assert_almost_equal(T2s[ii, 2], T2_ref[ii, 2])
+
     def test_rigid(self):
         ref_filename = "rigid.txt"
         if self.compare_test:
@@ -155,6 +204,40 @@ class TestMultisegmentedWEC(unittest.TestCase):
                 delimiter=",",
                 names="xpos,T1x,T1y,T1z,T2x,T2y,T2z",
             )
+
+    def test_rigid_reversed(self):
+        ref_filename = "rigid.txt"
+        if self.compare_test:
+            ref = csv2array(ref_filename, names=True, delimiter=",")
+            T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
+            T2_ref = np.column_stack((ref["T2x"], ref["T2y"], ref["T2z"]))
+
+        # create mooring line
+        mooring1, mooring2 = get_mooring_line(
+            elastic=False, floor=True, reversed=True
+        )
+        anchor1 = mooring1.get_anchor_position()
+        anchor2 = mooring2.get_anchor_position()
+
+        T1s = np.zeros((len(XPOS), 3))
+        T2s = np.zeros((len(XPOS), 3))
+        for ii, x in enumerate(XPOS):
+            mooring1.set_anchor_position(anchor1 + [x, 0.0, 0.0])
+            mooring1.compute_solution()
+            T1s[ii] = mooring1.get_anchor_force()
+
+            mooring2.set_anchor_position(anchor2 + [x, 0.0, 0.0])
+            mooring2.compute_solution()
+            T2s[ii] = mooring2.get_anchor_force()
+
+            # check solution
+            if self.compare_test:
+                npt.assert_almost_equal(T1s[ii, 0], T1_ref[ii, 0])
+                npt.assert_almost_equal(T1s[ii, 1], T1_ref[ii, 1])
+                npt.assert_almost_equal(T1s[ii, 2], T1_ref[ii, 2])
+                npt.assert_almost_equal(T2s[ii, 0], T2_ref[ii, 0])
+                npt.assert_almost_equal(T2s[ii, 1], T2_ref[ii, 1])
+                npt.assert_almost_equal(T2s[ii, 2], T2_ref[ii, 2])
 
     def test_elastic_nofloor(self):
         ref_filename = "elastic_nofloor.txt"
