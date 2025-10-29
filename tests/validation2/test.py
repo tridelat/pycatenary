@@ -843,9 +843,10 @@ class TestSingleLineFOWT(unittest.TestCase):
         ss_test = np.linspace(0.0, length, NPOINTS)
         for ii, s in enumerate(ss_test):
             # rotate tension and position back (-120 degrees)
-            T_test = rotate_vector_2d(
-                mooring.get_tension(s), -120 * np.pi / 180
-            )
+            tension = mooring.get_tension(s)
+            # necessary because tension is strictly positive otherwise
+            tension[0] = -tension[0]
+            T_test = rotate_vector_2d(tension, -120 * np.pi / 180)
             xyz_test = rotate_vector_2d(
                 mooring.get_position(s), -120 * np.pi / 180
             )

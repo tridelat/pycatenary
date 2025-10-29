@@ -165,11 +165,18 @@ class MooringLine:
             s = np.sum(self.catenary.L) - s
 
         if not self._fairlead_above_anchor:
-            return self._transform_vector_2d(
+            tension = self._transform_vector_2d(
                 self.catenary.get_tension(np.sum(self.catenary.L) - s)
             )
         else:
-            return self._transform_vector_2d(self.catenary.get_tension(s))
+            tension = self._transform_vector_2d(self.catenary.get_tension(s))
+
+        if self._nd == 2:
+            tension[0] = abs(tension[0])
+        elif self._nd == 3:
+            tension[0] = abs(tension[0])
+            tension[1] = abs(tension[1])
+        return tension
 
     def get_fairlead_force(self) -> np.ndarray:
         """Returns force at fairlead.
