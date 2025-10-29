@@ -66,7 +66,6 @@ class TestSingleLineWEC(unittest.TestCase):
 
         # make mooring line
         mooring = get_mooring_line(elastic=True, floor=True)
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros((NPOINTS, 3))
@@ -76,7 +75,7 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             Tf_test[ii] = Tf
             # total lifted line length
             Ls_test[ii] = np.sum(mooring.catenary.Ls)
@@ -108,7 +107,6 @@ class TestSingleLineWEC(unittest.TestCase):
         mooring = get_mooring_line(
             elastic=True, floor=True, multisegmented=True
         )
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         xx_test = np.linspace(6.4, 4.9, NPOINTS)
@@ -116,7 +114,7 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             # total lifted line length
             Ls = np.sum(mooring.catenary.Ls)
 
@@ -137,7 +135,6 @@ class TestSingleLineWEC(unittest.TestCase):
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=True)
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros((NPOINTS, 3))
@@ -147,7 +144,7 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             Tf_test[ii] = Tf
             # total lifted line length
             Ls_test[ii] = np.sum(mooring.catenary.Ls)
@@ -179,7 +176,6 @@ class TestSingleLineWEC(unittest.TestCase):
         mooring = get_mooring_line(
             elastic=False, floor=True, multisegmented=True
         )
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         xx_test = np.linspace(6.4, 4.9, NPOINTS)
@@ -187,7 +183,7 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             # total lifted line length
             Ls = np.sum(mooring.catenary.Ls)
 
@@ -209,7 +205,6 @@ class TestSingleLineWEC(unittest.TestCase):
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=False)
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         Tf_test = np.zeros((NPOINTS, 3))
@@ -220,10 +215,10 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             Tf_test[ii] = Tf
             # tension at anchor
-            Ta = mooring.get_tension(0.0)
+            Ta = mooring.get_anchor_force()
             Ta_test[ii] = Ta
             # total lifted line length
             Ls_test[ii] = np.sum(mooring.catenary.Ls)
@@ -259,7 +254,6 @@ class TestSingleLineWEC(unittest.TestCase):
         mooring = get_mooring_line(
             elastic=False, floor=False, multisegmented=True
         )
-        length = np.sum(mooring.catenary.L)
 
         # test for different positions of fairlead
         xx_test = np.linspace(6.4, 4.9, NPOINTS)
@@ -267,9 +261,9 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_fairlead_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(length)
+            Tf = mooring.get_fairlead_force()
             # tension at anchor
-            Ta = mooring.get_tension(0.0)
+            Ta = mooring.get_anchor_force()
             # total lifted line length
             Ls = np.sum(mooring.catenary.Ls)
 
@@ -294,7 +288,6 @@ class TestSingleLineWEC(unittest.TestCase):
 
         # make mooring line
         mooring = get_mooring_line(elastic=False, floor=False)
-        length = np.sum(mooring.catenary.L)
 
         # switch anchor and fairlead positions
         anchor_position = mooring.get_anchor_position()
@@ -309,9 +302,9 @@ class TestSingleLineWEC(unittest.TestCase):
             mooring.set_anchor_position(np.array([x, 0.0, 2.65]))
             mooring.compute_solution()
             # tension at fairlead
-            Tf = mooring.get_tension(0.0)
+            Tf = mooring.get_anchor_force()
             # tension at anchor
-            Ta = mooring.get_tension(length)
+            Ta = mooring.get_fairlead_force()
             # total lifted line length
             Ls = np.sum(mooring.catenary.Ls)
 

@@ -119,15 +119,12 @@ class CatenaryBase(ABC):
             w_av = np.sum(self.w * self.Ls) / Lst
             # horizontal tension
             Th = self.a * w_av * (Lst / Lset)
-            # reverse sign for Th if s > 0 for catenary
-            if s + self._get_elongation_at_s(s) + self._s_offset > 0.0:
-                Th = -Th
             # vertical tension
             dydx = np.sinh((self.s2xy(s)[0] - self._x_offset - s0) / self.a)
             angle = np.arctan(dydx)
             Tv = Th * np.tan(angle)
             # Tv assumed always negative
-            Tv = -np.abs(Tv)
+            Tv = np.abs(Tv)
             # tension at point
             Ts = np.array([Th, Tv])
         elif 0 <= s < s0:  # s on floor
@@ -314,6 +311,45 @@ class CatenaryBase(ABC):
         self.e = self.e[::-1]
         self.Ls = self.Ls[::-1]
         self._has_reversed_properties = not self._has_reversed_properties
+
+    def get_force_beginning_of_line(self):
+        Lt = np.sum(self.L)
+        if not self._has_reversed_properties:
+            s = 0.0
+        else:
+            s = Lt
+
+        force = self.get_tension(s)
+
+        s0 = self.d - self.x0
+        if Lt >= s >= s0:  # s in lifted line part
+            if s == Lt:
+                force[0] = -force[0]
+            if not (s == 0.0 and self._s_offset > 0.0):  # fully lifted line
+                # inverse sign of vertical component in all cases
+                # apart from case where line is fully lifted and not hanging
+                force[1] = -force[1]
+        return force
+
+    def get_force_end_of_line(self):
+        Lt = np.sum(self.L)
+        if not self._has_reversed_properties:
+            s = Lt
+        else:
+            s = 0.0
+
+        force = self.get_tension(s)
+
+        s0 = self.d - self.x0
+        if Lt >= s >= s0:  # s in lifted line part
+            # inverse sign of horizontal component if on right side of catenary
+            if s == Lt:
+                force[0] = -force[0]
+            if not (s == 0.0 and self._s_offset > 0.0):  # fully lifted line
+                # inverse sign of vertical component in all cases
+                # apart from case where line is fully lifted and not hanging
+                force[1] = -force[1]
+        return force
 
     # Deprecated camelCase methods with warnings
     def getTension(self, s: float) -> np.ndarray:

@@ -87,13 +87,19 @@ line1.plot_2d()
 
 ### Retrieving tension/position along line
 
+The force experienced by the anchor or fairlead at the mooring line can be retrieved as follows:
+
 ```python
-# get tension at the fairlead
-line1.get_tension_fairlead()
+# get force at the fairlead
+line1.get_fairlead_force()
 
-# get tension at the anchor
-line1.get_tension_anchor()
+# get force at the anchor
+line1.get_anchor_force()
+```
 
+Tension (strictly positive) and position can also be retrieved along the line as follows:
+
+```python
 # get tension at 800m along the line from the anchor
 line1.get_tension(800.0)
 # get position at 800m along the line from the anchor
@@ -117,7 +123,7 @@ line1.set_fairlead_position([-50.0, -19.84, -14.0])
 line1.compute_solution()
 ```
 
-This can be used for quasi-static analysis, retrieving tension at fairlead/anchor, applying it to an external body dynamics solver, and updating fairlead/anchor positions of the pyCatenary line.
+This can be used for quasi-static analysis, retrieving forces at fairlead/anchor, applying it to an external body dynamics solver, doing a dynamics step, and updating fairlead/anchor positions of the pyCatenary line to retrieve the new forces.
 
 
 

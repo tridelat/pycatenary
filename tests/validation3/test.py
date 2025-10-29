@@ -91,11 +91,11 @@ class TestMultisegmentedWEC(unittest.TestCase):
         for ii, x in enumerate(XPOS):
             mooring1.set_fairlead_position(fairlead1 + [x, 0.0, 0.0])
             mooring1.compute_solution()
-            T1s[ii] = mooring1.get_tension_fairlead()
+            T1s[ii] = mooring1.get_fairlead_force()
 
             mooring2.set_fairlead_position(fairlead2 + [x, 0.0, 0.0])
             mooring2.compute_solution()
-            T2s[ii] = mooring2.get_tension_fairlead()
+            T2s[ii] = mooring2.get_fairlead_force()
 
             # check solution
             if self.compare_test:
@@ -132,11 +132,11 @@ class TestMultisegmentedWEC(unittest.TestCase):
         for ii, x in enumerate(XPOS):
             mooring1.set_fairlead_position(fairlead1 + [x, 0.0, 0.0])
             mooring1.compute_solution()
-            T1s[ii] = mooring1.get_tension_fairlead()
+            T1s[ii] = mooring1.get_fairlead_force()
 
             mooring2.set_fairlead_position(fairlead2 + [x, 0.0, 0.0])
             mooring2.compute_solution()
-            T2s[ii] = mooring2.get_tension_fairlead()
+            T2s[ii] = mooring2.get_fairlead_force()
 
             # check solution
             if self.compare_test:
@@ -173,11 +173,11 @@ class TestMultisegmentedWEC(unittest.TestCase):
         for ii, x in enumerate(XPOS):
             mooring1.set_fairlead_position(fairlead1 + [x, 0.0, 0.0])
             mooring1.compute_solution()
-            T1s[ii] = mooring1.get_tension_fairlead()
+            T1s[ii] = mooring1.get_fairlead_force()
 
             mooring2.set_fairlead_position(fairlead2 + [x, 0.0, 0.0])
             mooring2.compute_solution()
-            T2s[ii] = mooring2.get_tension_fairlead()
+            T2s[ii] = mooring2.get_fairlead_force()
 
             # check solution
             if self.compare_test:
@@ -214,11 +214,11 @@ class TestMultisegmentedWEC(unittest.TestCase):
         for ii, x in enumerate(XPOS):
             mooring1.set_fairlead_position(fairlead1 + [x, 0.0, 0.0])
             mooring1.compute_solution()
-            T1s[ii] = mooring1.get_tension_fairlead()
+            T1s[ii] = mooring1.get_fairlead_force()
 
             mooring2.set_fairlead_position(fairlead2 + [x, 0.0, 0.0])
             mooring2.compute_solution()
-            T2s[ii] = mooring2.get_tension_fairlead()
+            T2s[ii] = mooring2.get_fairlead_force()
 
             # check solution
             if self.compare_test:

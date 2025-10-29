@@ -105,15 +105,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -157,13 +157,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
+            npt.assert_almost_equal(Ta[1], T_ref[0, 1])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
             array2csv(
@@ -206,15 +208,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -258,15 +260,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -317,15 +319,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
+            Tf = mooring.get_fairlead_force()
             npt.assert_almost_equal(Tf[0], T_ref[0, 0])
             npt.assert_almost_equal(Tf[1], T_ref[0, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[0, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[0, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
-            npt.assert_almost_equal(Ta[0], T_ref[-1, 0])
+            Ta = mooring.get_anchor_force()
+            npt.assert_almost_equal(Ta[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Ta[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_rigid_reversed(self):
         ref_filename = "rigid.txt"
@@ -367,15 +369,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
+            Tf = mooring.get_fairlead_force()
             npt.assert_almost_equal(Tf[0], T_ref[0, 0])
             npt.assert_almost_equal(Tf[1], T_ref[0, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[0, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[0, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
-            npt.assert_almost_equal(Ta[0], T_ref[-1, 0])
+            Ta = mooring.get_anchor_force()
+            npt.assert_almost_equal(Ta[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Ta[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_elastic_vertical(self):
         ref_filename = "elastic_line_too_long.txt"
@@ -415,15 +417,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -472,15 +474,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -527,15 +529,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -582,15 +584,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -636,15 +638,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -697,15 +699,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
+            Tf = mooring.get_fairlead_force()
             npt.assert_almost_equal(Tf[0], T_ref[0, 0])
             npt.assert_almost_equal(Tf[1], T_ref[0, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[0, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[0, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
-            npt.assert_almost_equal(Ta[0], T_ref[-1, 0])
+            Ta = mooring.get_anchor_force()
+            npt.assert_almost_equal(Ta[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Ta[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_rigid_heavy_section(self):
         ref_filename = "rigid_heavy_section.txt"
@@ -742,15 +744,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            Tf = mooring.get_fairlead_force()
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
+            Ta = mooring.get_anchor_force()
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
         if self.save_test2ref:
             stack = np.column_stack((ss_test, xyz_test, T_test))
@@ -803,15 +805,15 @@ class TestSingleLineFOWT(unittest.TestCase):
 
         if self.compare_test:
             # compare tension at fairlead
-            Tf = mooring.get_tension_fairlead()
+            Tf = mooring.get_fairlead_force()
             npt.assert_almost_equal(Tf[0], T_ref[0, 0])
             npt.assert_almost_equal(Tf[1], T_ref[0, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[0, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[0, 2])
             # compare tension at anchor
-            Ta = mooring.get_tension_anchor()
-            npt.assert_almost_equal(Ta[0], T_ref[-1, 0])
+            Ta = mooring.get_anchor_force()
+            npt.assert_almost_equal(Ta[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Ta[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_elastic_120degrees(self):
         ref_filename = "elastic.txt"
@@ -860,18 +862,18 @@ class TestSingleLineFOWT(unittest.TestCase):
         if self.compare_test:
             # compare tension at fairlead
             Tf = rotate_vector_2d(
-                mooring.get_tension_fairlead(), -120 * np.pi / 180
+                mooring.get_fairlead_force(), -120 * np.pi / 180
             )
-            npt.assert_almost_equal(Tf[0], T_ref[-1, 0])
+            npt.assert_almost_equal(Tf[0], -T_ref[-1, 0])
             npt.assert_almost_equal(Tf[1], T_ref[-1, 1])
-            npt.assert_almost_equal(Tf[2], T_ref[-1, 2])
+            npt.assert_almost_equal(Tf[2], -T_ref[-1, 2])
             # compare tension at anchor
             Ta = rotate_vector_2d(
-                mooring.get_tension_anchor(), -120 * np.pi / 180
+                mooring.get_anchor_force(), -120 * np.pi / 180
             )
             npt.assert_almost_equal(Ta[0], T_ref[0, 0])
             npt.assert_almost_equal(Ta[1], T_ref[0, 1])
-            npt.assert_almost_equal(Ta[2], T_ref[0, 2])
+            npt.assert_almost_equal(Ta[2], -T_ref[0, 2])
 
 
 if __name__ == "__main__":

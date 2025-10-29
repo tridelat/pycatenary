@@ -171,25 +171,27 @@ class MooringLine:
         else:
             return self._transform_vector_2d(self.catenary.get_tension(s))
 
-    def get_tension_fairlead(self) -> np.ndarray:
-        """Returns tension at fairlead.
+    def get_fairlead_force(self) -> np.ndarray:
+        """Returns force at fairlead.
 
         Returns
         -------
-        tension: np.ndarray
+        force: np.ndarray
             Tension vector [N].
         """
-        return self.get_tension(np.sum(self.catenary.L))
+        return self._transform_vector_2d(self.catenary.get_force_end_of_line())
 
-    def get_tension_anchor(self) -> np.ndarray:
-        """Returns tension at anchor.
+    def get_anchor_force(self) -> np.ndarray:
+        """Returns force at anchor.
 
         Returns
         -------
-        tension: np.ndarray
+        force: np.ndarray
             Tension vector [N].
         """
-        return self.get_tension(0.0)
+        return self._transform_vector_2d(
+            self.catenary.get_force_beginning_of_line()
+        )
 
     def plot(
         self,
@@ -300,8 +302,8 @@ class MooringLine:
                 "ko",
             )
         # add tension information
-        anchor_tension = np.linalg.norm(self.get_tension_anchor())
-        fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
+        anchor_tension = np.linalg.norm(self.get_anchor_force())
+        fairlead_tension = np.linalg.norm(self.get_fairlead_force())
         ax.set_title(
             f"Tensions: Fairlead {fairlead_tension:.3e} | "
             f"Anchor {anchor_tension:.3e}"
@@ -383,8 +385,8 @@ class MooringLine:
         ax.set_zlabel("z")
         ax.set_zlim(bottom=min(zz), top=max(zz))
         # add tension information
-        anchor_tension = np.linalg.norm(self.get_tension_anchor())
-        fairlead_tension = np.linalg.norm(self.get_tension_fairlead())
+        anchor_tension = np.linalg.norm(self.get_anchor_force())
+        fairlead_tension = np.linalg.norm(self.get_fairlead_force())
         ax.set_title(
             f"Tensions: Fairlead {fairlead_tension:.3e} | "
             f"Anchor {anchor_tension:.3e}"
@@ -525,22 +527,6 @@ class MooringLine:
             stacklevel=2,
         )
         return self.get_tension(s)
-
-    def getTensionFairlead(self) -> np.ndarray:
-        warnings.warn(
-            "getTensionFairlead is deprecated, use get_tension_fairlead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.get_tension_fairlead()
-
-    def getTensionAnchor(self) -> np.ndarray:
-        warnings.warn(
-            "getTensionAnchor is deprecated, use get_tension_anchor.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.get_tension_anchor()
 
     def setAnchorCoords(self, coords: Sequence[float]) -> None:
         warnings.warn(
