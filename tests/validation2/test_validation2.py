@@ -73,7 +73,7 @@ class TestSingleLineFOWT(unittest.TestCase):
         self.compare_test = True  # compare test results to ref
 
     def test_elastic(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -125,7 +125,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_rigid(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -176,7 +176,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_elastic_nofloor(self):
-        ref_filename = "elastic_nofloor.txt"
+        ref_filename = "elastic_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -228,7 +228,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_rigid_nofloor(self):
-        ref_filename = "rigid_nofloor.txt"
+        ref_filename = "rigid_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -280,7 +280,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_elastic_reversed(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -330,7 +330,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_rigid_reversed(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -380,7 +380,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_elastic_vertical(self):
-        ref_filename = "elastic_line_too_long.txt"
+        ref_filename = "elastic_line_too_long.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -437,7 +437,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_rigid_vertical(self):
-        ref_filename = "rigid_line_too_long.txt"
+        ref_filename = "rigid_line_too_long.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -494,7 +494,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_elastic_fully_lifted(self):
-        ref_filename = "elastic_fully_lifted.txt"
+        ref_filename = "elastic_fully_lifted.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -549,7 +549,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_rigid_fully_lifted(self):
-        ref_filename = "rigid_fully_lifted.txt"
+        ref_filename = "rigid_fully_lifted.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -604,7 +604,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_elastic_heavy_section(self):
-        ref_filename = "elastic_heavy_section.txt"
+        ref_filename = "elastic_heavy_section.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -658,7 +658,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_elastic_heavy_section_reversed(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -710,7 +710,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_rigid_heavy_section(self):
-        ref_filename = "rigid_heavy_section.txt"
+        ref_filename = "rigid_heavy_section.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -764,7 +764,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             )
 
     def test_rigid_heavy_section_reversed(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))
@@ -816,7 +816,7 @@ class TestSingleLineFOWT(unittest.TestCase):
             npt.assert_almost_equal(Ta[2], -T_ref[-1, 2])
 
     def test_elastic_120degrees(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"], ref["z"]))

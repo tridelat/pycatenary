@@ -90,7 +90,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
         self.compare_test = True  # compare test results to ref
 
     def test_elastic(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
@@ -131,7 +131,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
             )
 
     def test_elastic_reversed(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
@@ -165,7 +165,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
                 npt.assert_almost_equal(T2s[ii, 2], T2_ref[ii, 2])
 
     def test_rigid(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
@@ -206,7 +206,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
             )
 
     def test_rigid_reversed(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
@@ -240,7 +240,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
                 npt.assert_almost_equal(T2s[ii, 2], T2_ref[ii, 2])
 
     def test_elastic_nofloor(self):
-        ref_filename = "elastic_nofloor.txt"
+        ref_filename = "elastic_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))
@@ -281,7 +281,7 @@ class TestMultisegmentedWEC(unittest.TestCase):
             )
 
     def test_rigid_nofloor(self):
-        ref_filename = "rigid_nofloor.txt"
+        ref_filename = "rigid_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T1_ref = np.column_stack((ref["T1x"], ref["T1y"], ref["T1z"]))

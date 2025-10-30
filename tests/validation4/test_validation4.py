@@ -35,7 +35,8 @@ def rotate_vector_2d(vector: np.ndarray, angle: float) -> np.ndarray:
 
 
 def get_mooring_line(
-    elastic: bool = True, multisegmented: bool = False
+    elastic: bool = True,
+    multisegmented: bool = False,
 ) -> tuple[cable.MooringLine, cable.MooringLine]:
     """Returns a mooring line instance.
 
@@ -47,13 +48,13 @@ def get_mooring_line(
         If True, the floor is assumed to be at the anchor level.
     """
 
-    length = 20.0 if not multisegmented else [5.0, 10.0, 2.5, 2.5]
-    w = 1.962 if not multisegmented else [1.962] * 4
+    length = 20.0 if not multisegmented else [5.0, 6.0, 4.0, 1.5, 3.5]
+    w = 1.962 if not multisegmented else [1.962] * 5
     if not elastic:
         EA = None
     else:
         # make it very extensible on purpose
-        EA = 1e1 if not multisegmented else [1e1] * 4
+        EA = 1e1 if not multisegmented else [1e1] * 5
 
     # define properties of cable
     mooring = cable.MooringLine(
@@ -74,7 +75,7 @@ class TestHangingCable(unittest.TestCase):
         self.compare_test = True  # compare test results to ref
 
     def test_rigid(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"]))
@@ -122,7 +123,7 @@ class TestHangingCable(unittest.TestCase):
             )
 
     def test_elastic(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"]))
@@ -170,7 +171,7 @@ class TestHangingCable(unittest.TestCase):
             )
 
     def test_rigid_multisegmented(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             xyz_ref = np.column_stack((ref["x"], ref["y"]))
@@ -209,7 +210,7 @@ class TestHangingCable(unittest.TestCase):
             npt.assert_almost_equal(Ta[1], -T_ref[0, 1])
 
     def test_elastic_multisegmented(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             T_ref = np.column_stack((ref["Tx"], ref["Ty"]))

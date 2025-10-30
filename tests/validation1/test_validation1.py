@@ -58,7 +58,7 @@ class TestSingleLineWEC(unittest.TestCase):
         self.compare_test = True  # compare test results to ref
 
     def test_elastic(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -97,7 +97,7 @@ class TestSingleLineWEC(unittest.TestCase):
             )
 
     def test_elastic_multisegmented(self):
-        ref_filename = "elastic.txt"
+        ref_filename = "elastic.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -127,7 +127,7 @@ class TestSingleLineWEC(unittest.TestCase):
 
     def test_rigid(self):
         # load reference data
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -166,7 +166,7 @@ class TestSingleLineWEC(unittest.TestCase):
             )
 
     def test_rigid_multisegmented(self):
-        ref_filename = "rigid.txt"
+        ref_filename = "rigid.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -196,7 +196,7 @@ class TestSingleLineWEC(unittest.TestCase):
 
     def test_rigid_nofloor(self):
         # load reference data
-        ref_filename = "rigid_nofloor.txt"
+        ref_filename = "rigid_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -244,7 +244,7 @@ class TestSingleLineWEC(unittest.TestCase):
 
     def test_rigid_nofloor_multisegmented(self):
         # load reference data
-        ref_filename = "rigid_nofloor.txt"
+        ref_filename = "rigid_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
@@ -279,7 +279,7 @@ class TestSingleLineWEC(unittest.TestCase):
 
     def test_rigid_nofloor_anchor_above(self):
         # load reference data
-        ref_filename = "rigid_nofloor.txt"
+        ref_filename = "rigid_nofloor.csv"
         if self.compare_test:
             ref = csv2array(ref_filename, names=True, delimiter=",")
             Tf_ref = np.column_stack((ref["Tfx"], ref["Tfy"], ref["Tfz"]))
