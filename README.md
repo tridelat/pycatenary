@@ -18,6 +18,8 @@ pip install pycatenary
 
 ### Development version
 
+#### Installing
+
 For installing a development version through pip:
 
 ```bash
@@ -25,6 +27,15 @@ git clone https://github.com/tridelat/pycatenary
 cd pycatenary
 pip install -e .
 ```
+
+#### Running tests
+
+From the root directory of pycatenary, simply run:
+
+```bash
+pytest
+```
+
 
 ## About pyCatenary
 
@@ -41,7 +52,7 @@ pip install -e .
 - All lines, included multisegmented ones, have a single pure catenary shape.
 - Gravitational acceleration is along -Z in 3D, -Y in 2D.
 - If floor/seabed is enabled, it is assumed flat.
-- For multisegmented lines, elongation is calculated per section, starting from the lowest segment (so the order along the lifted line section matter). Once the solution for the elongated catenary is found, tension along the line is retrieved directly from the catenary equation. This means that tensions at the fairlead and anchor are as intended, and tensions at arbitrary location along the line are calculated directly from the catenary shape using submerged weight averaged over the whole lifted line length.
+- For multisegmented lines, elongation is calculated per section, starting from the lowest segment in the catenary. Once the solution for the elongated catenary has converged, tension along the line is retrieved directly from the catenary equation using submerged weight averaged over the lifted line length.
 
 
 ## Getting Started
@@ -81,8 +92,8 @@ line1.plot_2d()
 
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/line_plot_3D.svg" alt="3D line" width="43%">
-  <img src="docs/source/line_plot_2D.svg" alt="2D line" width="55%">
+  <img src="docs/source/_static/line_plot_3D.svg" alt="" width="43%">
+  <img src="docs/source/_static/line_plot_2D.svg" alt="" width="55%">
 </div>
 
 ### Retrieving tension/position along line
@@ -159,7 +170,7 @@ line2.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/line_plot_2D_hanging.svg" alt="Hanging line" width="70%">
+  <img src="docs/source/_static/line_plot_2D_hanging.svg" alt="" width="55%">
 </div>
 
 
@@ -204,12 +215,12 @@ line3.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/line_plot_2D_partly.svg" alt="Partly lifted line" width="49%">
-  <img src="docs/source/line_plot_2D_fully.svg" alt="Fully lifted line" width="49%">
+  <img src="docs/source/_static/line_plot_2D_partly.svg" alt="" width="49%">
+  <img src="docs/source/_static/line_plot_2D_fully.svg" alt="" width="49%">
 </div>
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/line_plot_2D_taut.svg" alt="Taut line" width="49%">
-  <img src="docs/source/line_plot_2D_long.svg" alt="Long line" width="49%">
+  <img src="docs/source/_static/line_plot_2D_taut.svg" alt="" width="49%">
+  <img src="docs/source/_static/line_plot_2D_long.svg" alt="" width="49%">
 </div>
 
 
@@ -237,7 +248,7 @@ line4.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/line_plot_3D_multisegmented.svg" alt="Multisegmented line" width="70%">
+  <img src="docs/source/_static/line_plot_3D_multisegmented.svg" alt="" width="70%">
 </div>
 
 Note that to make the cable inextensible, the axial stiffness only needs to be defined to None as follows:

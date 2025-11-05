@@ -577,3 +577,11 @@ class MooringLine:
             stacklevel=2,
         )
         return self.plot_3d(npoints, show_tension, colormap)
+
+    def s2xyz(self, s: float) -> np.ndarray:
+        warnings.warn(
+            "s2xyz is deprecated, use get_position.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.get_position(s)
