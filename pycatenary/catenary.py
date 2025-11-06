@@ -4,7 +4,7 @@ from typing import Sequence, Union
 
 import numpy as np
 
-from . import utils
+from . import root_finding
 
 
 def get_array(x: Union[float, Sequence[float]]) -> np.ndarray:
@@ -426,7 +426,7 @@ class CatenaryRigid(CatenaryBase):
                 f"({a2f}), delta={Lt - a2f} < tol={tol}."
             )
         if floor is False:
-            a = utils.nofloor_rigid(d=d, h=h, L=L, tol=tol, maxit=maxit)
+            a = root_finding.nofloor_rigid(d=d, h=h, L=L, tol=tol, maxit=maxit)
             x0 = d
             Ls[:] = L
             Lst = np.sum(Ls + self.e)
@@ -453,7 +453,7 @@ class CatenaryRigid(CatenaryBase):
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a * (np.cosh(d / a) - 1) - h
-                a = utils.bisection(
+                a = root_finding.bisection(
                     f,
                     int1=self.bisection_int1,
                     int2=self.bisection_int2,
@@ -466,13 +466,13 @@ class CatenaryRigid(CatenaryBase):
                 # get actual line length assuming fully lifted (from a)
                 Ls1 = np.sum(L)
                 if Ls1 > Ls0:  # partly lifted
-                    a, Ls = utils.partly_lifted_rigid(
+                    a, Ls = root_finding.partly_lifted_rigid(
                         d=d, h=h, L=L, maxit=maxit, tol=tol
                     )
                     x0 = a * np.arccosh(1 + h / a)
                     y_offset = -a
                 elif Ls1 <= Ls0:  # fully lifted
-                    a = utils.fully_lifted_rigid(
+                    a = root_finding.fully_lifted_rigid(
                         d=d,
                         h=h,
                         L=L,
@@ -566,7 +566,7 @@ class CatenaryElastic(CatenaryBase):
         diff = tol + 1
 
         if floor is False:
-            a, e = utils.nofloor_elastic(
+            a, e = root_finding.nofloor_elastic(
                 d=d, h=h, L=L, w=w, EA=EA, tol=tol, maxit=maxit
             )
             x0 = d
@@ -618,7 +618,7 @@ class CatenaryElastic(CatenaryBase):
             else:
                 # check if line is partly or fully lifted
                 f = lambda a: a * (np.cosh(d / a) - 1) - h
-                a = utils.bisection(
+                a = root_finding.bisection(
                     f,
                     self.bisection_int1,
                     self.bisection_int2,
@@ -643,7 +643,7 @@ class CatenaryElastic(CatenaryBase):
                     )
                 Ls1 = Lt + np.sum(e)
                 if Ls1 > Ls0:  # partly lifted
-                    a, e, Lsu = utils.partly_lifted_elastic(
+                    a, e, Lsu = root_finding.partly_lifted_elastic(
                         d=d, h=h, L=L, w=w, EA=EA, maxit=maxit, tol=tol
                     )
                     Ls[:] = Lsu
@@ -652,7 +652,7 @@ class CatenaryElastic(CatenaryBase):
                 elif Ls1 <= Ls0:  # fully lifted
                     x0 = d
                     Ls[:] = L
-                    a, e = utils.fully_lifted_elastic(
+                    a, e = root_finding.fully_lifted_elastic(
                         d=d,
                         h=h,
                         L=L,
