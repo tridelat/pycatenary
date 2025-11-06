@@ -1,9 +1,9 @@
-import warnings
 from typing import Optional, Sequence, Union
 
 import numpy as np
 
 from . import catenary
+from .utils import deprecated
 
 
 class MooringLine:
@@ -510,78 +510,44 @@ class MooringLine:
         """
         return np.array(self._fairlead)
 
-    def updateAxialStiffness(self, EA: Union[float, Sequence[float]]) -> None:
-        warnings.warn(
-            "updateAxialStiffness is deprecated, use update_axial_stiffness.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.update_axial_stiffness(EA)
-
+    @deprecated("computeSolution is deprecated, use compute_solution instead.")
     def computeSolution(self) -> None:
-        """Deprecated: Use compute_solution instead."""
-        warnings.warn(
-            "computeSolution is deprecated, use compute_solution.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.compute_solution()
 
+    @deprecated("getTension is deprecated, use get_tension instead.")
     def getTension(self, s: float) -> np.ndarray:
-        warnings.warn(
-            "getTension is deprecated, use get_tension.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.get_tension(s)
 
+    @deprecated(
+        "setAnchorCoords is deprecated, use set_anchor_position instead."
+    )
     def setAnchorCoords(self, coords: Sequence[float]) -> None:
-        warnings.warn(
-            "setAnchorCoords is deprecated, use set_anchor_coords.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.set_anchor_position(coords)
 
+    @deprecated(
+        "setFairleadCoords is deprecated, use set_fairlead_position instead."
+    )
     def setFairleadCoords(self, coords: Sequence[float]) -> None:
-        warnings.warn(
-            "setFairleadCoords is deprecated, use set_fairlead_coords.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.set_fairlead_position(coords)
 
-    # Additional deprecated camelCase methods with warnings
+    @deprecated("plot2D is deprecated, use plot_2d instead.")
     def plot2D(
         self,
         npoints: int = 100,
         show_tension: bool = True,
         colormap: str = "viridis",
     ) -> None:
-        warnings.warn(
-            "plot2D is deprecated, use plot_2d.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.plot_2d(npoints, show_tension, colormap)
 
+    @deprecated("plot3D is deprecated, use plot_3d instead.")
     def plot3D(
         self,
         npoints: int = 100,
         show_tension: bool = True,
         colormap: str = "viridis",
     ) -> None:
-        warnings.warn(
-            "plot3D is deprecated, use plot_3d.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.plot_3d(npoints, show_tension, colormap)
 
+    @deprecated("s2xyz is deprecated, use get_position instead.")
     def s2xyz(self, s: float) -> np.ndarray:
-        warnings.warn(
-            "s2xyz is deprecated, use get_position.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.get_position(s)
