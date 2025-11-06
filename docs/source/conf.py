@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "pycatenary"
+project = "pyCatenary"
 copyright = "2020, Tristan de Lataillade"
 author = "Tristan de Lataillade"
 
@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.graphviz",
     "sphinx.ext.inheritance_diagram",
     "sphinx.ext.napoleon",
+    "myst_parser",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -45,6 +46,15 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
+
+# Enable markdown parsing
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
+# Set master document to index.md
+master_doc = "index"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -87,8 +97,8 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "canonical_url": "",
     "analytics_id": "",
-    "logo_only": True,
-    "display_version": True,
+    "logo_only": False,
+    "version_selector": True,
     "prev_next_buttons_location": "bottom",
     "style_external_links": False,
     # 'vcs_pageview_mode': '',
@@ -100,11 +110,11 @@ html_theme_options = {
     "titles_only": False,
 }
 html_context = {
-    "display_github": True,  # Integrate GitHub
+    "display_github": False,  # Integrate GitHub
     "github_user": "tridelat",  # Username
     "github_repo": "pycatenary",  # Repo name
-    "github_version": "master",  # Version
-    "conf_py_path": "docs/source/",  # Path in the checkout to the docs root
+    "github_version": "v0.4.0",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
 }
 
 # Custom sidebar templates, maps document names to template names.
@@ -112,3 +122,5 @@ html_context = {
 html_sidebars = {"**": ["globaltoc.html", "sourcelink.html", "searchbox.html"]}
 
 graphviz_output_format = "svg"
+
+html_show_sourcelink = False

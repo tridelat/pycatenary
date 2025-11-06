@@ -248,7 +248,7 @@ line4.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_3D_multisegmented.svg" alt="" width="70%">
+  <img src="docs/source/_static/line_plot_3D_multisegmented.svg" alt="" width="55%">
 </div>
 
 Note that to make the cable inextensible, the axial stiffness only needs to be defined to None as follows:
