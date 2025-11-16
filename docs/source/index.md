@@ -6,5 +6,5 @@
 :caption: Contents:
 
 README <readme>
-API doc <api/modules>
+API doc <modules>
 ```

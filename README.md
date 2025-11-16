@@ -268,3 +268,13 @@ line4 = MooringLine(
 
 line4.compute_solution()
 ```
+
+## Documentation
+
+To generate the documentation, run the following from the root directory:
+```bash
+cd docs
+sphinx-build -M html build
+```
+
+Once generated, open the index page from `build/html/index.html`.
