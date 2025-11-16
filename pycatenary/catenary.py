@@ -289,7 +289,7 @@ class CatenaryBase(ABC):
                     return 0.0
 
     @abstractmethod
-    def get_state(self, d: float, h: float) -> None:
+    def compute_solution(self, d: float, h: float) -> None:
         """Abstract method to calculate the catenary solution.
 
         This method must be implemented by subclasses to define the specific
@@ -304,7 +304,7 @@ class CatenaryBase(ABC):
         """
         pass
 
-    def _reverseProperties(self) -> None:
+    def _reverse_properties(self) -> None:
         """Reverses the properties of the catenary (for internal use)."""
         self.L = self.L[::-1]
         self.w = self.w[::-1]
@@ -364,11 +364,11 @@ class CatenaryBase(ABC):
 
     def getState(self, d: float, h: float) -> None:
         warnings.warn(
-            "getState is deprecated, use get_state.",
+            "getState is deprecated, use compute_solution.",
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.get_state(d, h)
+        return self.compute_solution(d, h)
 
 
 class CatenaryRigid(CatenaryBase):
@@ -394,7 +394,7 @@ class CatenaryRigid(CatenaryBase):
     ) -> None:
         super(CatenaryRigid, self).__init__(L=L, w=w, floor=floor)
 
-    def get_state(self, d: float, h: float) -> None:
+    def compute_solution(self, d: float, h: float) -> None:
         """Calculates the solution for rigid catenary.
 
         Parameters
@@ -532,12 +532,12 @@ class CatenaryElastic(CatenaryBase):
         if len(self.L) != len(self.EA):
             raise ValueError("Length of L and EA vectors must be the same.")
 
-    def _reverseProperties(self) -> None:
+    def _reverse_properties(self) -> None:
         """Reverses the properties of the catenary (for internal use)."""
-        super(CatenaryElastic, self)._reverseProperties()
+        super(CatenaryElastic, self)._reverse_properties()
         self.EA = self.EA[::-1]
 
-    def get_state(self, d: float, h: float) -> None:
+    def compute_solution(self, d: float, h: float) -> None:
         """Calculates the solution for elastic catenary.
 
         Parameters

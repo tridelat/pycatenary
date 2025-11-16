@@ -35,8 +35,6 @@ class MooringLine:
         If fairlead is below anchor, the floor will be at fairlead level.
     """
 
-    count = 0
-
     def __init__(
         self,
         fairlead: Sequence[float],
@@ -96,7 +94,7 @@ class MooringLine:
         """Computes solution of the catenary.
 
         It is computed according to current anchor and fairlead positions."""
-        self.catenary.get_state(
+        self.catenary.compute_solution(
             d=self.distance_h,
             h=self.distance_v,
         )
@@ -439,12 +437,12 @@ class MooringLine:
             self._fairlead_above_anchor
             and self.catenary._has_reversed_properties
         ):
-            self.catenary._reverseProperties()
+            self.catenary._reverse_properties()
         elif (
             not self._fairlead_above_anchor
             and not self.catenary._has_reversed_properties
         ):
-            self.catenary._reverseProperties()
+            self.catenary._reverse_properties()
 
     def _transform_vector_2d(self, vector: Sequence[float]) -> np.ndarray:
         """Transforms a 2D vector back in 3D (or 2D) according to direction
