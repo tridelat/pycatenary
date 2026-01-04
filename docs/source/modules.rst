@@ -1,0 +1,17 @@
+pyCatenary
+==========
+
+.. automodule:: pycatenary.cable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pycatenary.catenary
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: pycatenary.root_finding
+   :members:
+   :undoc-members:
+   :show-inheritance:
