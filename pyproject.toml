@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycatenary"
+version = "1.0.0"
+description = "A Python library for solving catenary equations"
+readme = "README.md"
+requires-python = ">=3.6"
+license = "MIT"
+authors = [
+    {name = "Tristan de Lataillade", email = "delataillade.tristan@gmail.com"}
+]
+maintainers = [
+    {name = "Tristan de Lataillade", email = "delataillade.tristan@gmail.com"}
+]
+keywords = ["catenary", "mooring", "quasi-static", "python"]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+    "numpy>=1.16.0",
+]
+
+[project.optional-dependencies]
+plotting = [
+    "matplotlib>=2.0.0",
+]
+dev = [
+    "pytest>=6.0",
+    "black>=21.0",
+    "flake8>=3.8",
+    "isort>=5.0",
+]
+docs = [
+    "sphinx>=3.0",
+    "sphinx-rtd-theme>=0.5",
+    "myst-parser>=0.18",
+]
+
+[project.urls]
+Homepage = "https://github.com/tridelat/pycatenary"
+Repository = "https://github.com/tridelat/pycatenary"
+Issues = "https://github.com/tridelat/pycatenary/issues"
