@@ -92,8 +92,8 @@ line1.plot_2d()
 
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_3D.svg" alt="" width="43%">
-  <img src="docs/source/_static/line_plot_2D.svg" alt="" width="55%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_3D.svg" alt="" width="43%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D.svg" alt="" width="55%">
 </div>
 
 ### Retrieving tension/position along line
@@ -170,7 +170,7 @@ line2.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_2D_hanging.svg" alt="" width="55%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D_hanging.svg" alt="" width="55%">
 </div>
 
 
@@ -215,12 +215,12 @@ line3.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_2D_partly.svg" alt="" width="49%">
-  <img src="docs/source/_static/line_plot_2D_fully.svg" alt="" width="49%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D_partly.svg" alt="" width="49%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D_fully.svg" alt="" width="49%">
 </div>
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_2D_taut.svg" alt="" width="49%">
-  <img src="docs/source/_static/line_plot_2D_long.svg" alt="" width="49%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D_taut.svg" alt="" width="49%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_2D_long.svg" alt="" width="49%">
 </div>
 
 
@@ -248,7 +248,7 @@ line4.plot()
 ```
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="docs/source/_static/line_plot_3D_multisegmented.svg" alt="" width="55%">
+  <img src="https://raw.githubusercontent.com/tridelat/pycatenary/refs/heads/main/docs/source/_static/line_plot_3D_multisegmented.svg" alt="" width="55%">
 </div>
 
 Note that to make the cable inextensible, the axial stiffness only needs to be defined to None as follows:
