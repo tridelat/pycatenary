@@ -1,0 +1,937 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyCatenary &mdash; pyCatenary 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pyCatenary" href="readme.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyCatenary
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">README</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#pypi-version">PyPI version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#development-version">Development version</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="readme.html#installing">Installing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="readme.html#running-tests">Running tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#about-pycatenary">About pyCatenary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#assumptions">Assumptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#getting-started">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#creating-a-mooring-line">Creating a mooring line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#plotting">Plotting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#retrieving-tension-position-along-line">Retrieving tension/position along line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#updating-fairlead-anchor-position">Updating fairlead/anchor position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#other-functionalities">Other functionalities</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#cable-hanging-on-own-weight">Cable hanging on own weight</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#partly-fully-lifted-cable">Partly / fully lifted cable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#multisegmented-cable">Multisegmented cable</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#documentation">Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API doc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.cable.MooringLine"><code class="docutils literal notranslate"><span class="pre">MooringLine</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.update_axial_stiffness"><code class="docutils literal notranslate"><span class="pre">MooringLine.update_axial_stiffness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.compute_solution"><code class="docutils literal notranslate"><span class="pre">MooringLine.compute_solution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_position"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_tension"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_tension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_fairlead_force"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_fairlead_force()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_anchor_force"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_anchor_force()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.plot"><code class="docutils literal notranslate"><span class="pre">MooringLine.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.plot_2d"><code class="docutils literal notranslate"><span class="pre">MooringLine.plot_2d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.plot_3d"><code class="docutils literal notranslate"><span class="pre">MooringLine.plot_3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.set_anchor_position"><code class="docutils literal notranslate"><span class="pre">MooringLine.set_anchor_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_anchor_position"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_anchor_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.set_fairlead_position"><code class="docutils literal notranslate"><span class="pre">MooringLine.set_fairlead_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.get_fairlead_position"><code class="docutils literal notranslate"><span class="pre">MooringLine.get_fairlead_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.computeSolution"><code class="docutils literal notranslate"><span class="pre">MooringLine.computeSolution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.getTension"><code class="docutils literal notranslate"><span class="pre">MooringLine.getTension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.setAnchorCoords"><code class="docutils literal notranslate"><span class="pre">MooringLine.setAnchorCoords()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.setFairleadCoords"><code class="docutils literal notranslate"><span class="pre">MooringLine.setFairleadCoords()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.plot2D"><code class="docutils literal notranslate"><span class="pre">MooringLine.plot2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.plot3D"><code class="docutils literal notranslate"><span class="pre">MooringLine.plot3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.cable.MooringLine.s2xyz"><code class="docutils literal notranslate"><span class="pre">MooringLine.s2xyz()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.catenary.get_array"><code class="docutils literal notranslate"><span class="pre">get_array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase"><code class="docutils literal notranslate"><span class="pre">CatenaryBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.get_tension"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.get_tension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.s2xy"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.s2xy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.plot"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.compute_solution"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.compute_solution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.get_force_beginning_of_line"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.get_force_beginning_of_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.get_force_end_of_line"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.get_force_end_of_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.getTension"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.getTension()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryBase.getState"><code class="docutils literal notranslate"><span class="pre">CatenaryBase.getState()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.catenary.CatenaryRigid"><code class="docutils literal notranslate"><span class="pre">CatenaryRigid</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryRigid.compute_solution"><code class="docutils literal notranslate"><span class="pre">CatenaryRigid.compute_solution()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.catenary.CatenaryElastic"><code class="docutils literal notranslate"><span class="pre">CatenaryElastic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pycatenary.catenary.CatenaryElastic.compute_solution"><code class="docutils literal notranslate"><span class="pre">CatenaryElastic.compute_solution()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.get_root_a"><code class="docutils literal notranslate"><span class="pre">get_root_a()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.newton_raphson"><code class="docutils literal notranslate"><span class="pre">newton_raphson()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.bisection"><code class="docutils literal notranslate"><span class="pre">bisection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.integrate_tension"><code class="docutils literal notranslate"><span class="pre">integrate_tension()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.nofloor_rigid"><code class="docutils literal notranslate"><span class="pre">nofloor_rigid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.nofloor_elastic"><code class="docutils literal notranslate"><span class="pre">nofloor_elastic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.fully_lifted_elastic"><code class="docutils literal notranslate"><span class="pre">fully_lifted_elastic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.fully_lifted_rigid"><code class="docutils literal notranslate"><span class="pre">fully_lifted_rigid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.partly_lifted_elastic"><code class="docutils literal notranslate"><span class="pre">partly_lifted_elastic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.partly_lifted_rigid"><code class="docutils literal notranslate"><span class="pre">partly_lifted_rigid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pycatenary.root_finding.straight_elastic"><code class="docutils literal notranslate"><span class="pre">straight_elastic()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyCatenary</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyCatenary</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pycatenary.cable">
+<span id="pycatenary"></span><h1>pyCatenary<a class="headerlink" href="#module-pycatenary.cable" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycatenary.cable.</span></span><span class="sig-name descname"><span class="pre">MooringLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fairlead</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.cable.MooringLine" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to create a mooring line.</p>
+<p>Mooring lines can be elastic or rigid, and multisegmented or not.
+If the line is multisegmented, the properties must be given in a list
+going from the anchor to the fairlead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fairlead</strong> (<em>sequence of floats</em>) – Fairlead coordinates [x, y, z] (3D) or [x, y] (2D).</p></li>
+<li><p><strong>anchor</strong> (<em>sequence of floats</em>) – Anchor coordinates [x, y, z] (3D) or [x, y] (2D).</p></li>
+<li><p><strong>L</strong> (<em>float, or sequence of floats</em>) – Unstretched line length [m].
+If a list is provided, it is assumed to be a multisegmented cable.</p></li>
+<li><p><strong>w</strong> (<em>float, or sequence of floats</em>) – Submerged weight [N/m].
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>EA</strong> (<em>float, or sequence of floats</em>) – Axial stiffness [N].
+Must be provided if the cable is elastic.
+If EA is None, the cable is assumed to be rigid.
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>floor</strong> (<em>bool</em>) – If True, the floor is assumed to be at the anchor level.
+If fairlead is below anchor, the floor will be at fairlead level.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.update_axial_stiffness">
+<span class="sig-name descname"><span class="pre">update_axial_stiffness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.update_axial_stiffness" title="Link to this definition"></a></dt>
+<dd><p>Updates the axial stiffness of the cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>EA</strong> (<em>float, or sequence of floats</em>) – Axial stiffness [N].
+Must be of the same length as the original EA list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.compute_solution">
+<span class="sig-name descname"><span class="pre">compute_solution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.compute_solution" title="Link to this definition"></a></dt>
+<dd><p>Computes solution of the catenary.</p>
+<p>It is computed according to current anchor and fairlead positions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_fairlead</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_position" title="Link to this definition"></a></dt>
+<dd><p>Returns position at a given distance along line from 0 to L.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>float</em>) – Distance along line [m].</p></li>
+<li><p><strong>from_fairlead</strong> (<em>bool, optional</em>) – False (by default): distance is measured from the anchor,
+True: distance is measured from the fairlead.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>position</strong> – Position [x, y, z] (3D) or [x, y] (2D).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_tension">
+<span class="sig-name descname"><span class="pre">get_tension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_fairlead</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_tension" title="Link to this definition"></a></dt>
+<dd><p>Returns tension at a given distance along line from 0 to L.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>float</em>) – Distance along line [m].</p></li>
+<li><p><strong>from_fairlead</strong> (<em>bool, optional</em>) – False (by default): distance is measured from the anchor,
+True: distance is measured from the fairlead.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tension</strong> – Tension vector [N].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_fairlead_force">
+<span class="sig-name descname"><span class="pre">get_fairlead_force</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_fairlead_force" title="Link to this definition"></a></dt>
+<dd><p>Returns force at fairlead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> – Tension vector [N].</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_anchor_force">
+<span class="sig-name descname"><span class="pre">get_anchor_force</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_anchor_force" title="Link to this definition"></a></dt>
+<dd><p>Returns force at anchor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> – Tension vector [N].</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot" title="Link to this definition"></a></dt>
+<dd><p>Plots line from anchor to fairlead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npoints</strong> (<em>int, optional</em>) – Number of points along the line, by default 100.</p></li>
+<li><p><strong>show_tension</strong> (<em>bool, optional</em>) – If True, color the line by tension magnitude, by default True.</p></li>
+<li><p><strong>colormap</strong> (<em>str, optional</em>) – Matplotlib colormap name, by default “viridis”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.plot_2d">
+<span class="sig-name descname"><span class="pre">plot_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot_2d" title="Link to this definition"></a></dt>
+<dd><p>Plots line from anchor to fairlead in 2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npoints</strong> (<em>int, optional</em>) – Number of points along the line, by default 100.</p></li>
+<li><p><strong>show_tension</strong> (<em>bool, optional</em>) – If True, color the line by tension magnitude, by default True.</p></li>
+<li><p><strong>colormap</strong> (<em>str, optional</em>) – Matplotlib colormap name, by default “viridis”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If matplotlib is not installed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.plot_3d">
+<span class="sig-name descname"><span class="pre">plot_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot_3d" title="Link to this definition"></a></dt>
+<dd><p>Plots line from anchor to fairlead in 3D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npoints</strong> (<em>int, optional</em>) – Number of points along the line, by default 100.</p></li>
+<li><p><strong>show_tension</strong> (<em>bool, optional</em>) – If True, color the line by tension magnitude, by default True.</p></li>
+<li><p><strong>colormap</strong> (<em>str, optional</em>) – Matplotlib colormap name, by default “viridis”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If matplotlib is not installed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.set_anchor_position">
+<span class="sig-name descname"><span class="pre">set_anchor_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.set_anchor_position" title="Link to this definition"></a></dt>
+<dd><p>Sets coordinates of anchor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>sequence of floats</em>) – Anchor position [x, y, z] (3D) or [x, y] (2D).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_anchor_position">
+<span class="sig-name descname"><span class="pre">get_anchor_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_anchor_position" title="Link to this definition"></a></dt>
+<dd><p>Returns coordinates of anchor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> – Anchor position [x, y, z] (3D) or [x, y] (2D).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.set_fairlead_position">
+<span class="sig-name descname"><span class="pre">set_fairlead_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.set_fairlead_position" title="Link to this definition"></a></dt>
+<dd><p>Sets coordinates of fairlead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>sequence of floats</em>) – Fairlead position [x, y, z] (3D) or [x, y] (2D).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.get_fairlead_position">
+<span class="sig-name descname"><span class="pre">get_fairlead_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.get_fairlead_position" title="Link to this definition"></a></dt>
+<dd><p>Returns coordinates of fairlead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> – Fairlead position [x, y, z] (3D) or [x, y] (2D).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.computeSolution">
+<span class="sig-name descname"><span class="pre">computeSolution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.computeSolution" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.getTension">
+<span class="sig-name descname"><span class="pre">getTension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.getTension" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.setAnchorCoords">
+<span class="sig-name descname"><span class="pre">setAnchorCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.setAnchorCoords" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.setFairleadCoords">
+<span class="sig-name descname"><span class="pre">setFairleadCoords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.setFairleadCoords" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.plot2D">
+<span class="sig-name descname"><span class="pre">plot2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot2D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.plot3D">
+<span class="sig-name descname"><span class="pre">plot3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.plot3D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.cable.MooringLine.s2xyz">
+<span class="sig-name descname"><span class="pre">s2xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.cable.MooringLine.s2xyz" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-pycatenary.catenary">
+<dt class="sig sig-object py" id="pycatenary.catenary.get_array">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.catenary.</span></span><span class="sig-name descname"><span class="pre">get_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.catenary.get_array" title="Link to this definition"></a></dt>
+<dd><p>Converts input to numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Union[float, Sequence[float]]</em>) – Input to convert to numpy array.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> – Numpy array of the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycatenary.catenary.</span></span><span class="sig-name descname"><span class="pre">CatenaryBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for catenaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>Union[float, Sequence[float]]</em>) – Unstretched line length [m].
+If a list is provided, it is assumed to be a multisegmented cable.</p></li>
+<li><p><strong>w</strong> (<em>Union[float, Sequence[float]]</em>) – Submerged weight [N/m].
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>floor</strong> (<em>bool</em>) – If True, the floor is assumed to be at the anchor level.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.get_tension">
+<span class="sig-name descname"><span class="pre">get_tension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.get_tension" title="Link to this definition"></a></dt>
+<dd><p>Returns tension at a given distance along the line from the anchor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>float</em>) – Distance along line [m].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tension</strong> – Tension vector [N].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.s2xy">
+<span class="sig-name descname"><span class="pre">s2xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.s2xy" title="Link to this definition"></a></dt>
+<dd><p>Returns [x,y] coords at a given distance along line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>float</em>) – Distance along line [m].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>xy</strong> – [x,y] coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.plot" title="Link to this definition"></a></dt>
+<dd><p>Plots catenary in 2D from (0, 0) to (d, h).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npoints</strong> (<em>int, optional</em>) – Number of points along the line, by default 100.</p></li>
+<li><p><strong>show_tension</strong> (<em>bool, optional</em>) – If True, color the line by tension magnitude, by default True.</p></li>
+<li><p><strong>colormap</strong> (<em>str, optional</em>) – Matplotlib colormap name, by default “viridis”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ImportError</strong> – If matplotlib is not installed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.compute_solution">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.compute_solution" title="Link to this definition"></a></dt>
+<dd><p>Abstract method to calculate the catenary solution.</p>
+<p>This method must be implemented by subclasses to define the specific
+catenary calculation algorithm (rigid or elastic).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.get_force_beginning_of_line">
+<span class="sig-name descname"><span class="pre">get_force_beginning_of_line</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.get_force_beginning_of_line" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.get_force_end_of_line">
+<span class="sig-name descname"><span class="pre">get_force_end_of_line</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.get_force_end_of_line" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.getTension">
+<span class="sig-name descname"><span class="pre">getTension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.getTension" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryBase.getState">
+<span class="sig-name descname"><span class="pre">getState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryBase.getState" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryRigid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycatenary.catenary.</span></span><span class="sig-name descname"><span class="pre">CatenaryRigid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.catenary.CatenaryRigid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pycatenary.catenary.CatenaryBase" title="pycatenary.catenary.CatenaryBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CatenaryBase</span></code></a></p>
+<p>A class for rigid catenary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>Union[float, Sequence[float]]</em>) – Unstretched line length [m].
+If a list is provided, it is assumed to be a multisegmented cable.</p></li>
+<li><p><strong>w</strong> (<em>Union[float, Sequence[float]]</em>) – Submerged weight [N/m].
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>floor</strong> (<em>bool</em>) – If True, the floor is assumed to be at the anchor level.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryRigid.compute_solution">
+<span class="sig-name descname"><span class="pre">compute_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryRigid.compute_solution" title="Link to this definition"></a></dt>
+<dd><p>Calculates the solution for rigid catenary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryElastic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pycatenary.catenary.</span></span><span class="sig-name descname"><span class="pre">CatenaryElastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pycatenary.catenary.CatenaryElastic" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pycatenary.catenary.CatenaryBase" title="pycatenary.catenary.CatenaryBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CatenaryBase</span></code></a></p>
+<p>A class for elastic catenary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>Union[float, Sequence[float]]</em>) – Unstretched line length [m].
+If a list is provided, it is assumed to be a multisegmented cable.</p></li>
+<li><p><strong>w</strong> (<em>Union[float, Sequence[float]]</em>) – Submerged weight [N/m].
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>EA</strong> (<em>Union[float, Sequence[float]]</em>) – Axial stiffness [N].
+If a list is provided, it must match the length of the L list.</p></li>
+<li><p><strong>floor</strong> (<em>bool</em>) – If True, the floor is assumed to be at the anchor level.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pycatenary.catenary.CatenaryElastic.compute_solution">
+<span class="sig-name descname"><span class="pre">compute_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pycatenary.catenary.CatenaryElastic.compute_solution" title="Link to this definition"></a></dt>
+<dd><p>Calculates the solution for elastic catenary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function" id="module-pycatenary.root_finding">
+<dt class="sig sig-object py" id="pycatenary.root_finding.get_root_a">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">get_root_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.get_root_a" title="Link to this definition"></a></dt>
+<dd><p>Returns the initial guess for the catenary a parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>float</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>a0</strong> (<em>float</em>) – Initial guess for the catenary a parameter.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>a</strong> – Initial guess for the catenary a parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.newton_raphson">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">newton_raphson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.newton_raphson" title="Link to this definition"></a></dt>
+<dd><p>Newton-Raphson root finding algorithm (for transcendental equations).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>function</em>) – Function to find the root of.</p></li>
+<li><p><strong>df</strong> (<em>function</em>) – Derivative of the function f (df/dx).</p></li>
+<li><p><strong>x0</strong> (<em>float</em>) – Initial guess of x.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> – Root of the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.bisection">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">bisection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.bisection" title="Link to this definition"></a></dt>
+<dd><p>Bisection root finding algorithm (for transcendental equations).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>function</em>) – Function to find the root of.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> – Root of the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.integrate_tension">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">integrate_tension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Va</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.integrate_tension" title="Link to this definition"></a></dt>
+<dd><p>Helper function to integrate tension along a cable segment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s1</strong> (<em>float</em>) – Start of the cable segment [m].</p></li>
+<li><p><strong>s2</strong> (<em>float</em>) – End of the cable segment [m].</p></li>
+<li><p><strong>w</strong> (<em>float</em>) – Submerged weight [N/m].</p></li>
+<li><p><strong>Ha</strong> (<em>float</em>) – Horizontal tension at s1 [N].</p></li>
+<li><p><strong>Va</strong> (<em>float</em>) – Vertical tension at s1 [N].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Ts</strong> – Integrated tension.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.nofloor_rigid">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">nofloor_rigid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.nofloor_rigid" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary shape for rigid cable with no floor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>a</strong> – Catenary shape parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.nofloor_elastic">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">nofloor_elastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pycatenary.root_finding.nofloor_elastic" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary solution for elastic cable with no floor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>w</strong> (<em>Sequence[float]</em>) – Submerged weight [N/m].</p></li>
+<li><p><strong>EA</strong> (<em>Sequence[float]</em>) – Axial stiffness [N].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – Catenary shape parameter.</p></li>
+<li><p><strong>e</strong> (<em>np.ndarray</em>) – Elongation of the cable segments [m].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.fully_lifted_elastic">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">fully_lifted_elastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pycatenary.root_finding.fully_lifted_elastic" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary solution for fully lifted elastic cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>w</strong> (<em>Sequence[float]</em>) – Submerged weight [N/m].</p></li>
+<li><p><strong>EA</strong> (<em>Sequence[float]</em>) – Axial stiffness [N].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – Catenary shape parameter.</p></li>
+<li><p><strong>e</strong> (<em>np.ndarray</em>) – Elongation of the cable segments [m].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.fully_lifted_rigid">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">fully_lifted_rigid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pycatenary.root_finding.fully_lifted_rigid" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary solution for fully lifted rigid cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>a</strong> – Catenary shape parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.partly_lifted_elastic">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">partly_lifted_elastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pycatenary.root_finding.partly_lifted_elastic" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary solution for partly lifted elastic cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>w</strong> (<em>Sequence[float]</em>) – Submerged weight [N/m].</p></li>
+<li><p><strong>EA</strong> (<em>Sequence[float]</em>) – Axial stiffness [N].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – Catenary shape parameter.</p></li>
+<li><p><strong>e</strong> (<em>np.ndarray</em>) – Elongation of the cable segments [m].</p></li>
+<li><p><strong>Lsu</strong> (<em>np.ndarray</em>) – Lifted line lengths of the cable segments [m].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.partly_lifted_rigid">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">partly_lifted_rigid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pycatenary.root_finding.partly_lifted_rigid" title="Link to this definition"></a></dt>
+<dd><p>Returns catenary solution for partly lifted rigid cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>int1</strong> (<em>float</em>) – Lower bound for the bisection algorithm.</p></li>
+<li><p><strong>int2</strong> (<em>float</em>) – Upper bound for the bisection algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – Catenary shape parameter.</p></li>
+<li><p><strong>Lsu</strong> (<em>np.ndarray</em>) – Lifted line lengths of the cable segments [m].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pycatenary.root_finding.straight_elastic">
+<span class="sig-prename descclassname"><span class="pre">pycatenary.root_finding.</span></span><span class="sig-name descname"><span class="pre">straight_elastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EA</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">must_converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pycatenary.root_finding.straight_elastic" title="Link to this definition"></a></dt>
+<dd><p>Returns horizontal tension and elongation for straight elastic cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>float</em>) – Horizontal distance between anchor and fairlead [m].</p></li>
+<li><p><strong>h</strong> (<em>float</em>) – Vertical distance between anchor and fairlead [m].</p></li>
+<li><p><strong>L</strong> (<em>Sequence[float]</em>) – Unstretched line length [m].</p></li>
+<li><p><strong>w</strong> (<em>Sequence[float]</em>) – Submerged weight [N/m].</p></li>
+<li><p><strong>EA</strong> (<em>Sequence[float]</em>) – Axial stiffness [N].</p></li>
+<li><p><strong>H_low</strong> (<em>float</em>) – Lower bound for the horizontal tension at anchor [N].</p></li>
+<li><p><strong>H_high</strong> (<em>float</em>) – Upper bound for the horizontal tension at anchor [N].</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for the root finding algorithm.</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of iterations for the root finding algorithm.</p></li>
+<li><p><strong>must_converge</strong> (<em>bool</em>) – If True, an error will be raised if the algorithm does not converge.
+If False, a warning will be issued if the algorithm does not converge.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>H</strong> (<em>float</em>) – Horizontal tension at anchor [N].</p></li>
+<li><p><strong>e</strong> (<em>np.ndarray</em>) – Elongation of the cable segments [m].</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="readme.html" class="btn btn-neutral float-left" title="pyCatenary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Tristan de Lataillade.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
