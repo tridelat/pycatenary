@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pycatenary"
-version = "0.4.0"
+version = "1.0.0"
 description = "A Python library for solving catenary equations"
 readme = "README.md"
 requires-python = ">=3.6"

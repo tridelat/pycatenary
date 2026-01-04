@@ -23,7 +23,7 @@ copyright = "2020, Tristan de Lataillade"
 author = "Tristan de Lataillade"
 
 # The full version, including alpha/beta/rc tags
-release = "0.4.0"
+release = "1.0.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -113,7 +113,7 @@ html_context = {
     "display_github": False,  # Integrate GitHub
     "github_user": "tridelat",  # Username
     "github_repo": "pycatenary",  # Repo name
-    "github_version": "v0.4.0",  # Version
+    "github_version": "v1.0.0",  # Version
     "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
 }
 
